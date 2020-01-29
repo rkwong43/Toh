@@ -176,31 +176,30 @@ class Model:
             self.player_ship.recharge_shield()
             self.player_ship.isDamaged = False
 
-    """Moves the player ship and other actions depending on what keys are pressed.
+    """Moves the player ship and other actions depending on what directions are given.
 
-    :param keys: list of keys to handle
-    :type keys: list of pygame keys
+    :param keys: list of directions to handle
+    :type keys: list of Direction
     """
 
     def move_player(self, keys):
         # Player
         # Firing
-        # TODO: Don't use pygame
         if not self.player_ship.dead:
-            if keys[pygame.K_SPACE]:
+            if keys[Direction.FIRE]:
                 if self.reload == self.max_fire_speed:
                     self.projectile_generator()
                     self.reload = 0
             # Up and down
-            if keys[pygame.K_w] & self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
+            if keys[Direction.UP] & self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
                 self.player_ship.move_player(Direction.UP)
-            elif keys[pygame.K_s] & self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
+            elif keys[Direction.DOWN] & self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
                 self.player_ship.move_player(Direction.DOWN)
 
             # Left and right
-            if keys[pygame.K_a] & self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
+            if keys[Direction.LEFT] & self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
                 self.player_ship.move_player(Direction.LEFT)
-            elif keys[pygame.K_d] & self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
+            elif keys[Direction.RIGHT] & self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
                 self.player_ship.move_player(Direction.RIGHT)
 
     """Removes all off screen objects such as projectiles or ships.
