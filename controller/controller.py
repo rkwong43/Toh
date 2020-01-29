@@ -2,6 +2,7 @@ import pygame
 import os
 import threading
 
+from src.direction import Direction
 
 """Controller that keeps track of time and key inputs to pass onto the view and model. Will also handle music
 and different types of menus and screens
@@ -9,6 +10,9 @@ and different types of menus and screens
 
 
 class Controller:
+    # Key bindings:
+    key_to_directions = {pygame.K_w: Direction.UP, pygame.K_a: Direction.LEFT, pygame.K_s: Direction.DOWN,
+                         pygame.K_d: Direction.RIGHT, pygame.K_SPACE: Direction.FIRE}
     # If the player dies in the game
     game_over = False
     """Constructor that takes in a view and model to run the game
@@ -72,7 +76,7 @@ class Controller:
             keys = pygame.key.get_pressed()
             # Moves the player and ticks
             if not paused:
-                self.model.move_player(keys)
+                self.model.move_player(self.parse_keys(keys))
                 t1.start()
             else:
                 self.model.pause()
@@ -98,3 +102,18 @@ class Controller:
             pygame.display.update()
             clock.tick(self.fps)
         return False
+
+    """Takes in a list of Pygame keys and returns a list of directions for the model.
+    
+    :param keys: Keys to parse
+    :type keys: List of Pygame Key constants
+    :returns: list of directions
+    :rtype: List of Direction
+    """
+
+    def parse_keys(self, keys):
+        result = []
+        for key, direction in self.key_to_directions.items():
+            if keys[key]:
+                result.append(direction)
+        return result

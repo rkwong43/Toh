@@ -186,20 +186,20 @@ class Model:
         # Player
         # Firing
         if not self.player_ship.dead:
-            if keys[Direction.FIRE]:
+            if Direction.FIRE in keys:
                 if self.reload == self.max_fire_speed:
                     self.projectile_generator()
                     self.reload = 0
             # Up and down
-            if keys[Direction.UP] & self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
+            if Direction.UP in keys and self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
                 self.player_ship.move_player(Direction.UP)
-            elif keys[Direction.DOWN] & self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
+            elif Direction.DOWN in keys and self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
                 self.player_ship.move_player(Direction.DOWN)
 
             # Left and right
-            if keys[Direction.LEFT] & self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
+            if Direction.LEFT in keys and self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
                 self.player_ship.move_player(Direction.LEFT)
-            elif keys[Direction.RIGHT] & self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
+            elif Direction.RIGHT in keys and self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
                 self.player_ship.move_player(Direction.RIGHT)
 
     """Removes all off screen objects such as projectiles or ships.
@@ -308,7 +308,7 @@ class Model:
             # Plays a red tint
             tint = ScreenTint(0, 0, EntityID.HP_TINT, self.fps)
         # Checks if the current tint is already playing
-        if self.effects.count(tint) == 0:
+        if tint not in self.effects:
             self.effects.append(tint)
         if self.player_ship.hp <= 0:
             self.game_over = True

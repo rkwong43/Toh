@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 """Directions or commands to give the player and model.
 """
@@ -6,8 +6,9 @@ from enum import Enum
 
 class Direction(Enum):
     # Movement
-    UP = 1
-    DOWN = 2
-    RIGHT = 3
-    LEFT = 4
+    UP = auto()
+    DOWN = auto()
+    RIGHT = auto()
+    LEFT = auto()
     # Firing
+    FIRE = auto()
