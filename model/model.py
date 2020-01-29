@@ -185,22 +185,22 @@ class Model:
     def move_player(self, keys):
         # Player
         # Firing
-        if not self.player_ship.dead:
-            if Direction.FIRE in keys:
+        if Direction.FIRE in keys:
+            if not self.player_ship.dead:
                 if self.reload == self.max_fire_speed:
                     self.projectile_generator()
                     self.reload = 0
-            # Up and down
-            if Direction.UP in keys and self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
-                self.player_ship.move_player(Direction.UP)
-            elif Direction.DOWN in keys and self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
-                self.player_ship.move_player(Direction.DOWN)
+        # Up and down
+        if Direction.UP in keys and self.boundary_check(self.player_ship, Direction.UP, self.ship_size):
+            self.player_ship.move_player(Direction.UP)
+        elif Direction.DOWN in keys and self.boundary_check(self.player_ship, Direction.DOWN, self.ship_size):
+            self.player_ship.move_player(Direction.DOWN)
 
-            # Left and right
-            if Direction.LEFT in keys and self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
-                self.player_ship.move_player(Direction.LEFT)
-            elif Direction.RIGHT in keys and self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
-                self.player_ship.move_player(Direction.RIGHT)
+        # Left and right
+        if Direction.LEFT in keys and self.boundary_check(self.player_ship, Direction.LEFT, self.ship_size):
+            self.player_ship.move_player(Direction.LEFT)
+        elif Direction.RIGHT in keys and self.boundary_check(self.player_ship, Direction.RIGHT, self.ship_size):
+            self.player_ship.move_player(Direction.RIGHT)
 
     """Removes all off screen objects such as projectiles or ships.
     """
@@ -277,6 +277,7 @@ class Model:
                                                       projectile.y,
                                                       splash_color, self.fps))
                         self.explosion_sound.play()
+                    # Removes projectile if it is not a railgun shot
                     if projectile.entity_id != EntityID.RAILGUN:
                         projectiles.remove(projectile)
                     # If the ship is dead
@@ -310,7 +311,8 @@ class Model:
         # Checks if the current tint is already playing
         if tint not in self.effects:
             self.effects.append(tint)
-        if self.player_ship.hp <= 0:
+        # If the player dies, then game over and returns to title screen (from controller)
+        if self.player_ship.dead:
             self.game_over = True
             self.popup_text("Game Over", -1, -1, 4)
 
@@ -328,7 +330,7 @@ class Model:
         for ship in ships:
             if ship == ship_to_remove:
                 continue
-            if self.check_distance(projectile, ship, int(ship.size * .75)):
+            if self.check_distance(projectile, ship, self.ship_size):
                 ship.damage(projectile.damage)
 
     """Checks if the projectile and ship are within a given distance.
@@ -344,10 +346,10 @@ class Model:
     """
 
     def check_distance(self, projectile, ship, dist):
-        x1 = projectile.x + projectile.size / 2
-        y1 = projectile.y + projectile.size / 2
-        x2 = ship.x + ship.size / 2
-        y2 = ship.y + ship.size / 2
+        x1 = projectile.x + (projectile.size / 2)
+        y1 = projectile.y + (projectile.size / 2)
+        x2 = ship.x + (ship.size / 2)
+        y2 = ship.y + (ship.size / 2)
         distance = int(abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)))
         return distance <= dist
 
@@ -358,8 +360,7 @@ class Model:
     """
 
     def switch_weapon(self, weapon):
-        # TODO: Automate
-        # Base damage-per-second is indicated
+        # Grabs the weapon stats and sets buffer for frame rate
         weapon_stats = get_weapon_stats(weapon)
         self.bullet_speed = int(weapon_stats["PROJECTILE SPEED"] * (30 / self.fps))
         self.player_bullet_spread = weapon_stats["SPREAD"]
@@ -435,8 +436,8 @@ class Model:
 
     :param source: Source ship or projectile to use as origin
     :type source: Ship or Projectile
-    :returns: closest enemy to the source
-    :rtype: Ship
+    :returns: closest enemy to the source, or 0
+    :rtype: Ship or int
     """
 
     def find_closest_enemy(self, source):
@@ -486,16 +487,20 @@ class Model:
 
     def level_up(self):
         player = self.player_ship
+        # Increases max HP and restores it
         player.max_hp += 5
         player.hp = player.max_hp
+        # Increases max shield and restores it
         player.max_shield += 10
         player.shield_recharge_rate = (player.max_shield // 20 / self.fps)
         player.shield = player.max_shield
+        # Increases damage and fire rate
         self.damage_modifier += .2
         self.reload_modifier -= .05
         if self.reload_modifier <= 0:
             self.reload_modifier = .1
         self.popup_text("Level Up", -1, self.height // 3, 3)
+        # Refreshes the weapon stats for the player
         self.switch_weapon(self.player_weapon_type)
 
     """Adds a certain text to play for a certain length of time at the given position.
@@ -547,7 +552,7 @@ class Model:
     def get_effects(self):
         return self.effects
 
-    """Resets the model.
+    """Resets the model, emptying all lists of entities other than the player.
     """
 
     def clear(self):
@@ -557,7 +562,7 @@ class Model:
         self.friendly_projectiles = []
         self.effects = []
 
-    """Pauses the game by displaying a text field.
+    """Pauses the game by displaying a text field and prompt to exit to title screen.
     """
 
     def pause(self):
