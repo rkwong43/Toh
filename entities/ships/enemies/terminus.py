@@ -47,5 +47,5 @@ class Terminus(Enemy):
         if self.fire_rate - 16 == self.ticks:
             offset_x = int(math.sin(math.radians(self.angle)) * (self.size // 4))
             offset_y = int(math.cos(math.radians(self.angle)) * (self.size // 5))
-            charge = ChargeUp(self.x + offset_x, self.y + offset_y, EntityID.RED_CHARGE)
+            charge = ChargeUp(self.x + offset_x, self.y + offset_y, EntityID.RED_CHARGE, self.fps)
             self.effects.append(charge)

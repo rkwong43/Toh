@@ -1,4 +1,3 @@
-import math
 import random
 
 from src.entities.projectiles.projectile import Projectile

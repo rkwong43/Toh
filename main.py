@@ -12,7 +12,7 @@ def main():
     display_width = 1000
     display_height = 750
     game_title = 'Tears Over Heaven'
-    game_fps = 32
+    game_fps = 60
     ship_size = 100
     finished = False
     while not finished:
@@ -21,7 +21,7 @@ def main():
         game_mode, difficulty, weapon_selected = menu_controller.run_menus()
         if weapon_selected is None:
             break
-        view = View(display_width, display_height, game_title, ship_size, game_mode)
+        view = View(display_width, display_height, game_title, ship_size, game_mode, game_fps)
         model = Model(display_width, display_height, ship_size, game_fps, weapon_selected, difficulty, game_mode)
         model.clear()
         controller = Controller(model, view, game_fps)

@@ -37,7 +37,7 @@ class Mantis(Enemy):
         # Mantis has different fire rate mechanics
         # Fire rate affects an internal burst counter to determine
         # when to fire a burst
-        self.fire_rate = 1 * (fps // 32)
+        self.fire_rate = 1 * (fps // 30)
         self.projectile_type = EntityID.ENEMY_BULLET
 
         # Fires a burst

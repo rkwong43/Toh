@@ -105,7 +105,7 @@ class MenuModel(Model):
             if weapon_type == EntityID.RAILGUN:
                 self.effects.append(Explosion(projectile.x - self.ship_size / 4,
                                               projectile.y - self.ship_size / 4,
-                                              splash_color))
+                                              splash_color, self.fps))
             for ship in ships:
                 # Hit box
                 ship_bounding_box = ship.size / 4
@@ -121,7 +121,7 @@ class MenuModel(Model):
                         self.check_splash_damage(projectile, ship, ships)
                         self.effects.append(Explosion(projectile.x - (projectile.size // 4),
                                                       projectile.y,
-                                                      splash_color))
+                                                      splash_color, self.fps))
                         self.explosion_sound.play()
                     if projectile.entity_id != EntityID.RAILGUN:
                         projectiles.remove(projectile)

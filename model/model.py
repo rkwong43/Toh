@@ -208,19 +208,22 @@ class Model:
     """
 
     def remove_off_screen_objects(self):
-        for projectile in self.friendly_projectiles:
-            size = projectile.size / 2
-            # if off screen:
-            if projectile.x > self.width + size or projectile.x < -size or projectile.y > self.height + size \
-                    or projectile.y < -size:
-                self.friendly_projectiles.remove(projectile)
+        self.remove_off_screen_from_list(self.friendly_projectiles)
+        self.remove_off_screen_from_list(self.enemy_projectiles)
 
-        for projectile in self.enemy_projectiles:
-            size = projectile.size / 2
+    """Removes offscreen objects in the given list.
+    
+    :param entity_list: List of entities to check
+    :type entity_list: List of Entity
+    """
+    def remove_off_screen_from_list(self, entity_list):
+        for entity in entity_list:
+            size = entity.size / 2
+            center = (entity.x + size, entity.y + size)
             # if off screen:
-            if projectile.x > self.width + size or projectile.x < -size or projectile.y > self.height + size \
-                    or projectile.y < -size:
-                self.enemy_projectiles.remove(projectile)
+            if center[0] > self.width + size or center[0] < -size or center[1] > self.height + size \
+                    or center[1] < -size:
+                entity_list.remove(entity)
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
     explosion effect to the effects list.
@@ -253,7 +256,7 @@ class Model:
             if weapon_type == EntityID.RAILGUN:
                 self.effects.append(Explosion(projectile.x - self.ship_size / 4,
                                               projectile.y - self.ship_size / 4,
-                                              splash_color))
+                                              splash_color, self.fps))
             elif weapon_type == EntityID.FRIENDLY_MISSILE or weapon_type == EntityID.ENEMY_MISSILE:
                 # Projectile is missile and its target has been destroyed, gives it a new target
                 if projectile.target_destroyed:
@@ -274,7 +277,7 @@ class Model:
                         self.check_splash_damage(projectile, ship, ships)
                         self.effects.append(Explosion(projectile.x - (projectile.size // 4),
                                                       projectile.y,
-                                                      splash_color))
+                                                      splash_color, self.fps))
                         self.explosion_sound.play()
                     if projectile.entity_id != EntityID.RAILGUN:
                         projectiles.remove(projectile)
@@ -287,12 +290,12 @@ class Model:
                         self.explosion_sound.play()
                         offset = ((self.ship_size * 1.5) - ship.size) // 2
                         self.effects.append(Explosion(ship.x - offset, ship.y - offset,
-                                                      EntityID.EXPLOSION))
+                                                      EntityID.EXPLOSION, self.fps))
                         # Clears all if a Titan is killed
                         if ship.entity_id == EntityID.TITAN:
                             self.enemy_ships = []
                             self.popup_text("TITAN SLAIN", -1, -1, 3)
-                            self.effects.append(Explosion(ship.x, ship.y, EntityID.TITAN_EXPLOSION))
+                            self.effects.append(Explosion(ship.x, ship.y, EntityID.TITAN_EXPLOSION, self.fps))
                     break
 
     """Plays a particular screen tint effect depending on what damage the player has taken.
@@ -302,10 +305,10 @@ class Model:
     def play_screen_effect(self):
         # PLays a blue tint
         if self.player_ship.shield > 0:
-            tint = ScreenTint(0, 0, EntityID.SHIELD_TINT)
+            tint = ScreenTint(0, 0, EntityID.SHIELD_TINT, self.fps)
         else:
             # Plays a red tint
-            tint = ScreenTint(0, 0, EntityID.HP_TINT)
+            tint = ScreenTint(0, 0, EntityID.HP_TINT, self.fps)
         # Checks if the current tint is already playing
         if self.effects.count(tint) == 0:
             self.effects.append(tint)
@@ -360,11 +363,11 @@ class Model:
         # TODO: Automate
         # Base damage-per-second is indicated
         weapon_stats = get_weapon_stats(weapon)
-        self.bullet_speed = int(weapon_stats["PROJECTILE SPEED"] * (32 / self.fps))
+        self.bullet_speed = int(weapon_stats["PROJECTILE SPEED"] * (30 / self.fps))
         self.player_bullet_spread = weapon_stats["SPREAD"]
         self.player_projectile_type = weapon_stats["PROJECTILE TYPE"]
         self.player_bullet_damage = int(weapon_stats["DAMAGE"] * self.damage_modifier)
-        self.max_fire_speed = int(weapon_stats["RELOAD"] * self.reload_modifier * (self.fps / 32))
+        self.max_fire_speed = int(weapon_stats["RELOAD"] * self.reload_modifier * (self.fps / 30))
         self.player_projectile_count = weapon_stats["PROJECTILE COUNT"]
         # Sets the reload times
         if self.max_fire_speed <= 0:

@@ -51,7 +51,7 @@ class EnemyMandibleMadnessAI:
         # Range in fire rate for enemies, chosen randomly
         self.fire_rate_range = (fps * .75, fps * 2)
         self.change_difficulty(difficulty)
-        self.mandible_stats["SPEED"] *= (32 / fps)
+        self.mandible_stats["SPEED"] *= (30 / fps)
 
     """Changes the difficulty to the given setting.
     """

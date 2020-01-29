@@ -14,11 +14,13 @@ class ChargeUp(Effect):
     :type y: int
     :param entity_id: ID representing what effect it is
     :type entity_id: EntityID
+    :param fps: frames per second
+    :type fps: int
     """
 
-    def __init__(self, x, y, entity_id):
+    def __init__(self, x, y, entity_id, fps):
         super().__init__(x, y, entity_id)
-        # Charging has 8 frames.
-        self.max_frame = 16
+        # Charging has 16 frames.
+        self.max_frame = 16 * int(fps / 30)
 
 

@@ -6,7 +6,7 @@ Personal project using self-taught Python and the Pygame library. Features multi
   * Features decoupled views, models, controllers, and artificial intelligence for enemies.
   * Uses multi-threading to render the game and run the game concurrently.
   * Has a collision detection algorithm for detecting when projectiles and ships intersect.
-  * Supports different frame rates (default=32) while keeping the same gameplay.
+  * Supports different frame rates (default=60) while keeping the same gameplay.
   * Controller and main allow for restarting the game upon end.
   * Menu is implemented in the form of a tree structure.
   * Unique algorithms for different enemy types and projectiles such as homing missiles.

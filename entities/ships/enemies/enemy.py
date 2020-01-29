@@ -46,7 +46,7 @@ class Enemy(Ship):
         self.fps = fps
         stats = get_ship_stats(entity_id)
         self.projectile_damage = stats["DAMAGE"]
-        self.projectile_speed = stats["PROJECTILE SPEED"] * (32 / fps)
+        self.projectile_speed = stats["PROJECTILE SPEED"] * (30 / fps)
         self.score = stats["SCORE"]
         self.projectile_type = EntityID.ENEMY_BULLET
         # fire rate in seconds

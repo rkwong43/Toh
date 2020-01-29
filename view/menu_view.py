@@ -33,13 +33,13 @@ class MenuView(View):
 
     def __init__(self, display_width, display_height, game_title, ship_size, fps):
         # Sets up the game window surface
-        super().__init__(display_width, display_height, game_title, ship_size, None)
+        super().__init__(display_width, display_height, game_title, ship_size, None, fps)
         self.game_display = pygame.display.set_mode((display_width, display_height))
         # Title of the window
         pygame.display.set_caption(game_title)
         # Background image is 1920 x 1080
         # For scrolling background
-        self.background = pygame.image.load(self.background_path)
+        self.background = pygame.image.load(self.background_path).convert_alpha()
         self.background_x = 0
         self.background_y = 0
         self.width = display_width
@@ -55,7 +55,7 @@ class MenuView(View):
         # TODO: ADD SCROLLING
         self.current = 0
         # Title attributes
-        self.title = self.text_font.render(game_title, 1, (255, 255, 255))
+        self.title = self.text_font.render(game_title, 1, (255, 255, 255)).convert_alpha()
         # Title dimensions
         title_width, title_height = pygame.font.Font.size(self.text_font, game_title)
         self.title_x = display_width / 2 - title_width / 2
@@ -155,16 +155,16 @@ class MenuView(View):
         self.render(self.model.player_ship, self.model.get_projectiles(),
                     self.model.get_enemies(), self.model.get_effects())
         # Title and description
-        name_displayed = self.text_font.render(str(gallery.name), 1, (255, 255, 255))
+        name_displayed = self.text_font.render(str(gallery.name), 1, (255, 255, 255)).convert_alpha()
         name_rect = name_displayed.get_rect(center=(int(self.width / 2), int(self.height / 10)))
         self.game_display.blit(name_displayed, name_rect.topleft)
-        description = self.description_font.render(gallery.description, 0, (255, 255, 255))
+        description = self.description_font.render(gallery.description, 0, (255, 255, 255)).convert_alpha()
         description_rect = description.get_rect(center=(int(self.width / 2), int(self.height / 6)))
         self.game_display.blit(description, description_rect.topleft)
         # Other stats to show
         offset = 0
         for stat in gallery.stats:
-            stat_displayed = self.description_font.render(stat, 0, (255, 255, 255))
+            stat_displayed = self.description_font.render(stat, 0, (255, 255, 255)).convert_alpha()
             stat_rect = stat_displayed.get_rect(center=(int(self.width * .7), int(self.height / 4) + offset))
             offset += self.ship_size // 4
             self.game_display.blit(stat_displayed, stat_rect.topleft)

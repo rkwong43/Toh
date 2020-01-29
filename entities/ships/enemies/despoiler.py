@@ -32,7 +32,7 @@ class Despoiler(Enemy):
     def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps):
         super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.DESPOILER)
         # fire rate in seconds
-        self.fire_rate = 1 * (fps // 32)
+        self.fire_rate = 1 * (fps // 30)
         self.projectile_type = EntityID.ENEMY_MISSILE
         self.fire_variance = 10
 

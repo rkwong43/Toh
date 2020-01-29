@@ -51,6 +51,7 @@ class Mothership(Enemy):
 
     def fire(self, target, projectiles):
         temp = self.fire_variance
+        temp_speed = self.projectile_speed
         # Fires 3 missiles
         super().fire(target, projectiles)
         super().fire(target, projectiles)
@@ -62,3 +63,4 @@ class Mothership(Enemy):
                 ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
                 ship.x, ship.y = self.x, self.y
         self.fire_variance = temp
+        self.projectile_speed = temp_speed

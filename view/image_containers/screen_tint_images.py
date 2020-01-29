@@ -16,7 +16,7 @@ class ScreenTintImages:
     """
 
     def __init__(self, image, width, height):
-        frame1 = pygame.image.load(image)
+        frame1 = pygame.image.load(image).convert_alpha()
         frame1 = pygame.transform.scale(frame1, (width, height))
         self.frame = frame1
 

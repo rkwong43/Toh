@@ -74,7 +74,7 @@ class EnemyHeavenAI(EnemyWaveAI):
         # Adjusts the speed of enemies
         fps = model.fps
         for stats in self.stats.values():
-            stats["SPEED"] * (32 / fps)
+            stats["SPEED"] * (30 / fps)
             if stats["SPEED"] == 0:
                 stats["SPEED"] = 1
 

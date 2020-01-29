@@ -28,9 +28,15 @@ class View:
     :type display_height: int
     :param game_title: caption to put as the window title
     :type game_title: str
+    :param ship_size: size to render base ships to
+    :type ship_size: int
+    :param game_mode: Game mode to determine background
+    :type game_mode: EntityID
+    :param fps: Frames per second to set effect length
+    :type fps: int
     """
 
-    def __init__(self, display_width, display_height, game_title, ship_size, game_mode):
+    def __init__(self, display_width, display_height, game_title, ship_size, game_mode, fps):
         # Determines when to switch images for animation
         self.animation_switch = True
         # Sets up the game window surface
@@ -48,7 +54,7 @@ class View:
             background_path = os.path.join(self.image_path, 'heaven_background.png')
         elif game_mode == EntityID.SURVIVAL:
             background_path = os.path.join(self.image_path, 'survival_background.png')
-        self.background = pygame.image.load(background_path)
+        self.background = pygame.image.load(background_path).convert_alpha()
         self.background = pygame.transform.scale(self.background, (display_width, display_height))
         self.background_y = 0
         # How much the background scrolls
@@ -60,7 +66,7 @@ class View:
         font_path = os.path.join(self.resource_path, 'fonts')
         font_path = os.path.join(font_path, 'insane_hours_2.ttf')
         self.text_font = pygame.font.Font(font_path, int(self.font_size))
-        self.hp_text = self.text_font.render("HP", 1, (255, 255, 255))
+        self.hp_text = self.text_font.render("HP", 1, (255, 255, 255)).convert_alpha()
         hp_width, hp_height = pygame.font.Font.size(self.text_font, "HP")
         self.red_bar = pygame.rect.Rect(hp_width, display_height - self.font_size + self.font_size / 3,
                                         display_width / 3, self.font_size / 3)
@@ -69,20 +75,22 @@ class View:
         self.shield_bar = pygame.rect.Rect(hp_width, display_height - self.font_size + self.font_size / 5,
                                            display_width / 3, self.font_size / 4)
         # Score
-        self.score_text = self.text_font.render("Score:", 1, (255, 255, 255))
+        self.score_text = self.text_font.render("Score:", 1, (255, 255, 255)).convert_alpha()
         self.score_x = hp_width + (display_width / 3) + self.font_size
         self.score_width = pygame.font.Font.size(self.text_font, "Score:")[0]
 
         # Grabs the image dictionary
-        self.image_dict = self.init_images()
+        self.image_dict = self.init_images(fps)
 
     """Initializes all the images used in the game.
     
+    :param fps: frames per second to pass to image holders
+    :type fps: int
     :returns: dictionary of entity ID to images
     :rtype: {EntityID : ImageHolder}
     """
 
-    def init_images(self):
+    def init_images(self, fps):
         # Result to return:
         result = {}
         # Standard sized ships to render
@@ -141,7 +149,7 @@ class View:
         for id_name in projectiles_to_init:
             projectile_name = id_name.name
             image_path = os.path.join(self.image_path, projectile_name + '.png')
-            image = pygame.image.load(image_path)
+            image = pygame.image.load(image_path).convert_alpha()
             image = pygame.transform.scale(image, (projectile_size, projectile_size))
             result[id_name] = image
         # Renders each effect (explosions)
@@ -152,12 +160,12 @@ class View:
                            os.path.join(self.image_path, effect_name + '_frame3.png'),
                            os.path.join(self.image_path, effect_name + '_frame4.png'),
                            os.path.join(self.image_path, effect_name + '_frame5.png')]
-            container = ExplosionImages(image_paths, int(self.ship_size * 1.5))
+            container = ExplosionImages(image_paths, int(self.ship_size * 1.5), fps)
             if effect_name == "EXPLOSION":
-                big_container = ExplosionImages(image_paths, int(self.ship_size * 8))
+                big_container = ExplosionImages(image_paths, int(self.ship_size * 8), fps)
                 result[EntityID.TITAN_EXPLOSION] = big_container
             elif effect_name == "RED_EXPLOSION":
-                charge_effect_container = ChargeUpImages(image_paths, int(self.ship_size * 1.5))
+                charge_effect_container = ChargeUpImages(image_paths, int(self.ship_size * 1.5), fps)
                 result[EntityID.RED_CHARGE] = charge_effect_container
             result[id_name] = container
         # Screen tints
@@ -233,7 +241,7 @@ class View:
         self.game_display.blit(self.hp_text, (0, self.height - self.font_size))
         # Score
         self.game_display.blit(self.score_text, (self.score_x, self.height - self.font_size))
-        score = self.text_font.render(str(player.score), 1, (255, 255, 255))
+        score = self.text_font.render(str(player.score), 1, (255, 255, 255)).convert_alpha()
         self.game_display.blit(score, (self.score_x + self.score_width,
                                        self.height - self.font_size))
 

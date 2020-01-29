@@ -30,6 +30,14 @@ class MenuGallery:
     def goto_root(self):
         return self.root
 
+    """Returns -1 as a MenuGallery currently does not support selection or have any options.
+    
+    :returns: -1
+    :rtype: int
+    """
+    def select(self):
+        return -1
+
     """Returns the description of the entity this is describing,
     :returns: Description of the entity
     :rtype: str
