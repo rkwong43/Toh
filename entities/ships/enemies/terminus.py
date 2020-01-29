@@ -39,6 +39,7 @@ class Terminus(Enemy):
         self.fire_rate = int(fire_rate * 5)
         self.projectile_type = EntityID.RAILGUN
         self.effects = effects
+        self.projectile_damage *= (30 / fps)
 
     """Moves, but adds a charge-up effect for when it's about to fire.
     """

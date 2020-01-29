@@ -33,7 +33,7 @@ class Judicator(Terminus):
         super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, effects)
         self.entity_id = EntityID.JUDICATOR
         # fire rate in seconds
-        self.fire_rate = int(fire_rate * 2)
+        self.fire_rate = int(fire_rate * 3)
         self.projectile_type = EntityID.RAILGUN
         self.move_again = True
 

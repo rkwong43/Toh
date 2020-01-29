@@ -40,7 +40,6 @@ health, leveling experience, and game events such as spawning more enemies
 # TODO: Have a builder for enemy ships?
 # TODO: ADD MENU CLICK SOUND
 # TODO: ADD MORE GAME MODES AND OPTIONS
-# TODO: Heaven is just a ton of harder enemies
 # TODO: Maybe a reversal game mode with switched sides?
 
 
@@ -428,7 +427,7 @@ class Model:
         elif self.player_projectile_type == EntityID.RAILGUN:
             for x in range(self.player_projectile_count):
                 bullet = Bullet(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
-                                90, self.player_bullet_damage, self.ship_size,
+                                90, int(self.player_bullet_damage * (30 / self.fps)), self.ship_size,
                                 EntityID.RAILGUN)
                 self.friendly_projectiles.append(bullet)
             self.railgun_sound.play()
@@ -517,6 +516,11 @@ class Model:
             x = self.width // 2
         if y == -1:
             y = self.height // 2
+        # Moves the popup down if it is in the same space as another popup
+        for effect in self.effects:
+            if effect.entity_id == EntityID.POPUP:
+                if effect.y == y:
+                    y += self.ship_size
         self.effects.append(PopUp(text, self.fps, seconds, x, y))
 
     """Returns all the projectiles in play.
