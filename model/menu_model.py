@@ -139,6 +139,7 @@ class MenuModel(Model):
             self.showcase_weapon = True
             self.showcase_enemy = False
         if len(self.enemy_ships) == 0:
+            self.clear()
             self.player_bullet_damage = 0
             self.player_ship.x = self.width / 4
             self.player_ship.y = self.height * .75
@@ -160,6 +161,7 @@ class MenuModel(Model):
             self.showcase_enemy = True
             self.showcase_weapon = False
         if len(self.enemy_ships) == 0:
+            self.clear()
             self.player_ship.x = self.width / 4
             self.player_ship.y = self.height * .75
             ship = None
