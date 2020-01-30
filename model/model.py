@@ -41,6 +41,7 @@ health, leveling experience, and game events such as spawning more enemies
 # TODO: ADD MENU CLICK SOUND
 # TODO: ADD MORE GAME MODES AND OPTIONS
 # TODO: Maybe a reversal game mode with switched sides?
+# TODO: Maybe change sounds to OGG?
 
 
 # Future:
@@ -133,9 +134,6 @@ class Model:
         self.max_fire_speed = fps // 5
         # Current progress until weapon is reloaded
         self.reload = self.max_fire_speed
-
-        # Sounds and music
-        self.sound = pygame.mixer.init()
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
         resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
@@ -178,10 +176,10 @@ class Model:
 
     """Removes effects that are over.
     """
+
     def remove_effects(self):
         # Filters the effects for objects to offload
         self.effects[:] = [effect for effect in self.effects if effect.animate()]
-
 
     """Determines if the given enemy ship is dead, and adds to the player score if true.
     
