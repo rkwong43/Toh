@@ -1,5 +1,5 @@
 from src.entities.effects.effect import Effect
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents an explosion. Is 4 frames in length"""
 

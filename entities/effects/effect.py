@@ -23,8 +23,8 @@ class Effect:
 
     """Returns whether to animate the frame or not.
     
-    :returns: the frame it is at
-    :rtype: int
+    :returns: whether to animate it or not
+    :rtype: bool
     """
 
     def animate(self):

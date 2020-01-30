@@ -1,4 +1,4 @@
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.stats.ship_stats import get_ship_stats
 from src.model.stats.weapon_stats import get_weapon_stats
 

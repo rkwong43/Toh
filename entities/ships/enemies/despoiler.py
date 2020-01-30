@@ -1,5 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Despoiler enemy fighter."""
 
@@ -37,8 +37,8 @@ class Despoiler(Enemy):
         self.fire_variance = 10
 
         # Fires a burst
-        self.burst_max = 8
-        self.burst_curr = 8
+        self.burst_max = 8 * (fps // 30)
+        self.burst_curr = self.burst_max
         self.reload_speed = fire_rate * 2
         self.reload_curr = fire_rate * 2
 

@@ -1,5 +1,5 @@
 from src.entities.effects.effect import Effect
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a text popup that lasts a certain amount of time in the game.
 """

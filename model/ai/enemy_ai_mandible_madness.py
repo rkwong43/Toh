@@ -1,7 +1,7 @@
 import random
 
 from src.entities.ships.enemies.mandible import Mandible
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -178,7 +178,8 @@ class EnemyMandibleMadnessAI:
         final_y = new_pos[1]
         # Sets their fire rate randomly, from .75 seconds to 2 seconds
         fire_rate = random.randint(self.fire_rate_range[0], self.fire_rate_range[1])
-        ship = Mandible(self.model.ship_size, x_pos, 0, self.mandible_stats.get("HP"), final_x, final_y,
+        ship = Mandible(self.model.ship_size, x_pos, -self.model.ship_size, self.mandible_stats.get("HP"),
+                        final_x, final_y,
                         self.mandible_stats.get("SPEED"), fire_rate, self.mandible_stats.get("SHIELD"),
                         True, self.model.fps)
         if weapon == EntityID.RAILGUN:

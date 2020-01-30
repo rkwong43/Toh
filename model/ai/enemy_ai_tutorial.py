@@ -1,5 +1,5 @@
 from src.entities.projectiles.bullet import Bullet
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
@@ -122,5 +122,7 @@ class EnemyTutorialAI(EnemyWaveAI):
         elif self.tutorial_stage == 6:
             self.model.popup_text("COMBAT SIMULATOR TERMINATED", -1, -1, 3)
             self.model.popup_text("[ESC] TO PAUSE AND EXIT", -1, self.model.height * .6, 8)
+        else:
+            raise ValueError("Invalid tutorial stage")
 
         self.continue_tutorial = True

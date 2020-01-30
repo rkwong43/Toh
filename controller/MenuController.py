@@ -1,8 +1,8 @@
 import pygame
 import os
 
-from src.direction import Direction
-from src.entity_id import EntityID
+from src.utils.direction import Direction
+from src.utils.entity_id import EntityID
 from src.view.image_containers.menu_gallery import MenuGallery
 from src.view.menu_tree import MenuTree
 

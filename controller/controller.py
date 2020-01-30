@@ -1,8 +1,7 @@
 import pygame
 import os
-import threading
 
-from src.direction import Direction
+from src.utils.direction import Direction
 
 """Controller that keeps track of time and key inputs to pass onto the view and model. Will also handle music
 and different types of menus and screens
@@ -57,10 +56,6 @@ class Controller:
         pygame.mixer.music.play(-1)
         paused = False
         while not done:
-            # Creating two threads
-            t1 = threading.Thread(target=self.model.tick)
-            t2 = threading.Thread(target=self.view.render, args=(self.model.player_ship, self.model.get_projectiles(),
-                                                                 self.model.get_enemies(), self.model.get_effects()))
             for game_event in pygame.event.get():
                 # Checks if quit
                 if game_event.type == pygame.QUIT:
@@ -77,11 +72,12 @@ class Controller:
             # Moves the player and ticks
             if not paused:
                 self.model.move_player(self.parse_keys(keys))
-                t1.start()
+                self.model.tick()
             else:
                 self.model.pause()
             self.ticks += 1
-            t2.start()
+            self.view.render(self.model.player_ship, self.model.get_projectiles(),
+                             self.model.get_enemies(), self.model.get_effects())
             # Every few frames the animation will be changed
             if self.ticks == self.tick_limit:
                 self.view.animate()
@@ -90,13 +86,8 @@ class Controller:
                     self.tick_limit = self.fps * 4
                     # Starts the game over
                     if self.game_over:
-                        t1.join()
-                        t2.join()
                         return True
                     self.game_over = True
-            if not paused:
-                t1.join()
-            t2.join()
 
             # Updates display
             pygame.display.update()

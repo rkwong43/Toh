@@ -1,5 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Mantis enemy fighter. Fires a burst of bullets."""
 
@@ -41,8 +41,8 @@ class Mantis(Enemy):
         self.projectile_type = EntityID.ENEMY_BULLET
 
         # Fires a burst
-        self.burst_max = 5
-        self.burst_curr = 5
+        self.burst_max = 5 * (fps // 30)
+        self.burst_curr = self.burst_max
         self.reload_speed = fire_rate
         self.reload_curr = fire_rate
 

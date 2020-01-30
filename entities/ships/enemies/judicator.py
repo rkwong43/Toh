@@ -1,5 +1,5 @@
 from src.entities.ships.enemies.terminus import Terminus
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Judicator enemy fighter."""
 

@@ -10,7 +10,7 @@ from src.entities.ships.enemies.mothership import Mothership
 from src.entities.ships.enemies.seer import Seer
 from src.entities.ships.enemies.subjugator import Subjugator
 from src.entities.ships.enemies.terminus import Terminus
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.model import Model
 
 """Represents the model that handles displaying weapons or enemies in a gallery type menu.
@@ -21,6 +21,7 @@ class MenuModel(Model):
     # If a weapon or enemy is being showcased
     showcase_weapon = False
     showcase_enemy = False
+
     """Initializes the model with the width and height of the window and the size of ships
 
     :param width: width of window
@@ -34,7 +35,7 @@ class MenuModel(Model):
     """
 
     def __init__(self, width, height, ship_size, fps):
-        super().__init__(width, height, ship_size, fps, EntityID.GUN, EntityID.SURVIVAL, EntityID.EASY)
+        super().__init__(width, height, ship_size, fps, EntityID.GUN, EntityID.EASY, EntityID.SURVIVAL)
         self.player_ship.x = self.width
         self.play = False
 
@@ -78,54 +79,6 @@ class MenuModel(Model):
             self.player_ship.isDamaged = False
             self.check_collisions()
 
-    """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
-    explosion effect to the effects list.
-    """
-
-    def check_collisions(self):
-        # Checks friendly projectiles vs. enemy ships
-        self.check_collisions_helper(self.enemy_ships, self.friendly_projectiles, EntityID.BLUE_EXPLOSION)
-        # Checks enemy projectiles vs. friendly ships
-        self.check_collisions_helper(self.friendly_ships, self.enemy_projectiles, EntityID.RED_EXPLOSION)
-
-    """Checks collisions between the given list of ships and projectiles. Bare-bones version for modeling weapons.
-
-    :param ships: ships to check
-    :type ships: List of Ship
-    :param projectiles: projectiles to check
-    :type projectiles: List of Projectile
-    :param splash_color: color explosion for projectiles to use, also adjusts score of player if blue
-    :type splash_color: EntityID
-    """
-
-    def check_collisions_helper(self, ships, projectiles, splash_color):
-        for projectile in projectiles:
-            # If it is a railgun, uses explosions as indication of where they are
-            weapon_type = projectile.entity_id
-            if weapon_type == EntityID.RAILGUN:
-                self.effects.append(Explosion(projectile.x - self.ship_size / 4,
-                                              projectile.y - self.ship_size / 4,
-                                              splash_color, self.fps))
-            for ship in ships:
-                # Hit box
-                ship_bounding_box = ship.size / 4
-                # Radius for air burst
-                air_burst_box = int(self.ship_size * .7)
-                air_burst_distance = projectile.air_burst and self.check_distance(projectile, ship, air_burst_box)
-                # Checks if the projectile makes direct contact with the ship or is in air burst range
-                if self.check_distance(projectile, ship, ship_bounding_box) or air_burst_distance:
-                    # Creates an explosion around the projectile
-                    ship.isDamaged = True
-                    if projectile.has_splash:
-                        # Calculates what ships receive splash damage
-                        self.check_splash_damage(projectile, ship, ships)
-                        self.effects.append(Explosion(projectile.x - (projectile.size // 4),
-                                                      projectile.y,
-                                                      splash_color, self.fps))
-                        self.explosion_sound.play()
-                    if projectile.entity_id != EntityID.RAILGUN:
-                        projectiles.remove(projectile)
-                    break
 
     """Switches the player's weapon to the given type.
 
@@ -210,3 +163,16 @@ class MenuModel(Model):
                                  0, self.fps, 1000, self.fps)
             ship.projectile_damage = 0
             self.enemy_ships.append(ship)
+
+    """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
+       explosion effect to the effects list.
+       """
+
+    def check_collisions(self):
+        # TODO: Spatial partitioning?
+        # Checks friendly projectiles vs. enemy ships
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if not self.check_if_hit(projectile, self.enemy_ships, EntityID.BLUE_EXPLOSION)]
+        # Checks enemy projectiles vs. friendly ships
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self.check_if_hit(projectile, self.friendly_ships, EntityID.RED_EXPLOSION)]

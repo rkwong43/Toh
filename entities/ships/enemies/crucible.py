@@ -1,6 +1,6 @@
 
 from src.entities.ships.enemies.enemy import Enemy
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Crucible enemy fighter."""
 

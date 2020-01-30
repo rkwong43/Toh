@@ -1,12 +1,5 @@
 import random
-
-from src.entities.ships.enemies.arbitrator import Arbitrator
-from src.entities.ships.enemies.despoiler import Despoiler
-from src.entities.ships.enemies.judicator import Judicator
-from src.entities.ships.enemies.mothership import Mothership
-from src.entities.ships.enemies.terminus import Terminus
-from src.entities.ships.enemies.titan import Titan
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.model.stats.ship_stats import get_ship_stats
 
@@ -19,8 +12,8 @@ Heaven mode is only larger and difficult ships.
 class EnemyHeavenAI(EnemyWaveAI):
     # Ship stats
     # Default values for hard mode
-    # Mandible
-    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
+    # Crucible
+    crucible_stats = get_ship_stats(EntityID.CRUCIBLE)
     # Arbitrator
     arbitrator_stats = get_ship_stats(EntityID.ARBITRATOR)
     # Terminus
@@ -33,11 +26,13 @@ class EnemyHeavenAI(EnemyWaveAI):
     judicator_stats = get_ship_stats(EntityID.JUDICATOR)
     # Titan
     titan_stats = get_ship_stats(EntityID.TITAN)
+    # Mandible
+    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
     # Stats container:
     stats = {EntityID.ARBITRATOR: arbitrator_stats, EntityID.TERMINUS: terminus_stats,
              EntityID.MOTHERSHIP: mothership_stats, EntityID.DESPOILER: despoiler_stats,
              EntityID.JUDICATOR: judicator_stats, EntityID.TITAN: titan_stats,
-             EntityID.MANDIBLE: mandible_stats}
+             EntityID.CRUCIBLE: crucible_stats, EntityID.MANDIBLE: mandible_stats}
     # Combat ratings:
     combat_ratings = {EntityID.ARBITRATOR: 200, EntityID.TERMINUS: 250, EntityID.DESPOILER: 400,
                       EntityID.MOTHERSHIP: 400, EntityID.JUDICATOR: 300, EntityID.TITAN: 1000}
@@ -199,57 +194,5 @@ class EnemyHeavenAI(EnemyWaveAI):
         # Doubles the enemies spawned every given number of waves and buffs them
         if self.wave % self.enemy_buff_wave == 0 and self.wave != 0:
             self.buff_enemies()
-            self.model.popup_text("REINFORCEMENTS DETECTED", -1, self.model.height // 3, 3)
+            self.model.popup_text("REINFORCEMENTS DETECTED", -1, int(self.model.height * .6), 3)
             self.combat_ratio *= 2
-
-    """Spawns a single enemy ship depending on the given entity ID.
-       :param entity_id: ID of the enemy to spawn
-       :type entity_id: EntityID
-       :returns: the ship spawned
-       :rtype: Ship
-       """
-
-    def spawn_enemy(self, entity_id):
-        enemy_stats = self.stats.get(entity_id)
-        # Creates a random starting position
-        x_pos = random.randint(self.model.ship_size, self.model.width - self.model.ship_size)
-        # The final coordinates it moves to
-        new_pos = self.generate_pos()
-        final_x = new_pos[0]
-        final_y = new_pos[1]
-        # Sets their fire rate randomly, from .75 seconds to 2 seconds
-        fire_rate = random.randint(self.fire_rate_range[0], self.fire_rate_range[1])
-        ship = 0
-
-        if entity_id == EntityID.ARBITRATOR:
-            ship = Arbitrator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
-                              final_x, final_y,
-                              enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
-        elif entity_id == EntityID.TERMINUS:
-            ship = Terminus(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
-                            final_x, final_y,
-                            enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps,
-                            self.model.effects)
-        elif entity_id == EntityID.JUDICATOR:
-            ship = Judicator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
-                             final_x, final_y,
-                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps,
-                             self.model.effects)
-        elif entity_id == EntityID.MOTHERSHIP:
-            ship = Mothership(self.model.ship_size * 2, x_pos, -self.model.ship_size * 2, enemy_stats.get("HP"),
-                              final_x, final_y,
-                              enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps, self)
-        elif entity_id == EntityID.DESPOILER:
-            ship = Despoiler(self.model.ship_size * 2, x_pos, -self.model.ship_size * 2, enemy_stats.get("HP"), final_x,
-                             final_y,
-                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
-        elif entity_id == EntityID.TITAN:
-            middle_of_screen = (self.model.width - (self.model.ship_size * 8)) // 2
-            ship = Titan(self.model.ship_size * 8, middle_of_screen, -self.model.ship_size * 8, enemy_stats.get("HP"),
-                         middle_of_screen, -self.model.ship_size * 8, enemy_stats.get("SPEED"),
-                         fire_rate, enemy_stats.get("SHIELD"),
-                         self.model.fps, self, self.model.effects)
-        elif entity_id == EntityID.MANDIBLE:
-            return super().spawn_enemy(EntityID.MANDIBLE)
-        self.model.enemy_ships.append(ship)
-        return ship

@@ -1,5 +1,5 @@
 from src.entities.effects.effect import Effect
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a charge up effect for rail guns. Has 12 frames."""
 

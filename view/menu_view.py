@@ -1,7 +1,7 @@
 import os
 import pygame
 
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.menu_model import MenuModel
 from src.view.view import View
 
@@ -185,6 +185,4 @@ class MenuView(View):
         for projectile in projectiles:
             self.render_projectile(projectile)
         # Renders effects
-        for effect in effects:
-            if self.render_effect(effect):
-                effects.remove(effect)
+        effects[:] = [effect if not effect.animate() else self.render_effect(effect) for effect in effects]

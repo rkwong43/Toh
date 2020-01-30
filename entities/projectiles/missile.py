@@ -12,9 +12,11 @@ class Missile(Projectile):
     :type direction: int
     :param target: target to follow
     :type target: Ship
+    :param fps: Frames per second
+    :type fps: int
     """
 
-    def __init__(self, speed, x, y, direction, damage, size, entity_id, target):
+    def __init__(self, speed, x, y, direction, damage, size, entity_id, fps, target):
         super().__init__(speed, x, y, damage, size, entity_id)
         self.direction = direction
         # -1 if going up, 1 if going down
@@ -25,7 +27,8 @@ class Missile(Projectile):
         self.target = target
         self.size = size
         # How many ticks does the missile have to prep before tracking
-        self.ticks = 4
+        self.ticks = int(4 * (fps / 30))
+        # Initial direction when fired
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed
         self.target_destroyed = False
@@ -42,18 +45,22 @@ class Missile(Projectile):
         else:
             # No target
             if self.target == 0:
+                # Continues moving in the direction it is initially going
                 self.x += self.x_change
                 self.y += self.y_change
                 self.target_destroyed = True
             elif self.target.dead:
                 # Target is dead
+                # Continues moving along its current angle
                 self.move_along_angle()
                 self.target_destroyed = True
             else:
                 # Target is alive
+                self.target_destroyed = False
                 target_center = (self.target.x, self.target.y)
+                # 100 is the base ship size
                 if self.target.size > 100:
-                    target_center = (self.target.x + + ((self.target.size - 100) // 2),
+                    target_center = (self.target.x + ((self.target.size - 100) // 2),
                                      self.target.y + ((self.target.size - 100) // 2))
                 angle = int(-math.degrees(math.atan2(self.y - target_center[1], self.x - target_center[0])))
                 self.adjust_angle(angle)
@@ -87,36 +94,22 @@ class Missile(Projectile):
 
     def adjust_angle(self, target_angle):
         # Which y direction the missile was initially fired
+        # Only tracks targets that are in front of the missile.
         # Up (-y)
         going_up = self.orientation == 1 and self.y > self.target.y
         # Down (+y)
         going_down = self.orientation == -1 and self.y < self.target.y
         # Missile goes in straight line if past the target
         if going_down or going_up:
-            curr_angle = self.direction
-            # Converts both to range [0, 360)
-            if curr_angle < 0:
-                curr_angle += 360
-            if target_angle < 0:
-                target_angle += 360
-            difference = abs(target_angle - curr_angle)
+            # Looks for which direction to go on the unit circle (clockwise or counterclockwise)
+            difference = abs(target_angle - self.direction)
             complement_difference = 360 - abs(difference)
             if not (-self.speed < difference < self.speed):
-                delta = 0
                 if difference < complement_difference:
                     delta = int(-self.speed / 4) * self.orientation
-                elif difference > complement_difference:
-                    delta = int(self.speed / 4) * self.orientation
-                curr_angle += delta
-                # Converts back to range (-180, 180)
-                if curr_angle < 0:
-                    curr_angle += 360
-                elif curr_angle > 360:
-                    curr_angle -= 360
-                if curr_angle > 180:
-                    self.direction = curr_angle - 360
                 else:
-                    self.direction = curr_angle
+                    delta = int(self.speed / 4) * self.orientation
+                self.direction -= delta
 
 
 

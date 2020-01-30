@@ -1,4 +1,4 @@
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Returns a dictionary of the given ship's statistics.
 :param entity_id: ID of ship
@@ -88,7 +88,7 @@ def get_ship_stats(entity_id):
         result["HP"] = 450
         result["SHIELD"] = 400
         result["SPEED"] = 3
-        result["DAMAGE"] = 5
+        result["DAMAGE"] = 6
         result["PROJECTILE SPEED"] = 20
         result["SCORE"] = 600
         result["DESCRIPTION"] = "Gunship designed to take down enemies with a barrage of missiles."
@@ -104,7 +104,7 @@ def get_ship_stats(entity_id):
         result["HP"] = 4500
         result["SHIELD"] = 500
         result["SPEED"] = 5
-        result["DAMAGE"] = 20
+        result["DAMAGE"] = 15
         result["PROJECTILE SPEED"] = 10
         result["SCORE"] = 10000
         result["DESCRIPTION"] = "Calamity-class Warship with multiple turrets and defense systems."

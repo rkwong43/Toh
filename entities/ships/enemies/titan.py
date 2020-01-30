@@ -1,7 +1,7 @@
 from src.entities.ships.enemies.enemy import Enemy
 from src.entities.ships.enemies.mantis import Mantis
 from src.entities.ships.enemies.terminus import Terminus
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Titan enemy cruiser."""
 
@@ -123,6 +123,7 @@ class Titan(Enemy):
 
     def fire(self, target, projectiles):
         temp = self.fire_variance
+        temp_speed = self.projectile_speed
         # Fires 3 missiles
         super().fire(target, projectiles)
         super().fire(target, projectiles)
@@ -135,3 +136,4 @@ class Titan(Enemy):
                 ship = self.ai.spawn_enemy(EntityID.CRUCIBLE)
                 ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
         self.fire_variance = temp
+        self.projectile_speed = temp_speed

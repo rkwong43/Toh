@@ -1,9 +1,8 @@
 import random
 
 from src.entities.ships.enemies.crucible import Crucible
-from src.entities.ships.enemies.mandible import Mandible
 from src.entities.ships.enemies.titan import Titan
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.

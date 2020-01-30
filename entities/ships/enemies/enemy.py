@@ -5,7 +5,7 @@ from src.entities.projectiles.bad_missile import BadMissile
 from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.missile import Missile
 from src.entities.ships.enemies.ship import Ship
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.stats.ship_stats import get_ship_stats
 
 """Represents an enemy ship or structure."""
@@ -128,7 +128,7 @@ class Enemy(Ship):
         if weapon_type == EntityID.ENEMY_MISSILE:
             projectile = Missile(self.projectile_speed, x_pos, y_pos,
                                  angle, self.projectile_damage, 100,
-                                 weapon_type, target)
+                                 weapon_type, self.fps, target)
         elif weapon_type == EntityID.BAD_MISSILE:
             projectile = BadMissile(self.projectile_speed, x_pos, y_pos,
                                     angle, self.projectile_damage, 100,

@@ -12,7 +12,7 @@ from src.entities.ships.enemies.seer import Seer
 from src.entities.ships.enemies.subjugator import Subjugator
 from src.entities.ships.enemies.terminus import Terminus
 from src.entities.ships.enemies.titan import Titan
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.stats.ship_stats import get_ship_stats
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
@@ -219,7 +219,7 @@ class EnemyWaveAI:
         # Doubles the enemies spawned every given number of waves and buffs them
         if self.wave % self.enemy_buff_wave == 0 and self.wave != 0:
             self.buff_enemies()
-            self.model.popup_text("REINFORCEMENTS DETECTED", -1, self.model.height // 3, 3)
+            self.model.popup_text("REINFORCEMENTS DETECTED", -1, int(self.model.height * .6), 3)
             self.combat_ratio *= 2
 
     """Generates a random (x,y) coordinate within the upper half of the screen.
@@ -237,6 +237,7 @@ class EnemyWaveAI:
     :type entity_id: EntityID
     :returns: the ship spawned
     :rtype: Ship
+    :raises: ValueError if given entity ID does not correspond to a ship
     """
 
     def spawn_enemy(self, entity_id):
@@ -249,48 +250,52 @@ class EnemyWaveAI:
         final_y = new_pos[1]
         # Sets their fire rate randomly, from .75 seconds to 2 seconds
         fire_rate = random.randint(self.fire_rate_range[0], self.fire_rate_range[1])
-        ship = 0
         # TODO: Parameterize
         if entity_id == EntityID.MANDIBLE:
-            ship = Mandible(self.model.ship_size, x_pos, -self.model.ship_size, enemy_stats.get("HP"), final_x, final_y,
+            ship = Mandible(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"), final_x,
+                            final_y,
                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"),
                             self.mandible_moves_again, self.model.fps)
         elif entity_id == EntityID.MANTIS:
-            ship = Mantis(self.model.ship_size, x_pos, 0, enemy_stats.get("HP"), x_pos, final_y,
+            ship = Mantis(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"), x_pos,
+                          final_y,
                           enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.mantis_moves_again,
                           self.model.fps)
         elif entity_id == EntityID.CRUCIBLE:
-            ship = Crucible(self.model.ship_size, x_pos, 0, enemy_stats.get("HP"), final_x, final_y,
+            ship = Crucible(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"), final_x,
+                            final_y,
                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.MOSQUITO:
-            ship = Mosquito(self.model.ship_size, x_pos, 0, enemy_stats.get("HP"), final_x, final_y,
+            ship = Mosquito(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"), final_x,
+                            final_y,
                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.SUBJUGATOR:
-            ship = Subjugator(self.model.ship_size, x_pos, 0, enemy_stats.get("HP"), final_x, final_y,
+            ship = Subjugator(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"),
+                              final_x, final_y,
                               enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.ARBITRATOR:
-            ship = Arbitrator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
+            ship = Arbitrator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * .75, enemy_stats.get("HP"),
                               final_x, final_y,
                               enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.TERMINUS:
-            ship = Terminus(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
+            ship = Terminus(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * .75, enemy_stats.get("HP"),
                             final_x, final_y,
                             enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps,
                             self.model.effects)
         elif entity_id == EntityID.SEER:
-            ship = Seer(self.model.ship_size, x_pos, 0, enemy_stats.get("HP"), x_pos, final_y,
+            ship = Seer(self.model.ship_size, x_pos, -self.model.ship_size // 2, enemy_stats.get("HP"), x_pos, final_y,
                         enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.JUDICATOR:
-            ship = Judicator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * 1.5, enemy_stats.get("HP"),
+            ship = Judicator(self.model.ship_size * 1.5, x_pos, -self.model.ship_size * .75, enemy_stats.get("HP"),
                              final_x, final_y,
                              enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps,
                              self.model.effects)
         elif entity_id == EntityID.MOTHERSHIP:
-            ship = Mothership(self.model.ship_size * 2, x_pos, -self.model.ship_size * 2, enemy_stats.get("HP"),
+            ship = Mothership(self.model.ship_size * 2, x_pos, -self.model.ship_size, enemy_stats.get("HP"),
                               final_x, final_y,
                               enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps, self)
         elif entity_id == EntityID.DESPOILER:
-            ship = Despoiler(self.model.ship_size * 2, x_pos, -self.model.ship_size * 2, enemy_stats.get("HP"), final_x,
+            ship = Despoiler(self.model.ship_size * 2, x_pos, -self.model.ship_size, enemy_stats.get("HP"), final_x,
                              final_y,
                              enemy_stats.get("SPEED"), fire_rate, enemy_stats.get("SHIELD"), self.model.fps)
         elif entity_id == EntityID.TITAN:
@@ -299,5 +304,7 @@ class EnemyWaveAI:
                          middle_of_screen, -self.model.ship_size * 8, enemy_stats.get("SPEED"),
                          fire_rate, enemy_stats.get("SHIELD"),
                          self.model.fps, self, self.model.effects)
+        else:
+            raise ValueError("Invalid ship ID:", entity_id)
         self.model.enemy_ships.append(ship)
         return ship

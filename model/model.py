@@ -4,7 +4,7 @@ import random
 
 import pygame
 
-from src.direction import Direction
+from src.utils.direction import Direction
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint
 from src.entities.projectiles.bad_missile import BadMissile
@@ -12,7 +12,7 @@ from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.missile import Missile
 from src.entities.effects.explosion import Explosion
 from src.entities.ships.player import Player
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_heaven import EnemyHeavenAI
 from src.model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
 from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
@@ -125,6 +125,8 @@ class Model:
             self.AI = EnemyHeavenAI(self, difficulty)
         elif game_mode == EntityID.TUTORIAL:
             self.AI = EnemyTutorialAI(self)
+        else:
+            raise ValueError("Given game mode is not supported:", game_mode)
         # TODO: ADOPT OTHER GAME MODES
 
         # Reload time for the player's weapon, measured in frames
@@ -159,22 +161,47 @@ class Model:
         # Moves all projectiles
         for projectile in self.friendly_projectiles + self.enemy_projectiles:
             projectile.move()
+        # Reloads the player's weapon depending on its fire speed
+        if self.reload < self.max_fire_speed:
+            self.reload += 1
+        # Rotates enemies, recharges their shields, and checks if they're dead
+        self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self.is_dead(enemy)]
+        # Checks collisions between projectiles and ships
+        # Removes off screen objects
+        self.remove_off_screen_objects()
         if not self.player_ship.dead:
-            # Reloads the player's weapon depending on its fire speed
-            if self.reload < self.max_fire_speed:
-                self.reload += 1
-            # Rotates enemies and recharges their shields
-            for ship in self.enemy_ships:
-                ship.rotate(self.player_ship)
-                ship.recharge_shield()
-                ship.isDamaged = False
-            # Checks collisions between projectiles and ships
-            self.check_collisions()
-            self.remove_off_screen_objects()
             self.AI.tick()
+            self.check_collisions()
             # Recharges shield for player
             self.player_ship.recharge_shield()
-            self.player_ship.isDamaged = False
+        self.player_ship.isDamaged = False
+
+    """Determines if the given enemy ship is dead, and adds to the player score if true.
+    
+    :param ship: Ship to check if dead
+    :type ship: Ship
+    :returns: if ship is dead
+    :rtype: bool
+    """
+
+    def is_dead(self, ship):
+        if ship.dead:
+            # Adds to score
+            self.player_ship.score += ship.score
+            self.explosion_sound.play()
+            offset = ((self.ship_size * 1.5) - ship.size) // 2
+            self.effects.append(Explosion(ship.x - offset, ship.y - offset,
+                                          EntityID.EXPLOSION, self.fps))
+            # Clears all if a Titan is killed
+            if ship.entity_id == EntityID.TITAN:
+                del self.enemy_ships[:]
+                self.popup_text("TITAN SLAIN", -1, -1, 3)
+                self.effects.append(Explosion(ship.x, ship.y, EntityID.TITAN_EXPLOSION, self.fps))
+        else:
+            ship.rotate(self.player_ship)
+            ship.recharge_shield()
+            ship.isDamaged = False
+        return ship.dead
 
     """Moves the player ship and other actions depending on what directions are given.
 
@@ -206,22 +233,24 @@ class Model:
     """
 
     def remove_off_screen_objects(self):
-        self.remove_off_screen_from_list(self.friendly_projectiles)
-        self.remove_off_screen_from_list(self.enemy_projectiles)
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if not self.is_off_screen(projectile)]
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self.is_off_screen(projectile)]
 
-    """Removes offscreen objects in the given list.
+    """Removes off screen objects in the given list.
     
-    :param entity_list: List of entities to check
-    :type entity_list: List of Entity
+    :param entity: entity to check
+    :type entity: Entity
     """
-    def remove_off_screen_from_list(self, entity_list):
-        for entity in entity_list:
-            size = entity.size / 2
-            center = (entity.x + size, entity.y + size)
-            # if off screen:
-            if center[0] > self.width + size or center[0] < -size or center[1] > self.height + size \
-                    or center[1] < -size:
-                entity_list.remove(entity)
+
+    def is_off_screen(self, entity):
+        size = entity.size / 2
+        center = (entity.x + size, entity.y + size)
+        # if off screen:
+        x_off = center[0] > self.width + self.ship_size or center[0] < -self.ship_size
+        y_off = center[1] > self.height + self.ship_size or center[1] < -self.ship_size
+        return x_off or y_off
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
     explosion effect to the effects list.
@@ -230,72 +259,59 @@ class Model:
     def check_collisions(self):
         # TODO: Spatial partitioning?
         # Checks friendly projectiles vs. enemy ships
-        self.check_collisions_helper(self.enemy_ships, self.friendly_projectiles, EntityID.BLUE_EXPLOSION)
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if not self.check_if_hit(projectile, self.enemy_ships, EntityID.BLUE_EXPLOSION)]
         # Checks enemy projectiles vs. friendly ships
-        self.check_collisions_helper(self.friendly_ships, self.enemy_projectiles, EntityID.RED_EXPLOSION)
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self.check_if_hit(projectile, self.friendly_ships, EntityID.RED_EXPLOSION)]
         # If the player is damaged, then plays a screen effect
         if self.player_ship.isDamaged:
             self.play_screen_effect()
 
-    """Checks collisions between the given list of ships and projectiles.
-
-    :param ships: ships to check
+    """Checks whether to remove the projectile.
+    
+    :param projectile: Projectile to check
+    :type projectile: Projectile
+    :param ships: List of ships to check if any were hit
     :type ships: List of Ship
-    :param projectiles: projectiles to check
-    :type projectiles: List of Projectile
     :param splash_color: color explosion for projectiles to use, also adjusts score of player if blue
     :type splash_color: EntityID
+    :returns: True if projectile is to be removed, false otherwise
+    :rtype: bool
     """
 
-    def check_collisions_helper(self, ships, projectiles, splash_color):
-        for projectile in projectiles:
-            # If it is a railgun, uses explosions as indication of where they are
-            weapon_type = projectile.entity_id
-            if weapon_type == EntityID.RAILGUN:
-                self.effects.append(Explosion(projectile.x - self.ship_size / 4,
-                                              projectile.y - self.ship_size / 4,
-                                              splash_color, self.fps))
-            elif weapon_type == EntityID.FRIENDLY_MISSILE or weapon_type == EntityID.ENEMY_MISSILE:
-                # Projectile is missile and its target has been destroyed, gives it a new target
-                if projectile.target_destroyed:
-                    projectile.acquire_target(self.find_closest_enemy(projectile))
-            for ship in ships:
-                # Hit box
-                ship_bounding_box = ship.size / 4
-                # Radius for air burst
-                air_burst_box = int(self.ship_size * .7)
-                air_burst_distance = projectile.air_burst and self.check_distance(projectile, ship, air_burst_box)
-                # Checks if the projectile makes direct contact with the ship or is in air burst range
-                if self.check_distance(projectile, ship, ship_bounding_box) or air_burst_distance:
-                    # Damages the ship
-                    ship.damage(projectile.damage)
-                    # Creates an explosion around the projectile
-                    if projectile.has_splash:
-                        # Calculates what ships receive splash damage
-                        self.check_splash_damage(projectile, ship, ships)
-                        self.effects.append(Explosion(projectile.x - (projectile.size // 4),
-                                                      projectile.y,
-                                                      splash_color, self.fps))
-                        self.explosion_sound.play()
-                    # Removes projectile if it is not a railgun shot
-                    if projectile.entity_id != EntityID.RAILGUN:
-                        projectiles.remove(projectile)
-                    # If the ship is dead
-                    if ship.dead:
-                        # Adds to score if enemy ship
-                        if splash_color == EntityID.BLUE_EXPLOSION:
-                            self.player_ship.score += ship.score
-                        ships.remove(ship)
-                        self.explosion_sound.play()
-                        offset = ((self.ship_size * 1.5) - ship.size) // 2
-                        self.effects.append(Explosion(ship.x - offset, ship.y - offset,
-                                                      EntityID.EXPLOSION, self.fps))
-                        # Clears all if a Titan is killed
-                        if ship.entity_id == EntityID.TITAN:
-                            self.enemy_ships = []
-                            self.popup_text("TITAN SLAIN", -1, -1, 3)
-                            self.effects.append(Explosion(ship.x, ship.y, EntityID.TITAN_EXPLOSION, self.fps))
-                    break
+    def check_if_hit(self, projectile, ships, splash_color):
+        weapon_type = projectile.entity_id
+        if weapon_type == EntityID.RAILGUN:
+            self.effects.append(Explosion(projectile.x - self.ship_size / 4,
+                                          projectile.y - self.ship_size / 4,
+                                          splash_color, self.fps))
+        elif weapon_type == EntityID.FRIENDLY_MISSILE:
+            # Projectile is missile and its target has been destroyed, gives it a new target
+            if projectile.target_destroyed:
+                projectile.acquire_target(self.find_closest_enemy(projectile))
+        for ship in ships:
+            # Hit box
+            ship_bounding_box = ship.size / 4
+            # Radius for air burst
+            air_burst_box = int(self.ship_size * .7)
+            air_burst_distance = projectile.air_burst and self.check_distance(projectile, ship, air_burst_box)
+            # Checks if the projectile makes direct contact with the ship or is in air burst range
+            if self.check_distance(projectile, ship, ship_bounding_box) or air_burst_distance:
+                # Damages the ship
+                ship.damage(projectile.damage)
+                # Creates an explosion around the projectile
+                if projectile.has_splash:
+                    # Calculates what ships receive splash damage
+                    self.check_splash_damage(projectile, ship, ships)
+                    self.effects.append(Explosion(projectile.x - (projectile.size // 4),
+                                                  projectile.y,
+                                                  splash_color, self.fps))
+                    self.explosion_sound.play()
+                # Removes projectile if it is not a railgun shot
+                if projectile.entity_id != EntityID.RAILGUN:
+                    return True
+        return False
 
     """Plays a particular screen tint effect depending on what damage the player has taken.
     Blue for shield damage, red for health damage.
@@ -330,7 +346,7 @@ class Model:
         for ship in ships:
             if ship == ship_to_remove:
                 continue
-            if self.check_distance(projectile, ship, self.ship_size):
+            if self.check_distance(projectile, ship, self.ship_size * .75):
                 ship.damage(projectile.damage)
 
     """Checks if the projectile and ship are within a given distance.
@@ -376,19 +392,22 @@ class Model:
 
         self.player_weapon_type = weapon
 
-    """Generates a projectile based on the current type and given angle
+    """Generates a projectile based on the current type and given angle.
+    
+    :raises: ValueError if current projectile type is not supported
     """
 
     def projectile_generator(self):
         # Offset and angle partitions based on number of projectiles
         partition = ((2 * self.player_bullet_spread) // self.player_projectile_count) + 5
         offset = -self.player_bullet_spread
+        firing_position = self.player_ship.y - self.ship_size / 4
         # Standard bullet
         if self.player_projectile_type == EntityID.FRIENDLY_BULLET:
             # Bullet starts at 3/4 of the ship sprite
             for x in range(self.player_projectile_count):
                 offset = random.randint(-self.player_bullet_spread, self.player_bullet_spread)
-                bullet = Bullet(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
+                bullet = Bullet(self.bullet_speed, self.player_ship.x, firing_position,
                                 offset + 90, self.player_bullet_damage, self.ship_size,
                                 EntityID.FRIENDLY_BULLET)
                 self.friendly_projectiles.append(bullet)
@@ -399,7 +418,7 @@ class Model:
             # Bullet starts at 3/4 of the ship sprite
             for x in range(self.player_projectile_count):
                 offset = random.randint(-self.player_bullet_spread, self.player_bullet_spread)
-                bullet = Bullet(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
+                bullet = Bullet(self.bullet_speed, self.player_ship.x, firing_position,
                                 offset + 90, self.player_bullet_damage, self.ship_size,
                                 EntityID.FRIENDLY_FLAK)
                 self.friendly_projectiles.append(bullet)
@@ -407,30 +426,34 @@ class Model:
             self.bullet_sound.play()
         # Homing missiles
         elif self.player_projectile_type == EntityID.FRIENDLY_MISSILE:
+            closest_enemy = self.find_closest_enemy(self.player_ship)
             for x in range(self.player_projectile_count):
-                missile = Missile(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
+                missile = Missile(self.bullet_speed, self.player_ship.x, firing_position,
                                   offset + 90, self.player_bullet_damage, self.ship_size,
-                                  EntityID.FRIENDLY_MISSILE, self.find_closest_enemy(self.player_ship))
+                                  EntityID.FRIENDLY_MISSILE, self.fps, closest_enemy)
                 offset += partition
                 self.friendly_projectiles.append(missile)
             # Missile sound effect
             self.missile_sound.play()
         # Really bad missile
         elif self.player_projectile_type == EntityID.BAD_MISSILE:
+            closest_enemy = self.find_closest_enemy(self.player_ship)
             for x in range(self.player_projectile_count):
-                missile = BadMissile(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
+                missile = BadMissile(self.bullet_speed, self.player_ship.x, firing_position,
                                      offset + 90, self.player_bullet_damage, self.ship_size,
-                                     EntityID.FRIENDLY_BULLET, self.find_closest_enemy(self.player_ship))
+                                     EntityID.FRIENDLY_BULLET, closest_enemy)
                 offset += partition
                 self.friendly_projectiles.append(missile)
             self.bullet_sound.play()
         elif self.player_projectile_type == EntityID.RAILGUN:
             for x in range(self.player_projectile_count):
-                bullet = Bullet(self.bullet_speed, self.player_ship.x, self.player_ship.y - self.ship_size / 4,
+                bullet = Bullet(self.bullet_speed, self.player_ship.x, firing_position,
                                 90, int(self.player_bullet_damage * (30 / self.fps)), self.ship_size,
                                 EntityID.RAILGUN)
                 self.friendly_projectiles.append(bullet)
             self.railgun_sound.play()
+        else:
+            raise ValueError("Invalid projectile type:", str(self.player_projectile_type))
 
     """Finds the closest enemy to the given entity. Used primarily for missile tracking.
 
@@ -470,6 +493,7 @@ class Model:
     :type offset: int
     :returns: boolean of whether the ship is at the boundary of the screen or not
     :rtype: boolean
+    :raises: ValueError if given direction is not valid
     """
 
     def boundary_check(self, entity, direction, offset):
@@ -481,6 +505,8 @@ class Model:
             return entity.x + entity.speed < self.width - offset
         elif direction == Direction.LEFT:
             return entity.x - entity.speed > 0
+        else:
+            raise ValueError("Given direction is not valid:", direction)
 
     """Levels the player up! Modifies the reload and damage modifiers, along with health and shield.
     """
@@ -523,7 +549,7 @@ class Model:
         # Moves the popup down if it is in the same space as another popup
         for effect in self.effects:
             if effect.entity_id == EntityID.POPUP:
-                if effect.y == y:
+                if effect.y == y and effect.text != text:
                     y += self.ship_size
         self.effects.append(PopUp(text, self.fps, seconds, x, y))
 
@@ -556,11 +582,12 @@ class Model:
     """
 
     def clear(self):
-        self.friendly_ships = [self.player_ship]
-        self.enemy_ships = []
-        self.enemy_projectiles = []
-        self.friendly_projectiles = []
-        self.effects = []
+        del self.enemy_ships[:]
+        del self.enemy_projectiles[:]
+        del self.friendly_projectiles[:]
+        del self.effects[:]
+        del self.friendly_ships[:]
+        self.friendly_ships.append(self.player_ship)
 
     """Pauses the game by displaying a text field and prompt to exit to title screen.
     """

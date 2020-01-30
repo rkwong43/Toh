@@ -1,7 +1,7 @@
 import os
 import pygame
 
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 from src.view.image_containers.charge_up_images import ChargeUpImages
 from src.view.image_containers.explosion_images import ExplosionImages
 from src.view.image_containers.image_holder import ImageHolder
@@ -204,9 +204,7 @@ class View:
         for projectile in projectiles:
             self.render_projectile(projectile)
         # Renders effects
-        for effect in effects:
-            if self.render_effect(effect):
-                effects.remove(effect)
+        effects[:] = [effect if not effect.animate() else self.render_effect(effect) for effect in effects]
         # Renders HUD
         self.draw_hud(player)
 
@@ -288,18 +286,15 @@ class View:
                 center=(center_width, center_height))
             self.game_display.blit(projectile_image, new_rect.topleft)
 
-    """Renders the given effect. Returns True if done animating, false otherwise.
+    """Renders the given effect. Returns the effect.
     
     :param effect: effect to render
     :type effect: Effect
-    :returns: true if done, false if not
-    :rtype: bool
+    :returns: the effect
+    :rtype: Effect
     """
 
     def render_effect(self, effect):
-        if not effect.animate():
-            return True
-        else:
-            image = self.image_dict.get(effect.entity_id).get_frame(effect)
-            self.game_display.blit(image, (effect.x, effect.y))
-            return False
+        image = self.image_dict.get(effect.entity_id).get_frame(effect)
+        self.game_display.blit(image, (effect.x, effect.y))
+        return effect

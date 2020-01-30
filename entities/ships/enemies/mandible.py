@@ -1,6 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.entity_id import EntityID
-from src.model.stats.ship_stats import get_ship_stats
+from src.utils.entity_id import EntityID
 
 """Represents a Mandible enemy fighter."""
 

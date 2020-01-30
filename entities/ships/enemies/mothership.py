@@ -1,14 +1,12 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Represents a Mothership enemy fighter that spawns smaller Mandibles."""
 
 
 class Mothership(Enemy):
-    # Number of ships it spawns
-    ships_spawned_per_wave = 3
-    max_ships_spawned = 3 * ships_spawned_per_wave
-    ships_spawned = 0
+    # How many ships it spawns:
+    ships_spawned = 2
     """Constructor to make the Mothership
 
     :param ship_size: size the ship should be
@@ -43,6 +41,7 @@ class Mothership(Enemy):
         self.fire_variance = 30
         self.ai = ai
 
+
     """Despoiler fires multiple flak rounds at the target.
 
     :param target: Target to fire at.
@@ -60,10 +59,8 @@ class Mothership(Enemy):
         self.fire_variance = 0
         self.projectile_speed = 15 * (32 / self.fps)
         super().fire(target, projectiles)
-        if self.ai is not None and self.ships_spawned < self.ships_spawned_per_wave:
-            for i in range(self.ships_spawned_per_wave):
-                ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
-                ship.x, ship.y = self.x, self.y
-            self.ships_spawned += self.ships_spawned_per_wave
+        for i in range(self.ships_spawned):
+            ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
+            ship.x, ship.y = self.x, self.y
         self.fire_variance = temp
         self.projectile_speed = temp_speed

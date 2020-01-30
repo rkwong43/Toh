@@ -1,4 +1,4 @@
-from src.entity_id import EntityID
+from src.utils.entity_id import EntityID
 
 """Returns a dictionary of the given weapon's statistics.
 :param entity_id: ID of weapon
@@ -67,7 +67,7 @@ def get_weapon_stats(entity_id):
         result["NAME"] = "FLAK GUN"
     elif entity_id == EntityID.MISSILE_LAUNCHER:
         # DPS: 50
-        result["PROJECTILE SPEED"] = 20
+        result["PROJECTILE SPEED"] = 25
         result["SPREAD"] = 0
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_MISSILE
         result["DAMAGE"] = 25
@@ -78,7 +78,7 @@ def get_weapon_stats(entity_id):
         result["NAME"] = "MISSILE LAUNCHER"
     elif entity_id == EntityID.MULTI_MISSILE:
         # DPS: 40
-        result["PROJECTILE SPEED"] = 15
+        result["PROJECTILE SPEED"] = 18
         result["SPREAD"] = 20
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_MISSILE
         result["DAMAGE"] = 5

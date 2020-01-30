@@ -1,6 +1,3 @@
-
-from src.entity_id import EntityID
-
 """A basic projectile, can be extended into different types such as bullets or missiles.
 """
 

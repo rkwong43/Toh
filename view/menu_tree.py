@@ -1,7 +1,7 @@
 
 """Represents a tree of menus.
 """
-from src.direction import Direction
+from src.utils.direction import Direction
 
 
 class MenuTree:
