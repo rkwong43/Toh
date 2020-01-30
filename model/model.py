@@ -166,6 +166,7 @@ class Model:
             self.reload += 1
         # Rotates enemies, recharges their shields, and checks if they're dead
         self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self.is_dead(enemy)]
+        self.player_ship.isDamaged = False
         # Checks collisions between projectiles and ships
         # Removes off screen objects
         self.remove_off_screen_objects()
@@ -174,7 +175,13 @@ class Model:
             self.check_collisions()
             # Recharges shield for player
             self.player_ship.recharge_shield()
-        self.player_ship.isDamaged = False
+
+    """Removes effects that are over.
+    """
+    def remove_effects(self):
+        # Filters the effects for objects to offload
+        self.effects[:] = [effect for effect in self.effects if effect.animate()]
+
 
     """Determines if the given enemy ship is dead, and adds to the player score if true.
     
@@ -248,8 +255,8 @@ class Model:
         size = entity.size / 2
         center = (entity.x + size, entity.y + size)
         # if off screen:
-        x_off = center[0] > self.width + self.ship_size or center[0] < -self.ship_size
-        y_off = center[1] > self.height + self.ship_size or center[1] < -self.ship_size
+        x_off = center[0] > self.width + size or center[0] < -size
+        y_off = center[1] > self.height + size or center[1] < -size
         return x_off or y_off
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
@@ -325,7 +332,11 @@ class Model:
             # Plays a red tint
             tint = ScreenTint(0, 0, EntityID.HP_TINT, self.fps)
         # Checks if the current tint is already playing
-        if tint not in self.effects:
+        tint_number = 0
+        for effect in self.effects:
+            if effect.entity_id == tint.entity_id:
+                tint_number += 1
+        if tint_number <= 8:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
         if self.player_ship.dead:

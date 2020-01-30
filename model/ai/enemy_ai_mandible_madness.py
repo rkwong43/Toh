@@ -1,6 +1,7 @@
 import random
 
 from src.entities.ships.enemies.mandible import Mandible
+from src.model.stats.ship_stats import get_ship_stats
 from src.utils.entity_id import EntityID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
@@ -12,7 +13,7 @@ This is the game mode Mandible Madness
 class EnemyMandibleMadnessAI:
     # Ship stats
     # Mandible
-    mandible_stats = {"HP": 10, "SHIELD": 10, "SPEED": 4}
+    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
     mandible_combat_rating = 10
     # Initial wave
     wave = 0

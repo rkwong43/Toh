@@ -42,6 +42,7 @@ class MenuView(View):
         self.background = pygame.image.load(self.background_path).convert_alpha()
         self.background_x = 0
         self.background_y = 0
+        self.background_change = 1 * (30 / fps)
         self.width = display_width
         self.height = display_height
         self.font_size = display_height / 20
@@ -134,8 +135,8 @@ class MenuView(View):
         self.game_display.fill((0, 0, 0))
         self.game_display.blit(self.background, (self.background_x, self.background_y))
         if self.background_x > -self.width or self.background_y > 2 * -self.height:
-            self.background_x -= 1
-            self.background_y -= 1
+            self.background_x -= self.background_change
+            self.background_y -= self.background_change
 
     """Renders the given gallery object.
     
@@ -176,6 +177,7 @@ class MenuView(View):
        """
 
     def render(self, player, projectiles, enemies, effects):
+        self.model.remove_effects()
         # If the player isn't dead, it is rendered
         self.render_ship(player, 0)
         # Renders enemies to face the player
@@ -185,4 +187,5 @@ class MenuView(View):
         for projectile in projectiles:
             self.render_projectile(projectile)
         # Renders effects
-        effects[:] = [effect if not effect.animate() else self.render_effect(effect) for effect in effects]
+        for effect in effects:
+            self.render_effect(effect)

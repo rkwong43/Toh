@@ -58,7 +58,7 @@ class View:
         self.background = pygame.transform.scale(self.background, (display_width, display_height))
         self.background_y = 0
         # How much the background scrolls
-        self.background_change = 2
+        self.background_change = 2 * (30 / fps)
         # Display parameters
         self.width = display_width
         self.height = display_height
@@ -78,6 +78,8 @@ class View:
         self.score_text = self.text_font.render("Score:", 1, (255, 255, 255)).convert_alpha()
         self.score_x = hp_width + (display_width / 3) + self.font_size
         self.score_width = pygame.font.Font.size(self.text_font, "Score:")[0]
+        # FPS ticker
+        self.fps_text = self.text_font.render("FPS:", 1, (255, 255, 255)).convert_alpha()
 
         # Grabs the image dictionary
         self.image_dict = self.init_images(fps)
@@ -204,7 +206,8 @@ class View:
         for projectile in projectiles:
             self.render_projectile(projectile)
         # Renders effects
-        effects[:] = [effect if not effect.animate() else self.render_effect(effect) for effect in effects]
+        for effect in effects:
+            self.render_effect(effect)
         # Renders HUD
         self.draw_hud(player)
 
@@ -298,3 +301,14 @@ class View:
         image = self.image_dict.get(effect.entity_id).get_frame(effect)
         self.game_display.blit(image, (effect.x, effect.y))
         return effect
+
+    """Renders the FPS counter for the game.
+    
+    :param fps: frames per second
+    :type fps: int
+    """
+
+    def render_fps(self, fps):
+        self.game_display.blit(self.fps_text, (self.width - (5 * self.font_size), self.height - self.font_size))
+        fps_number = self.text_font.render(str(fps), 1, (255, 255, 255)).convert_alpha()
+        self.game_display.blit(fps_number, (self.width - (2 * self.font_size), self.height - self.font_size))

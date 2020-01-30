@@ -29,9 +29,6 @@ class Controller:
         self.model = model
         self.view = view
         self.fps = fps
-        # Ticks for animation
-        self.ticks = 0
-        self.tick_limit = fps // 5
         # Music by Scott Buckley – www.scottbuckley.com.au
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
@@ -55,11 +52,14 @@ class Controller:
         pygame.mixer.music.load(self.game_music_path)
         pygame.mixer.music.play(-1)
         paused = False
+        ANIMATE = pygame.USEREVENT + 1
+        game_over_countdown = self.fps * 5
+        pygame.time.set_timer(ANIMATE, 300)
         while not done:
             for game_event in pygame.event.get():
                 # Checks if quit
                 if game_event.type == pygame.QUIT:
-                    done = True
+                    return False
                 elif game_event.type == pygame.KEYUP:
                     # Pauses game
                     if game_event.key == pygame.K_ESCAPE:
@@ -67,6 +67,9 @@ class Controller:
                     # Goes back to menu
                     elif game_event.key == pygame.K_BACKSPACE and paused:
                         return True
+                # Animates sprites
+                if game_event.type == ANIMATE:
+                    self.view.animate()
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
             # Moves the player and ticks
@@ -75,20 +78,15 @@ class Controller:
                 self.model.tick()
             else:
                 self.model.pause()
-            self.ticks += 1
+            # Renders the view and removes lasting effects
+            self.model.remove_effects()
             self.view.render(self.model.player_ship, self.model.get_projectiles(),
                              self.model.get_enemies(), self.model.get_effects())
-            # Every few frames the animation will be changed
-            if self.ticks == self.tick_limit:
-                self.view.animate()
-                self.ticks = 0
-                if self.model.game_over:
-                    self.tick_limit = self.fps * 4
-                    # Starts the game over
-                    if self.game_over:
-                        return True
-                    self.game_over = True
-
+            if self.model.game_over:
+                game_over_countdown -= 1
+                if game_over_countdown == 0:
+                    return True
+            self.view.render_fps(int(clock.get_fps()))
             # Updates display
             pygame.display.update()
             clock.tick(self.fps)
