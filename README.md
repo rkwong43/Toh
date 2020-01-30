@@ -1,6 +1,7 @@
 # Tears Under Heaven
 Last Edited: 1/29/2020
 
+_NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
 Personal project using self-taught Python and the Pygame library. Is currently under development.
   * Features decoupled views, models, controllers, and artificial intelligence for enemies.
