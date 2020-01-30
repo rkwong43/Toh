@@ -62,3 +62,18 @@ Features currently under development or planned for the future.
  * Writing high scores and statistics to a file.
  * Adding settings for modifying resolution, frame rate, and sound/music volume.
  * More game modes, enemies, and weapons!
+
+## How to Add Ships
+    * Create sprites for the animated, base, damaged, and shielded images.
+    * Create an EntityID for them, name the images EntityID_animation.png, EntityID_base.png
+    EntityID_damaged.png, and EntityID_shield.png respectively.
+    * Place the images into the images folder under resources.
+    * Add the Entity ID to the ship list in init_images() in the View.
+    * Create a class for the new ship, extending the Ship class, or Enemy class if the
+    new ship is an enemy.
+    * Add the ship's stats to the get_ship_stats(EntityID) function inside the 
+    ship_stats.py file.
+    * Alter the MenuView, MenuModel, to add the ship to the hangar if needed.
+    * If player, alter the constructor inside the Model. If enemy, alter the spawn_enemy(EntityID)
+    in whatever game mode enemy AI class the ship is to be added to.
+    

@@ -25,12 +25,6 @@ health, leveling experience, and game events such as spawning more enemies
 """
 
 
-# Steps to add new enemy:
-# 1: Create damaged, base, animation, and shield sprites
-# 2: Create glow effects for animation and base, overlay (opacity .4)
-# 3: Create glow effect for shielding (opacity .4)
-
-
 # Current
 # TODO: different player ship types
 # TODO: UNIT TESTING
@@ -610,5 +604,6 @@ class Model:
 
     """Clears all popup texts in the effects.
     """
+
     def clear_popups(self):
         self.effects[:] = [effect for effect in self.effects if not effect.entity_id == EntityID.POPUP]
