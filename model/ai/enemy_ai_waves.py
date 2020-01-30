@@ -21,37 +21,6 @@ This is an AI where number of enemies are spawned in waves. Defeating a wave wil
 
 
 class EnemyWaveAI:
-    # Ship stats
-    # Mandible
-    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
-    # Mantis
-    mantis_stats = get_ship_stats(EntityID.MANTIS)
-    # Crucible
-    crucible_stats = get_ship_stats(EntityID.CRUCIBLE)
-    # Mosquito
-    mosquito_stats = get_ship_stats(EntityID.MOSQUITO)
-    # Subjugator
-    subjugator_stats = get_ship_stats(EntityID.SUBJUGATOR)
-    # Seer
-    seer_stats = get_ship_stats(EntityID.SEER)
-    # Arbitrator
-    arbitrator_stats = get_ship_stats(EntityID.ARBITRATOR)
-    # Terminus
-    terminus_stats = get_ship_stats(EntityID.TERMINUS)
-    # Despoiler
-    despoiler_stats = get_ship_stats(EntityID.DESPOILER)
-    # Mothership
-    mothership_stats = get_ship_stats(EntityID.MOTHERSHIP)
-    # Judicator
-    judicator_stats = get_ship_stats(EntityID.JUDICATOR)
-    # Titan
-    titan_stats = get_ship_stats(EntityID.TITAN)
-    # Stats container:
-    stats = {EntityID.MANDIBLE: mandible_stats, EntityID.MANTIS: mantis_stats, EntityID.CRUCIBLE: crucible_stats,
-             EntityID.MOSQUITO: mosquito_stats, EntityID.SUBJUGATOR: subjugator_stats, EntityID.ARBITRATOR:
-                 arbitrator_stats, EntityID.TERMINUS: terminus_stats, EntityID.SEER: seer_stats, EntityID.MOTHERSHIP:
-                 mothership_stats, EntityID.DESPOILER: despoiler_stats, EntityID.JUDICATOR: judicator_stats,
-             EntityID.TITAN: titan_stats}
     # Combat ratings:
     combat_ratings = {EntityID.MANDIBLE: 10, EntityID.MANTIS: 40, EntityID.CRUCIBLE: 100, EntityID.MOSQUITO: 30,
                       EntityID.SUBJUGATOR: 60, EntityID.ARBITRATOR: 200, EntityID.TERMINUS: 250, EntityID.SEER: 50,
@@ -93,12 +62,14 @@ class EnemyWaveAI:
         fps = self.model.fps
         # Range in fire rate for enemies, chosen randomly
         self.fire_rate_range = (int(fps * .75), int(fps * 2))
-        self.change_difficulty(difficulty)
         # Adjusts the speed of enemies
+        self.stats = self.init_stats()
         for stats in self.stats.values():
             stats["SPEED"] *= (30 / fps)
             if stats["SPEED"] == 0:
                 stats["SPEED"] = 1
+
+        self.change_difficulty(difficulty)
 
     """Changes the difficulty to the given setting.
     """
@@ -173,11 +144,11 @@ class EnemyWaveAI:
     """
 
     def buff_enemies(self):
-        self.mandible_stats["SHIELD"] += 10
-        self.mosquito_stats["SHIELD"] += 10
-        self.subjugator_stats["SHIELD"] += 10
-        self.crucible_stats["SHIELD"] += 10
-        self.mantis_stats["SHIELD"] += 10
+        self.stats[EntityID.MANDIBLE]["SHIELD"] += 10
+        self.stats[EntityID.MANTIS]["SHIELD"] += 10
+        self.stats[EntityID.SEER]["SHIELD"] += 10
+        self.stats[EntityID.MOSQUITO]["SHIELD"] += 10
+        self.stats[EntityID.CRUCIBLE]["SHIELD"] += 10
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """
@@ -203,7 +174,7 @@ class EnemyWaveAI:
                 rating -= combat_value
                 available_enemies.remove(enemy)
                 self.spawn_enemy(enemy)
-                self.titan_stats["HP"] += 500
+                self.stats[EntityID.TITAN]["HP"] += 500
             else:
                 available_enemies.remove(enemy)
         self.max_combat_rating += self.combat_ratio
@@ -213,7 +184,7 @@ class EnemyWaveAI:
             self.mantis_moves_again = True
             self.model.popup_text("WARNING: ENTERING DEEP SPACE", -1, -1, 3)
             # Buffs certain enemies
-            self.subjugator_stats["SPEED"] += 1
+            self.stats[EntityID.SUBJUGATOR]["SPEED"] += 1
         elif 400 - self.combat_ratio < self.max_combat_rating < 400 + self.combat_ratio:
             self.model.popup_text("WARNING: DEADLY THREATS DETECTED", -1, -1, 3)
         # Doubles the enemies spawned every given number of waves and buffs them
@@ -308,3 +279,43 @@ class EnemyWaveAI:
             raise ValueError("Invalid ship ID:", entity_id)
         self.model.enemy_ships.append(ship)
         return ship
+
+    """Initializes all stats of enemies and returns a dictionary of their values.
+    
+    :returns: Dictionary of enemy stats
+    :rtype: {EntityID, Dictionary}
+    """
+    def init_stats(self):
+        # Ship stats
+        # Mandible
+        mandible_stats = get_ship_stats(EntityID.MANDIBLE)
+        # Mantis
+        mantis_stats = get_ship_stats(EntityID.MANTIS)
+        # Crucible
+        crucible_stats = get_ship_stats(EntityID.CRUCIBLE)
+        # Mosquito
+        mosquito_stats = get_ship_stats(EntityID.MOSQUITO)
+        # Subjugator
+        subjugator_stats = get_ship_stats(EntityID.SUBJUGATOR)
+        # Seer
+        seer_stats = get_ship_stats(EntityID.SEER)
+        # Arbitrator
+        arbitrator_stats = get_ship_stats(EntityID.ARBITRATOR)
+        # Terminus
+        terminus_stats = get_ship_stats(EntityID.TERMINUS)
+        # Despoiler
+        despoiler_stats = get_ship_stats(EntityID.DESPOILER)
+        # Mothership
+        mothership_stats = get_ship_stats(EntityID.MOTHERSHIP)
+        # Judicator
+        judicator_stats = get_ship_stats(EntityID.JUDICATOR)
+        # Titan
+        titan_stats = get_ship_stats(EntityID.TITAN)
+        # Stats container:
+        stats = {EntityID.MANDIBLE: mandible_stats, EntityID.MANTIS: mantis_stats, EntityID.CRUCIBLE: crucible_stats,
+                 EntityID.MOSQUITO: mosquito_stats, EntityID.SUBJUGATOR: subjugator_stats, EntityID.ARBITRATOR:
+                     arbitrator_stats, EntityID.TERMINUS: terminus_stats, EntityID.SEER: seer_stats,
+                 EntityID.MOTHERSHIP:
+                     mothership_stats, EntityID.DESPOILER: despoiler_stats, EntityID.JUDICATOR: judicator_stats,
+                 EntityID.TITAN: titan_stats}
+        return stats

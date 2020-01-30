@@ -10,29 +10,6 @@ Heaven mode is only larger and difficult ships.
 
 
 class EnemyHeavenAI(EnemyWaveAI):
-    # Ship stats
-    # Default values for hard mode
-    # Crucible
-    crucible_stats = get_ship_stats(EntityID.CRUCIBLE)
-    # Arbitrator
-    arbitrator_stats = get_ship_stats(EntityID.ARBITRATOR)
-    # Terminus
-    terminus_stats = get_ship_stats(EntityID.TERMINUS)
-    # Despoiler
-    despoiler_stats = get_ship_stats(EntityID.DESPOILER)
-    # Mothership
-    mothership_stats = get_ship_stats(EntityID.MOTHERSHIP)
-    # Judicator
-    judicator_stats = get_ship_stats(EntityID.JUDICATOR)
-    # Titan
-    titan_stats = get_ship_stats(EntityID.TITAN)
-    # Mandible
-    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
-    # Stats container:
-    stats = {EntityID.ARBITRATOR: arbitrator_stats, EntityID.TERMINUS: terminus_stats,
-             EntityID.MOTHERSHIP: mothership_stats, EntityID.DESPOILER: despoiler_stats,
-             EntityID.JUDICATOR: judicator_stats, EntityID.TITAN: titan_stats,
-             EntityID.CRUCIBLE: crucible_stats, EntityID.MANDIBLE: mandible_stats}
     # Combat ratings:
     combat_ratings = {EntityID.ARBITRATOR: 200, EntityID.TERMINUS: 250, EntityID.DESPOILER: 400,
                       EntityID.MOTHERSHIP: 400, EntityID.JUDICATOR: 300, EntityID.TITAN: 1000}
@@ -66,12 +43,6 @@ class EnemyHeavenAI(EnemyWaveAI):
         # Model to work with
         super().__init__(model, difficulty)
         self.change_difficulty(difficulty)
-        # Adjusts the speed of enemies
-        fps = model.fps
-        for stats in self.stats.values():
-            stats["SPEED"] *= (30 / fps)
-            if stats["SPEED"] == 0:
-                stats["SPEED"] = 1
 
     """Changes the difficulty to the given setting.
     """
@@ -186,7 +157,7 @@ class EnemyHeavenAI(EnemyWaveAI):
                 self.spawn_enemy(enemy)
                 if enemy == EntityID.TITAN:
                     self.model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
-                    self.titan_stats["HP"] += 500
+                    self.stats[EntityID.TITAN]["HP"] += 500
                     available_enemies.remove(enemy)
             else:
                 available_enemies.remove(enemy)
