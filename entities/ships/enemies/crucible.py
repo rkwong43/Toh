@@ -33,7 +33,7 @@ class Crucible(Enemy):
     def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps):
         super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.CRUCIBLE)
         # fire rate in seconds
-        self.fire_rate = int(fire_rate // 3)
+        self.fire_rate = int(fire_rate // 2.5)
         self.projectile_type = EntityID.ENEMY_BULLET
         self.fire_variance = 20
 
