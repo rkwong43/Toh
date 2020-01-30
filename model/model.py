@@ -42,10 +42,11 @@ health, leveling experience, and game events such as spawning more enemies
 # TODO: ADD MORE GAME MODES AND OPTIONS
 # TODO: Maybe a reversal game mode with switched sides?
 # TODO: Maybe change sounds to OGG?
+# TODO: Use profiler to see what's giving the big performance hits
 
 
 # Future:
-# TODO: Spatial partitioning?
+# TODO: Spatial partitioning? Quadtrees?
 # TODO: Story mode (dialogue etc)
 # Story: Arms race, first level enemies do nothing. They steadily arm themselves and develop weapons to fight back
 # TODO: Resolution support

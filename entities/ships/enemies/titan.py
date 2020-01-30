@@ -59,35 +59,35 @@ class Titan(Enemy):
         # Mantis side turrets
         # Upper middle
         mantis1 = Mantis(base_size, left_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 6, 0,
+                         self.fire_rate // 5, 0,
                          False, self.fps)
         mantis2 = Mantis(base_size, right_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 6, 0,
+                         self.fire_rate // 5, 0,
                          False, self.fps)
         # Lower middle
         mantis3 = Mantis(base_size, left_x - base_size, center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 5, 0,
+                         self.fire_rate // 4, 0,
                          False, self.fps)
         mantis4 = Mantis(base_size, right_x, center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 5, 0,
+                         self.fire_rate // 4, 0,
                          False, self.fps)
         # Far left
         mantis5 = Mantis(base_size, left_x - (1.5 * base_size), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 4, 0, False, self.fps)
+                         0, self.fire_rate // 3, 0, False, self.fps)
         mantis5.burst_max = 8
         mantis5.burst_curr = 8
         # Far right
         mantis6 = Mantis(base_size, right_x + (base_size // 2), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 4, 0, False, self.fps)
+                         0, self.fire_rate // 3, 0, False, self.fps)
         mantis6.burst_max = 8
         mantis6.burst_curr = 8
         # Middle
         mantis7 = Mantis(base_size, center_x - (base_size // 2), center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 7, 0, False, self.fps)
+                         self.fire_rate // 6, 0, False, self.fps)
         # Middle Terminus
         terminus = Terminus(base_size * 1.5, center_x - (base_size * .75),
                             center_y - base_size, self.max_hp, center_x - (base_size * .75),
-                            center_y, 0, self.fire_rate // 5, 0, self.fps, self.effects)
+                            center_y, 0, self.fire_rate // 4, 0, self.fps, self.effects)
         terminus.move_again = False
         terminus.projectile_damage = 20
         self.turrets = [mantis1, mantis2, mantis3, mantis4, mantis5, mantis6, mantis7, terminus]
