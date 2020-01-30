@@ -44,23 +44,23 @@ class EnemyTutorialAI(EnemyWaveAI):
         self.popup_ticks += 1
         if self.popup_ticks == self.popup_duration and self.continue_tutorial:
             self.tutorial_stage += 1
-            self.model.effects = []
+            self.model.clear_popups()
             self.advance_tutorial()
         player = self.model.player_ship
         old_pos = self.player_pos
         self.player_pos = (player.x, player.y)
         if self.tutorial_stage == 0 and self.player_pos != old_pos:
             self.tutorial_stage += 1
-            self.model.effects = []
+            self.model.clear_popups()
             self.advance_tutorial()
         elif self.tutorial_stage == 1 and len(self.model.friendly_projectiles) != 0:
             self.tutorial_stage += 1
-            self.model.effects = []
+            self.model.clear_popups()
             self.advance_tutorial()
         elif self.tutorial_stage == 2 and len(self.model.enemy_ships) == 0:
             self.tutorial_stage += 1
             self.model.level_up()
-            self.model.effects = []
+            self.model.clear_popups()
             self.advance_tutorial()
         elif self.tutorial_stage == 3 and self.popup_ticks >= self.popup_duration:
             self.tutorial_stage += 1

@@ -603,6 +603,12 @@ class Model:
     """
 
     def pause(self):
+        self.clear_popups()
         self.popup_text("PAUSED", -1, self.height // 3, 1 / self.fps)
         self.popup_text("[BACKSPACE] TO RETURN TO TITLE", -1,
                         (self.height // 3) + (self.ship_size // 2), 1 / self.fps)
+
+    """Clears all popup texts in the effects.
+    """
+    def clear_popups(self):
+        self.effects[:] = [effect for effect in self.effects if not effect.entity_id == EntityID.POPUP]
