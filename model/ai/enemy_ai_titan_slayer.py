@@ -34,10 +34,10 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
     def change_difficulty(self, difficulty):
         fps = self.model.fps
         if difficulty == EntityID.EASY:
-            self.titan_stats = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
-            self.fire_rate = fps * 2
+            self.stats[EntityID.TITAN] = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
+            self.fire_rate = fps * 1.5
         elif difficulty == EntityID.HARD:
-            self.titan_stats = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
+            self.stats[EntityID.TITAN] = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
             self.fire_rate = fps * .75
 
     """Represents a tick to keep track of enemy spawning, firing, and movement.
@@ -55,6 +55,12 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         for enemy in self.model.enemy_ships:
             enemy.ticks += 1
             enemy.move()
+            if enemy.finished_moving and enemy.move_again:
+                # Generates a new position to move to
+                new_pos = self.generate_pos()
+                enemy.end_x = new_pos[0]
+                enemy.end_y = new_pos[1]
+                enemy.finished_moving = False
             # Fires their weapon if their individual tick rate matches their fire rate
             if enemy.ticks == enemy.fire_rate:
                 enemy.ticks = 0
@@ -96,16 +102,16 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         ship = None
         # TODO: Parameterize
         if entity_id == EntityID.CRUCIBLE:
-            ship = Crucible(self.model.ship_size, 0, -self.model.ship_size, self.crucible_stats.get("HP"), final_x,
-                            final_y, self.crucible_stats.get("SPEED"), fire_rate, self.crucible_stats.get("SHIELD"),
+            ship = Crucible(self.model.ship_size, 0, -self.model.ship_size, self.stats[entity_id].get("HP"), final_x,
+                            final_y, self.stats[entity_id].get("SPEED"), fire_rate, self.stats[entity_id].get("SHIELD"),
                             self.model.fps)
 
         elif entity_id == EntityID.TITAN:
             middle_of_screen = (self.model.width - (self.model.ship_size * 8)) // 2
             ship = Titan(self.model.ship_size * 8, middle_of_screen, -self.model.ship_size * 8,
-                         self.titan_stats.get("HP"),
-                         middle_of_screen, -self.model.ship_size * 8, self.titan_stats.get("SPEED"),
-                         self.fire_rate, self.titan_stats.get("SHIELD"),
+                         self.stats[EntityID.TITAN].get("HP"),
+                         middle_of_screen, -self.model.ship_size * 8, self.stats[EntityID.TITAN].get("SPEED"),
+                         self.fire_rate, self.stats[EntityID.TITAN].get("SHIELD"),
                          self.model.fps, self, self.model.effects)
         self.model.enemy_ships.append(ship)
         return ship

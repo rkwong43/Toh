@@ -47,10 +47,10 @@ class MenuController:
         # WEAPONS
         weapon_selection = ["GUN", "SHOTGUN", "MACHINE GUN", "FLAK GUN", "FLAK CANNON", "MISSILE LAUNCHER",
                             "MISSILE BATTERY",
-                            "DIAMOND DUST", "RAILGUN"]
+                            "DIAMOND DUST", "STRIKER", "RAILGUN"]
         weapon_ids = [EntityID.GUN, EntityID.SHOTGUN, EntityID.MACHINE_GUN, EntityID.FLAK_GUN, EntityID.FLAK_CANNON,
                       EntityID.MISSILE_LAUNCHER, EntityID.MULTI_MISSILE, EntityID.BAD_MISSILE_LAUNCHER,
-                      EntityID.RAILGUN]
+                      EntityID.STRIKER, EntityID.RAILGUN]
         # ENEMIES
         enemy_selection = ["MANDIBLE", "MANTIS", "MOSQUITO", "SEER", "SUBJUGATOR", "CRUCIBLE", "ARBITRATOR", "TERMINUS",
                            "JUDICATOR", "DESPOILER", "MOTHERSHIP"]

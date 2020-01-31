@@ -80,7 +80,7 @@ def get_ship_stats(entity_id):
         result["HP"] = 200
         result["SHIELD"] = 250
         result["SPEED"] = 2
-        result["DAMAGE"] = 4
+        result["DAMAGE"] = 3
         result["PROJECTILE SPEED"] = 25
         result["SCORE"] = 350
         result["DESCRIPTION"] = "Heavy gunship mounted with a railgun and diamond dust generator."
