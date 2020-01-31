@@ -26,7 +26,6 @@ health, leveling experience, and game events such as spawning more enemies
 
 
 # Current
-# TODO: different player ship types
 # TODO: UNIT TESTING
 # TODO: EXCEPTION CHECKING
 # TODO: REFACTOR EVERYTHING
@@ -35,7 +34,6 @@ health, leveling experience, and game events such as spawning more enemies
 # TODO: ADD MENU CLICK SOUND
 # TODO: ADD MORE GAME MODES AND OPTIONS
 # TODO: Maybe a reversal game mode with switched sides?
-# TODO: Maybe change sounds to OGG?
 # TODO: Use profiler to see what's giving the big performance hits
 
 
@@ -49,6 +47,13 @@ health, leveling experience, and game events such as spawning more enemies
 
 
 # TODO: Maybe if performance suffers, remove shields for enemies
+
+# CURRENT SHIP IDEAS FOR PLAYER
+# More HP/Shield, slower movement
+# Less HP, faster
+# Slower ship, more damage
+# Faster ship, less shield, faster fire rate
+# less HP and shield, more fire rate and damage
 
 class Model:
     # Friendly ships and player
@@ -134,15 +139,15 @@ class Model:
         resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
         sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
         # Sound weapons make when they fire
-        path = os.path.join(sound_path, 'bullet_sound.wav')
+        path = os.path.join(sound_path, 'bullet_sound.ogg')
         self.bullet_sound = pygame.mixer.Sound(file=path)
         self.bullet_sound.set_volume(.1)
-        path = os.path.join(sound_path, 'missile_sound.wav')
+        path = os.path.join(sound_path, 'missile_sound.ogg')
         self.missile_sound = pygame.mixer.Sound(file=path)
         self.missile_sound.set_volume(.1)
-        path = os.path.join(sound_path, 'explosion_sound.wav')
+        path = os.path.join(sound_path, 'explosion_sound.ogg')
         self.explosion_sound = pygame.mixer.Sound(file=path)
-        path = os.path.join(sound_path, 'railgun_sound.wav')
+        path = os.path.join(sound_path, 'railgun_sound.ogg')
         self.railgun_sound = pygame.mixer.Sound(file=path)
         self.switch_weapon(weapon_chosen)
 
