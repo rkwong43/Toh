@@ -29,7 +29,6 @@ def main():
 
 
 if __name__ == "__main__":
-    pygame.mixer.pre_init(44100, -8, 6, 512)
     pygame.init()
     main()
     pygame.quit()

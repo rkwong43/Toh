@@ -456,6 +456,17 @@ class Model:
                                 EntityID.RAILGUN)
                 self.friendly_projectiles.append(bullet)
             self.railgun_sound.play()
+        elif self.player_projectile_type == EntityID.HOMING_BULLET:
+            closest_enemy = self.find_closest_enemy(self.player_ship)
+            for x in range(self.player_projectile_count):
+                bullet = Missile(self.bullet_speed, self.player_ship.x, firing_position,
+                                 offset + 90, self.player_bullet_damage, self.ship_size,
+                                 EntityID.FRIENDLY_BULLET, self.fps, closest_enemy)
+                bullet.has_splash = False
+                offset += partition
+                self.friendly_projectiles.append(bullet)
+            # Missile sound effect
+            self.bullet_sound.play()
         else:
             raise ValueError("Invalid projectile type:", str(self.player_projectile_type))
 

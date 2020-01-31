@@ -11,14 +11,14 @@ from src.utils.entity_id import EntityID
 def get_weapon_stats(entity_id):
     result = {}
     if entity_id == EntityID.GUN:
-        # DPS: 75
+        # DPS: 100
         result["PROJECTILE SPEED"] = 20
         result["SPREAD"] = 0
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_BULLET
-        result["DAMAGE"] = 15
+        result["DAMAGE"] = 20
         result["RELOAD"] = 6
         result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 75
+        result["DPS"] = 100
         result["DESCRIPTION"] = "Fires lethal blasts of plasma in a straight line."
         result["NAME"] = "GUN"
     elif entity_id == EntityID.FLAK_CANNON:
@@ -33,14 +33,14 @@ def get_weapon_stats(entity_id):
         result["DESCRIPTION"] = "Fires an array of volatile plasma that detonate near enemies."
         result["NAME"] = "FLAK CANNON"
     elif entity_id == EntityID.MACHINE_GUN:
-        # DPS: 80
+        # DPS: 100
         result["PROJECTILE SPEED"] = 15
         result["SPREAD"] = 10
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_BULLET
-        result["DAMAGE"] = 8
+        result["DAMAGE"] = 10
         result["RELOAD"] = 3
         result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 80
+        result["DPS"] = 100
         result["DESCRIPTION"] = "Fires an orb of explosive plasma that detonates near enemies."
         result["NAME"] = "MACHINE GUN"
     elif entity_id == EntityID.SHOTGUN:
@@ -55,22 +55,22 @@ def get_weapon_stats(entity_id):
         result["DESCRIPTION"] = "Fires an inaccurate spread of plasma rounds."
         result["NAME"] = "SHOTGUN"
     elif entity_id == EntityID.FLAK_GUN:
-        # DPS: 48
+        # DPS: 60
         result["PROJECTILE SPEED"] = 15
         result["SPREAD"] = 5
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_FLAK
-        result["DAMAGE"] = 12
+        result["DAMAGE"] = 15
         result["RELOAD"] = 8
         result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 48
+        result["DPS"] = 60
         result["DESCRIPTION"] = "Fires an orb of explosive plasma that detonates near enemies."
         result["NAME"] = "FLAK GUN"
     elif entity_id == EntityID.MISSILE_LAUNCHER:
-        # DPS: 50
+        # DPS: 60
         result["PROJECTILE SPEED"] = 25
         result["SPREAD"] = 0
         result["PROJECTILE TYPE"] = EntityID.FRIENDLY_MISSILE
-        result["DAMAGE"] = 25
+        result["DAMAGE"] = 30
         result["RELOAD"] = 16
         result["PROJECTILE COUNT"] = 1
         result["DPS"] = 50
@@ -109,4 +109,15 @@ def get_weapon_stats(entity_id):
         result["DPS"] = (25, 100)
         result["DESCRIPTION"] = "Generates a high-velocity blast of super-compressed plasma."
         result["NAME"] = "RAILGUN"
+    elif entity_id == EntityID.STRIKER:
+        # DPS:
+        result["PROJECTILE SPEED"] = 25
+        result["SPREAD"] = 0
+        result["PROJECTILE TYPE"] = EntityID.HOMING_BULLET
+        result["DAMAGE"] = 8
+        result["RELOAD"] = 3
+        result["PROJECTILE COUNT"] = 1
+        result["DPS"] = 80
+        result["DESCRIPTION"] = "Rapidly fires homing plasma rounds at enemies."
+        result["NAME"] = "STRIKER"
     return result

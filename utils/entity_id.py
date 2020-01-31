@@ -35,6 +35,7 @@ class EntityID(Enum):
     FRIENDLY_MISSILE = auto()
     ENEMY_MISSILE = auto()
     BAD_MISSILE = auto()
+    HOMING_BULLET = auto()
     # Effects
     EXPLOSION = auto()
     TITAN_EXPLOSION = auto()
@@ -55,6 +56,7 @@ class EntityID(Enum):
     MULTI_MISSILE = auto()
     BAD_MISSILE_LAUNCHER = auto()
     RAILGUN = auto()
+    STRIKER = auto()
     # Difficulties
     EASY = auto()
     NORMAL = auto()
