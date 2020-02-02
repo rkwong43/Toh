@@ -4,7 +4,7 @@ import random
 from src.entities.projectiles.bad_missile import BadMissile
 from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.missile import Missile
-from src.entities.ships.enemies.ship import Ship
+from src.entities.ships.ship import Ship
 from src.utils.entity_id import EntityID
 from src.model.stats.ship_stats import get_ship_stats
 
@@ -101,7 +101,7 @@ class Enemy(Ship):
 
     def rotate(self, target):
         # Rotates the ship to face the target ship
-        self.angle = -math.degrees(math.atan2(target.y - self.y, target.x - self.x)) + 90
+        self.angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) - 90
 
     """Fires projectiles from the enemy to the given target, at the given speed, damage, and size.
 

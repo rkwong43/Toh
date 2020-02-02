@@ -49,11 +49,12 @@ health, leveling experience, and game events such as spawning more enemies
 # TODO: Maybe if performance suffers, remove shields for enemies
 
 # CURRENT SHIP IDEAS FOR PLAYER
-# More HP/Shield, slower movement
+# More HP and Shield, slower movement
 # Less HP, faster
 # Slower ship, more damage
 # Faster ship, less shield, faster fire rate
 # less HP and shield, more fire rate and damage
+# Increase all stats, very slow movement
 
 class Model:
     # Friendly ships and player

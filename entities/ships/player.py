@@ -1,5 +1,5 @@
 from src.utils.direction import Direction
-from src.entities.ships.enemies.ship import Ship
+from src.entities.ships.ship import Ship
 
 """Represents the player ship that moves"""
 
