@@ -95,8 +95,11 @@ class View:
     def init_images(self, fps):
         # Result to return:
         result = {}
+        # Standard sized player ships to render:
+        players_to_init = [EntityID.CITADEL, EntityID.AEGIS, EntityID.GHOST, EntityID.ARCHANGEL, EntityID.STORM,
+                           EntityID.ORIGIN]
         # Standard sized ships to render
-        ships_to_init = [EntityID.CITADEL, EntityID.MANDIBLE, EntityID.MANTIS, EntityID.CRUCIBLE, EntityID.MOSQUITO,
+        ships_to_init = [EntityID.MANDIBLE, EntityID.MANTIS, EntityID.CRUCIBLE, EntityID.MOSQUITO,
                          EntityID.SUBJUGATOR, EntityID.SEER]
         # Larger ships to render (1.5 * ship_size)
         large_ships_to_init = [EntityID.ARBITRATOR, EntityID.TERMINUS, EntityID.JUDICATOR]
@@ -110,8 +113,8 @@ class View:
         # Effects to render
         effects_to_init = [EntityID.EXPLOSION, EntityID.RED_EXPLOSION, EntityID.BLUE_EXPLOSION]
 
-        # Renders each ship
-        for id_name in ships_to_init:
+        # Renders each ship (standard sized)
+        for id_name in ships_to_init + players_to_init:
             ship_name = id_name.name
             image_paths = [os.path.join(self.image_path, ship_name + '_base.png'),
                            os.path.join(self.image_path, ship_name + '_animation.png'),

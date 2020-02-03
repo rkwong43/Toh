@@ -34,6 +34,7 @@ class MenuController:
         self.start_menu_music_path = os.path.join(music_path, 'undertow.mp3')
         self.difficulty_selection_tree = None
         self.weapon_selection_tree = None
+        self.ship_selection_tree = None
         self.tree = self.construct_tree()
         # To keep background continuity between the two views:
 
@@ -57,12 +58,19 @@ class MenuController:
         enemy_ids = [EntityID.MANDIBLE, EntityID.MANTIS, EntityID.MOSQUITO, EntityID.SEER, EntityID.SUBJUGATOR,
                      EntityID.CRUCIBLE, EntityID.ARBITRATOR, EntityID.TERMINUS, EntityID.JUDICATOR, EntityID.DESPOILER,
                      EntityID.MOTHERSHIP]
+        # PLAYER SHIPS
+        ship_selection = ["CITADEL", "AEGIS", "GHOST", "ARCHANGEL", "STORM", "ORIGIN"]
+        ship_ids = [EntityID.CITADEL, EntityID.AEGIS, EntityID.GHOST, EntityID.ARCHANGEL, EntityID.STORM,
+                    EntityID.ORIGIN]
+        # Tree to select ships
+        self.ship_selection_tree = MenuTree(ship_selection, ship_ids, None)
         # Tree to select weapons
         self.weapon_selection_tree = MenuTree(weapon_selection, weapon_ids, None)
         # Tree to select difficulty
         difficulty_selection = ["EASY", "NORMAL", "HARD"]
         difficulty_ids = [EntityID.EASY, EntityID.NORMAL, EntityID.HARD]
         self.difficulty_selection_tree = MenuTree(difficulty_selection, difficulty_ids, None)
+        self.ship_selection_tree.root = self.weapon_selection_tree
         self.weapon_selection_tree.root = self.difficulty_selection_tree
         # Challenge Options
         challenge_layer = ["TITAN SLAYER"]
@@ -74,24 +82,30 @@ class MenuController:
                                                                      EntityID.HEAVEN])
         # MENUS
         # Hangar
-        hangar_layer = ["SHIPS (COMING SOON", "WEAPONS", "ENEMIES"]
+        hangar_layer = ["SHIPS", "WEAPONS", "ENEMIES"]
         weapon_descriptions = self.construct_gallery(weapon_ids)
         enemy_descriptions = self.construct_gallery(enemy_ids)
+        ship_descriptions = self.construct_gallery(ship_ids)
         gallery_list_weapons = [EntityID.GALLERY] * (len(weapon_selection))
         gallery_list_enemies = [EntityID.GALLERY] * (len(enemy_selection))
+        gallery_list_ships = [EntityID.GALLERY] * (len(ship_selection))
         gallery_weapons = MenuTree(weapon_selection, weapon_descriptions, gallery_list_weapons)
         gallery_enemies = MenuTree(enemy_selection, enemy_descriptions, gallery_list_enemies)
+        gallery_ships = MenuTree(ship_selection, ship_descriptions, gallery_list_ships)
         for gallery in weapon_descriptions:
             gallery.root = gallery_weapons
         for gallery in enemy_descriptions:
             gallery.root = gallery_enemies
-        hangar_tree = MenuTree(hangar_layer, [-1, gallery_weapons, gallery_enemies], [0, 0, 0])
+        for gallery in ship_descriptions:
+            gallery.root = gallery_ships
+        hangar_tree = MenuTree(hangar_layer, [gallery_ships, gallery_weapons, gallery_enemies], [0, 0, 0])
         first_layer = ["STORY (COMING SOON)", "SURVIVAL", "CHALLENGE",
                        "TUTORIAL", "HANGAR", "SETTINGS (COMING SOON)"]
         main_menu_tree = MenuTree(first_layer, [-1, survival_tree, challenge_tree, 0, hangar_tree, -1],
                                   [0, 0, 0, EntityID.TUTORIAL, 0, -1])
         gallery_enemies.root = hangar_tree
         gallery_weapons.root = hangar_tree
+        gallery_ships.root = hangar_tree
         hangar_tree.root = main_menu_tree
         survival_tree.root = main_menu_tree
         challenge_tree.root = main_menu_tree
@@ -123,12 +137,14 @@ class MenuController:
         game_mode = None
         difficulty = None
         weapon_chosen = None
+        player = EntityID.CITADEL
         # In game clock for FPS and time
         clock = pygame.time.Clock()
         # Defines if the game is done
         done = False
         select_difficulty = False
         select_weapon = False
+        select_ship = False
         if self.start_screen(clock):
             done = True
         # Loops on the menu
@@ -167,6 +183,11 @@ class MenuController:
                             self.tree = self.weapon_selection_tree
                         elif select_weapon:
                             weapon_chosen = new_tree
+                            select_weapon = False
+                            select_ship = True
+                            self.tree = self.ship_selection_tree
+                        elif select_ship:
+                            player = new_tree
                             done = True
                         elif new_tree != -1:
                             if self.tree.name[self.tree.current_selection] == EntityID.GALLERY:
@@ -177,7 +198,10 @@ class MenuController:
                         new_tree = self.tree.goto_root()
                         self.menus.gallery = False
                         self.menus.model.clear()
-                        if select_weapon:
+                        if select_ship:
+                            select_weapon = True
+                            select_ship = False
+                        elif select_weapon:
                             select_weapon = False
                             select_difficulty = True
                         elif select_difficulty:
@@ -190,7 +214,7 @@ class MenuController:
             # Updates display
             pygame.display.update()
             clock.tick(self.fps)
-        return game_mode, difficulty, weapon_chosen
+        return game_mode, difficulty, weapon_chosen, player
 
     """Defines the starting menu screen for the game. Returns a boolean whether the user exited the window.
 

@@ -18,18 +18,19 @@ def main():
     while not finished:
         menu_view = MenuView(display_width, display_height, game_title, ship_size, game_fps)
         menu_controller = MenuController(menu_view, game_fps)
-        game_mode, difficulty, weapon_selected = menu_controller.run_menus()
+        game_mode, difficulty, weapon_selected, player = menu_controller.run_menus()
         if weapon_selected is None:
             break
         view = View(display_width, display_height, game_title, ship_size, game_mode, game_fps)
-        model = Model(display_width, display_height, ship_size, game_fps, weapon_selected, difficulty, game_mode)
+        model = Model(display_width, display_height, ship_size, game_fps, weapon_selected, difficulty,
+                      game_mode, player)
         model.clear()
         controller = Controller(model, view, game_fps)
         finished = not controller.run_game()
 
 
 if __name__ == "__main__":
-    pygame.mixer.pre_init(channels=6)
+    pygame.mixer.pre_init(channels=16)
     pygame.init()
     main()
     pygame.quit()

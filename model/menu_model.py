@@ -35,7 +35,8 @@ class MenuModel(Model):
     """
 
     def __init__(self, width, height, ship_size, fps):
-        super().__init__(width, height, ship_size, fps, EntityID.GUN, EntityID.EASY, EntityID.SURVIVAL)
+        super().__init__(width, height, ship_size, fps, EntityID.GUN, EntityID.EASY, EntityID.SURVIVAL,
+                         EntityID.CITADEL)
         self.player_ship.x = self.width
         self.play = False
 

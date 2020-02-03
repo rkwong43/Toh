@@ -171,10 +171,11 @@ class EnemyWaveAI:
             if combat_value <= rating:
                 if enemy == EntityID.TITAN:
                     self.model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
+                    self.stats[EntityID.TITAN]["HP"] += 500
                 rating -= combat_value
                 available_enemies.remove(enemy)
                 self.spawn_enemy(enemy)
-                self.stats[EntityID.TITAN]["HP"] += 500
+
             else:
                 available_enemies.remove(enemy)
         self.max_combat_rating += self.combat_ratio

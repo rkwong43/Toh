@@ -20,14 +20,14 @@ class Player(Ship):
     :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, shield, entity_id, fps):
+    def __init__(self, ship_size, x, y, hp, shield, entity_id, fps, speed):
         super().__init__(x, y, hp, shield, ship_size, fps)
         # 32 is the size of the image of the ship
         # 10 is the width of the ship in pixels
         # 9 is the height of the ship in pixels
         self.max_hp = hp
         self.entity_id = entity_id
-        self.speed = 10 * (32 / fps)
+        self.speed = speed * (32 / fps)
         self.score = 0
         self.angle = 90
 

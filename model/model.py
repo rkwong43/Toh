@@ -4,6 +4,7 @@ import random
 
 import pygame
 
+from src.model.stats.ship_stats import get_ship_stats
 from src.utils.direction import Direction
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint
@@ -105,7 +106,7 @@ class Model:
     :type game_mode: EntityID
     """
 
-    def __init__(self, width, height, ship_size, fps, weapon_chosen, difficulty, game_mode):
+    def __init__(self, width, height, ship_size, fps, weapon_chosen, difficulty, game_mode, player_id):
         self.width = width
         self.height = height
         self.ship_size = ship_size
@@ -114,7 +115,11 @@ class Model:
         self.tick_counter = 0
         # Starts near the bottom center of the screen
         # TODO: Change for new ships
-        self.player_ship = Player(ship_size, width / 2 - ship_size / 2, height / 2, 100, 100, EntityID.CITADEL, fps)
+        player_stats = get_ship_stats(player_id)
+        self.reload_bonus = 1 - (player_stats["RELOAD MODIFIER"] - 1)
+        self.damage_bonus = player_stats["DAMAGE MULTIPLIER"]
+        self.player_ship = Player(ship_size, width / 2 - ship_size / 2, height / 2, player_stats["HP"],
+                                  player_stats["SHIELD"], player_id, fps, player_stats["SPEED"])
         self.friendly_ships.append(self.player_ship)
         # The current enemy AI module
         if game_mode == EntityID.SURVIVAL:
@@ -148,6 +153,7 @@ class Model:
         self.missile_sound.set_volume(.1)
         path = os.path.join(sound_path, 'explosion_sound.ogg')
         self.explosion_sound = pygame.mixer.Sound(file=path)
+        self.explosion_sound.set_volume(.2)
         path = os.path.join(sound_path, 'railgun_sound.ogg')
         self.railgun_sound = pygame.mixer.Sound(file=path)
         self.switch_weapon(weapon_chosen)
@@ -391,8 +397,8 @@ class Model:
         self.bullet_speed = int(weapon_stats["PROJECTILE SPEED"] * (30 / self.fps))
         self.player_bullet_spread = weapon_stats["SPREAD"]
         self.player_projectile_type = weapon_stats["PROJECTILE TYPE"]
-        self.player_bullet_damage = int(weapon_stats["DAMAGE"] * self.damage_modifier)
-        self.max_fire_speed = int(weapon_stats["RELOAD"] * self.reload_modifier * (self.fps / 30))
+        self.player_bullet_damage = int(weapon_stats["DAMAGE"] * self.damage_modifier * self.damage_bonus)
+        self.max_fire_speed = int(weapon_stats["RELOAD"] * self.reload_modifier * (self.fps / 30) * self.reload_bonus)
         self.player_projectile_count = weapon_stats["PROJECTILE COUNT"]
         # Sets the reload times
         if self.max_fire_speed <= 0:
@@ -535,10 +541,10 @@ class Model:
     def level_up(self):
         player = self.player_ship
         # Increases max HP and restores it
-        player.max_hp += 5
+        player.max_hp += (player.max_hp // 20)
         player.hp = player.max_hp
         # Increases max shield and restores it
-        player.max_shield += 10
+        player.max_shield += (player.max_hp // 10)
         player.shield_recharge_rate = (player.max_shield // 20 / self.fps)
         player.shield = player.max_shield
         # Increases damage and fire rate
