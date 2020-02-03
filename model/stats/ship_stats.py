@@ -125,7 +125,7 @@ def get_ship_stats(entity_id):
         result["DESCRIPTION"] = "Quick interceptor designed for assassinations."
     elif entity_id == EntityID.AEGIS:
         result["HP"] = 150
-        result["SHIELD"] = 100
+        result["SHIELD"] = 150
         result["SPEED"] = 8
         result["DAMAGE MULTIPLIER"] = 1
         result["RELOAD MODIFIER"] = 1
@@ -135,21 +135,21 @@ def get_ship_stats(entity_id):
         result["SHIELD"] = 80
         result["SPEED"] = 12
         result["DAMAGE MULTIPLIER"] = 1
-        result["RELOAD MODIFIER"] = 1.5
+        result["RELOAD MODIFIER"] = 1.2
         result["DESCRIPTION"] = "Announces a storm of destruction for enemies."
     elif entity_id == EntityID.ARCHANGEL:
         result["HP"] = 90
-        result["SHIELD"] = 100
-        result["SPEED"] = 8
-        result["DAMAGE MULTIPLIER"] = 1.2
+        result["SHIELD"] = 90
+        result["SPEED"] = 10
+        result["DAMAGE MULTIPLIER"] = 1.3
         result["RELOAD MODIFIER"] = 1
         result["DESCRIPTION"] = "Harbinger of calamity for all."
     elif entity_id == EntityID.ORIGIN:
         result["HP"] = 50
         result["SHIELD"] = 50
         result["SPEED"] = 15
-        result["DAMAGE MULTIPLIER"] = 2
-        result["RELOAD MODIFIER"] = 1.5
+        result["DAMAGE MULTIPLIER"] = 1.5
+        result["RELOAD MODIFIER"] = 1.2
         result["DESCRIPTION"] = "Fragile but extremely powerful experimental warship."
 
     result["NAME"] = entity_id.name

@@ -59,8 +59,9 @@ class Mothership(Enemy):
         self.fire_variance = 0
         self.projectile_speed = 15 * (32 / self.fps)
         super().fire(target, projectiles)
-        for i in range(self.ships_spawned):
-            ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
-            ship.x, ship.y = self.x, self.y
+        if self.ai is not None:
+            for i in range(self.ships_spawned):
+                ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
+                ship.x, ship.y = self.x, self.y
         self.fire_variance = temp
         self.projectile_speed = temp_speed

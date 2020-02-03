@@ -80,7 +80,6 @@ class MenuModel(Model):
             self.player_ship.isDamaged = False
             self.check_collisions()
 
-
     """Switches the player's weapon to the given type.
 
     :param weapon: weapon type
@@ -118,7 +117,6 @@ class MenuModel(Model):
             self.clear()
             self.player_ship.x = self.width / 4
             self.player_ship.y = self.height * .75
-            ship = None
             x_pos = self.width / 4
             if entity_id == EntityID.MANDIBLE:
                 ship = Mandible(self.ship_size, x_pos, self.height / 3, 1000, 0, 1,
@@ -162,8 +160,21 @@ class MenuModel(Model):
                 ship = Despoiler(self.ship_size * 2, x_pos - (self.ship_size // 2), self.height / 3, 1000, 0,
                                  1,
                                  0, self.fps, 1000, self.fps)
+            else:
+                self.spawn_player(entity_id)
+                return
             ship.projectile_damage = 0
             self.enemy_ships.append(ship)
+
+    """Renders the player ship.
+    :param entity_id: ID of player ship
+    :type entity_id: EntityID
+    """
+
+    def spawn_player(self, entity_id):
+        self.player_ship.x = self.width / 4
+        self.player_ship.y = self.height / 2
+        self.player_ship.entity_id = entity_id
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
        explosion effect to the effects list.

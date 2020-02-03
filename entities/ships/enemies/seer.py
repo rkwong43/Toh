@@ -34,4 +34,4 @@ class Seer(Enemy):
         self.entity_id = EntityID.SEER
         # fire rate in seconds
         self.fire_rate = fire_rate * 2
-        self.projectile_type = EntityID.ENEMY_FLAK
+        self.projectile_type = EntityID.ENEMY_BULLET
