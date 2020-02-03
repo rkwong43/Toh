@@ -54,7 +54,6 @@ Describes the current gameplay features inside the game.
 ## Future Features
 Features currently under development or planned for the future.
  * Adding or creating a custom ship for the player.
- * Selecting ships from the hangar for the player, each with different statistics.
  * Adding sound and scrolling animations for the menu.
  * Adding a story mode with chapters.
  * Adding a constant progression system (for release of game)
