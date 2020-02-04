@@ -1,10 +1,11 @@
 # Tears Under Heaven
-Last Edited: 1/29/2020
+CURRENTLY IN PROGRESS \
+Last Edited: 2/4/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
 Personal project using self-taught Python and the Pygame library. Is currently under development.
-  * Features decoupled views, models, controllers, and artificial intelligence for enemies.
+  * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
   * Has a collision detection algorithm for detecting when projectiles and ships intersect.
   * Supports different frame rates (default=60) while keeping the same gameplay.
   * Controller and main allow for restarting the game upon end.
@@ -13,6 +14,8 @@ Personal project using self-taught Python and the Pygame library. Is currently u
   * Pixel art and effects created by myself, Roger Kwong.
   * In-game music created by [Scott Buckley](https://www.scottbuckley.com.au/) and used under the Creative Commons Attribution International 4.0 license. Current tracks used are [Undertow](https://www.scottbuckley.com.au/library/undertow/) and [Endurance](https://www.scottbuckley.com.au/library/?s=endurance).
   * Backgrounds and sound effects are temporary until custom ones are created.
+ 
+ As of now, all weapons and ships are permanently unlocked for the player for demo purposes.
 ## Current Game Features:
 Describes the current gameplay features inside the game.
   * Difficulty Settings:
@@ -53,6 +56,8 @@ Describes the current gameplay features inside the game.
     * Uses a smaller model to simulate firing of shown weapons of the player and the selected enemy.
 ## Future Features
 Features currently under development or planned for the future.
+ * Expanding on enemy artificial intelligence.
+ * Streamlined creation for enemies and players.
  * Adding or creating a custom ship for the player.
  * Adding sound and scrolling animations for the menu.
  * Adding a story mode with chapters.
