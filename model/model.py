@@ -27,6 +27,7 @@ health, leveling experience, and game events such as spawning more enemies
 
 
 # Current
+# TODO: Add descriptions to menu
 # TODO: UNIT TESTING
 # TODO: EXCEPTION CHECKING
 # TODO: REFACTOR EVERYTHING
@@ -147,7 +148,7 @@ class Model:
         # Sound weapons make when they fire
         path = os.path.join(sound_path, 'bullet_sound.ogg')
         self.bullet_sound = pygame.mixer.Sound(file=path)
-        self.bullet_sound.set_volume(.1)
+        self.bullet_sound.set_volume(.05)
         path = os.path.join(sound_path, 'missile_sound.ogg')
         self.missile_sound = pygame.mixer.Sound(file=path)
         self.missile_sound.set_volume(.1)

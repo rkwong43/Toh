@@ -30,7 +30,7 @@ def main():
 
 
 if __name__ == "__main__":
-    pygame.mixer.pre_init(channels=16)
+    pygame.mixer.pre_init(channels=32)
     pygame.init()
     main()
     pygame.quit()

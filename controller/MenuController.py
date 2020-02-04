@@ -23,9 +23,6 @@ class MenuController:
     def __init__(self, menus, fps):
         self.menus = menus
         self.fps = fps
-        # Selection ticks for the delay before moving selection
-        self.ticks = fps // 6
-        self.tick_limit = fps // 6
         # Music by Scott Buckley – www.scottbuckley.com.au
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
@@ -147,13 +144,11 @@ class MenuController:
         select_ship = False
         if self.start_screen(clock):
             done = True
+
+        ANIMATE = pygame.USEREVENT + 1
+        pygame.time.set_timer(ANIMATE, 300)
         # Loops on the menu
         while not done:
-            if self.ticks < self.tick_limit:
-                self.ticks += 1
-            else:
-                self.menus.animate()
-                self.ticks = 0
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
             self.menus.render_menu(self.tree)
@@ -162,8 +157,9 @@ class MenuController:
             for game_event in pygame.event.get():
                 # Checks if quit
                 if game_event.type == pygame.QUIT:
-                    done = True
+                    return None, None, None, None
                 elif game_event.type == pygame.KEYUP:
+                    # TODO: Clean up
                     self.parse_key_input(game_event.key)
                     # Selects the current option if space is pressed
                     if game_event.key == pygame.K_SPACE:
@@ -172,7 +168,7 @@ class MenuController:
                             if self.tree.name is not None:
                                 game_mode = self.tree.name[self.tree.current_selection]
                                 if game_mode == EntityID.TUTORIAL:
-                                    return game_mode, EntityID.EASY, EntityID.GUN
+                                    return game_mode, EntityID.EASY, EntityID.GUN, EntityID.CITADEL
                             select_difficulty = True
                             self.difficulty_selection_tree.root = self.tree
                             self.tree = self.difficulty_selection_tree
@@ -211,6 +207,9 @@ class MenuController:
                         else:
                             if self.start_screen(clock):
                                 done = True
+                # Animates sprites
+                if game_event.type == ANIMATE:
+                    self.menus.animate()
             # Updates display
             pygame.display.update()
             clock.tick(self.fps)
