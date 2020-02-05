@@ -1,6 +1,4 @@
-# Tears Under Heaven
-WORK IN PROGRESS \
-Last Edited: 2/5/2020
+WORK IN PROGRESS
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
