@@ -1,4 +1,10 @@
 import pygame
+import sys
+import os
+
+current_path = os.path.dirname(__file__)  # where this file is located
+outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
+sys.path.insert(1, outer_path)
 
 from src.controller.MenuController import MenuController
 from src.controller.controller import Controller
@@ -29,10 +35,17 @@ def main():
         finished = not controller.run_game()
 
 
-if __name__ == "__main__":
+"""Starts the game.
+"""
+
+
+def start_game():
     pygame.mixer.pre_init(channels=32)
     pygame.init()
     main()
     pygame.quit()
     pygame.mixer.quit()
-    quit()
+
+
+if __name__ == "__main__":
+    start_game()

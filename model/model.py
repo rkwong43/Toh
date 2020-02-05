@@ -142,7 +142,7 @@ class Model:
         # Current progress until weapon is reloaded
         self.reload = self.max_fire_speed
         current_path = os.path.dirname(__file__)  # where this file is located
-        outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
+        outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
         resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
         sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
         # Sound weapons make when they fire

@@ -1,4 +1,4 @@
-from src.entities.effects.explosion import Explosion
+
 from src.entities.ships.enemies.arbitrator import Arbitrator
 from src.entities.ships.enemies.crucible import Crucible
 from src.entities.ships.enemies.despoiler import Despoiler

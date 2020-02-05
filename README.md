@@ -4,6 +4,9 @@ Last Edited: 2/4/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
+**DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
+Currently the demo is only compatible with Windows operating systems.
+
 Personal project using self-taught Python and the Pygame library. Is currently under development.
   * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
   * Has a collision detection algorithm for detecting when projectiles and ships intersect.
