@@ -1,6 +1,6 @@
 **WORK IN PROGRESS**
 
-_NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
+_NOTE: Meant to be run on Python 3.7 or any version compatible with Pygame_
 
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
@@ -25,42 +25,49 @@ Personal project using self-taught Python and the Pygame library. Is currently u
  
  As of now, all weapons and ships are permanently unlocked for the player for demo purposes.
 ## Current Game Features:
-Describes the current gameplay features inside the game.
-  * Difficulty Settings:
+Describes the current gameplay features:
+  - 4 game modes and a tutorial! (story coming soon)
+  - 10 weapons!
+  - 6 unique player ships!
+  - 12 distinct enemy types! (and more to come!)
+  - Hangar to inspect the stats of enemies, player ships, and weapons.
+  - 3 difficulty settings that affect pace and the challenge given!
+  
+  * **Difficulty Settings:**
     * Difficulty affects the rate at which enemies spawn, their statistics such as health, shielding, and movement speed, their fire rate, and the amount of experience required to level up.
-  * Survival
-    * Classic:
+  * **Survival**
+    * _Classic:_
       * Survive against hordes of enemy ships.
       * Every type of enemy in the game is featured inside Classic.
       * Leveling up will increase the player's health, shield, shield regeneration, fire rate, and weapon damage. Level thresholds are dependent on score and is doubled every level.
       * Every weapon is available for use.
       * Types of enemies spawned are chosen randomly based on an assigned combat rating and the total combat rating allowed for the current wave.
       * Every wave, the total combat rating is reset and increased by a certain amount.
-    * Mandible Madness:
+    * _Mandible Madness:_
       ![A swarm of Mandibles](page images/screenshot1.png)
       * Survive against hordes of hornet-like Mandible ships.
       * Leveling is the same as in Classic, except the initial level threshold is lower.
       * Every weapon is available for use.
       * Every few waves (depending on difficulty), the health, shield, damage, score, and quantity of Mandibles will increase. The wave that their stats increase will have one Mandible given a railgun and boosted health and shield.
-    * Heaven:
+    * _Heaven:_
       * Survive against hordes of difficult enemy ships.
       * Every larger enemy ship is featured in Heaven Survival.
       * Leveling is the same as in Classic.
       * Every weapon is available for use.
       * Enemy spawning is the same as in Classic.
-  * Challenge
+  * **Challenge**
     ![Player fighting a Titan.](page images/screenshot4.png)
-    * Titan Slayer:
+    * _Titan Slayer:_
       * Duel against a large Titan enemy ship with the base weapons.
       * All weapons are available for use.
       * Score is not relevant, game victory returns the time taken to destroy the Titan.
       * Difficulty affects the health and fire rate of the Titan and its turrets.
-  * Tutorial
+  * **Tutorial**
     * Leads the player through basic controls (WASD to move, SPACE to shoot).
     * Gives the player a sample enemy to destroy.
     * Introduces the concept of health, shield, and how each increase or regenerate.
     * Informs the player that ESC can be used to pause, and if paused, BACKSPACE will exit the game to the title screen.
-  * Hangar
+  * **Hangar**
     * Consists of ships, weapons, and enemies to view.
     * Each page displays the selected entity and limited stats on its base form.
     * Uses a smaller model to simulate firing of shown weapons of the player and the selected enemy.
