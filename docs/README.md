@@ -1,4 +1,4 @@
-WORK IN PROGRESS
+**WORK IN PROGRESS**
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
@@ -20,6 +20,8 @@ Personal project using self-taught Python and the Pygame library. Is currently u
   * Pixel art and effects created by myself, Roger Kwong.
   * In-game music created by [Scott Buckley](https://www.scottbuckley.com.au/) and used under the Creative Commons Attribution International 4.0 license. Current tracks used are [Undertow](https://www.scottbuckley.com.au/library/undertow/) and [Endurance](https://www.scottbuckley.com.au/library/?s=endurance).
   * Backgrounds and sound effects are temporary until custom ones are created.
+ 
+ [Link](https://www.pygame.org/news) to Pygame homepage.
  
  As of now, all weapons and ships are permanently unlocked for the player for demo purposes.
 ## Current Game Features:
