@@ -7,8 +7,11 @@ Currently the demo is only compatible with Windows operating systems. Unpack the
 
 **SOURCE CODE:** https://github.com/rkwong43/Tears-Under-Heaven
 
+![A screenshot of the game's Classic Survival](page images/screenshot3.png?raw=true "Title")
+_Screenshot from the game's Survival Mode: Classic._
+
 Personal project using self-taught Python and the Pygame library. Is currently under development.
-  * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
+  * Features decoupled views, models, controllers, and logic for behavior of enemies.
   * Has a collision detection algorithm for detecting when projectiles and ships intersect.
   * Supports different frame rates (default=60) while keeping the same gameplay.
   * Controller and main allow for restarting the game upon end.
@@ -32,6 +35,7 @@ Describes the current gameplay features inside the game.
       * Types of enemies spawned are chosen randomly based on an assigned combat rating and the total combat rating allowed for the current wave.
       * Every wave, the total combat rating is reset and increased by a certain amount.
     * Mandible Madness:
+      ![A swarm of Mandibles](page images/screenshot1.png)
       * Survive against hordes of hornet-like Mandible ships.
       * Leveling is the same as in Classic, except the initial level threshold is lower.
       * Every weapon is available for use.
@@ -43,6 +47,7 @@ Describes the current gameplay features inside the game.
       * Every weapon is available for use.
       * Enemy spawning is the same as in Classic.
   * Challenge
+    ![Player fighting a Titan.](page images/screenshot4.png)
     * Titan Slayer:
       * Duel against a large Titan enemy ship with the base weapons.
       * All weapons are available for use.
