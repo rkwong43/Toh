@@ -5,7 +5,7 @@ _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
 
-**SOURCE CODE:** https://github.com/rkwong43/Tears-Under-Heaven
+**SOURCE CODE:** [https://github.com/rkwong43/Tears-Under-Heaven](https://github.com/rkwong43/Tears-Under-Heaven)
 
 ![A screenshot of the game's Classic Survival](page images/screenshot3.png?raw=true "Title")
 _Screenshot from the game's Survival Mode: Classic._
@@ -64,6 +64,8 @@ Describes the current gameplay features inside the game.
     * Consists of ships, weapons, and enemies to view.
     * Each page displays the selected entity and limited stats on its base form.
     * Uses a smaller model to simulate firing of shown weapons of the player and the selected enemy.
+
+
 ## Future Features
 Features currently under development or planned for the future.
  * Expanding on enemy artificial intelligence.
