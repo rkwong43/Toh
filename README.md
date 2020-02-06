@@ -1,4 +1,4 @@
-# Tears Under Heaven
+# Tears Over Heaven
 WORK IN PROGRESS \
 Last Edited: 2/5/2020
 
@@ -7,7 +7,8 @@ _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
 
-**SOURCE CODE:** https://github.com/rkwong43/Tears-Under-Heaven
+**SOURCE CODE:** [https://github.com/rkwong43/Tears-Over-Heaven](https://github.com/rkwong43/Tears-Over-Heaven)
+**GITHUB PAGES:** [https://rkwong43.github.io/Tears-Over-Heaven/](https://rkwong43.github.io/Tears-Over-Heaven/)
 
 Personal project using self-taught Python and the Pygame library. Is currently under development.
   * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
