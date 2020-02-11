@@ -1,7 +1,6 @@
 import random
 from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.model.stats.ship_stats import get_ship_stats
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -107,7 +106,6 @@ class EnemyHeavenAI(EnemyWaveAI):
                     elif enemy.projectile_type == EntityID.RAILGUN:
                         self.model.railgun_sound.play()
         if len(self.model.enemy_ships) == 0:
-            # Leveling up!
             if self.wait_for_next_wave():
                 self.spawn_enemies()
                 self.wave += 1

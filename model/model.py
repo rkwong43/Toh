@@ -151,17 +151,18 @@ class Model:
     """
     def init_enemy_ai(self, game_mode, difficulty):
         if game_mode == EntityID.SURVIVAL:
-            self.AI = EnemyWaveAI(self, difficulty)
+            AI = EnemyWaveAI(self, difficulty)
         elif game_mode == EntityID.MANDIBLE_MADNESS:
-            self.AI = EnemyMandibleMadnessAI(self, difficulty)
+            AI = EnemyMandibleMadnessAI(self, difficulty)
         elif game_mode == EntityID.TITAN_SLAYER:
-            self.AI = EnemyTitanSlayerAI(self, difficulty)
+            AI = EnemyTitanSlayerAI(self, difficulty)
         elif game_mode == EntityID.HEAVEN:
-            self.AI = EnemyHeavenAI(self, difficulty)
+            AI = EnemyHeavenAI(self, difficulty)
         elif game_mode == EntityID.TUTORIAL:
-            self.AI = EnemyTutorialAI(self)
+            AI = EnemyTutorialAI(self)
         else:
             raise ValueError("Given game mode is not supported:", game_mode)
+        return AI
 
     """Represents a tick in the game. Handles reloads and moves all projectiles and updates the AI module to
     move enemies. Also rotates enemies to face the player.
@@ -335,18 +336,15 @@ class Model:
     """
 
     def play_screen_effect(self):
-        # PLays a blue tint
-        if self.player_ship.shield > 0:
-            tint = ScreenTint(0, 0, EntityID.SHIELD_TINT, self.fps)
-        else:
-            # Plays a red tint
-            tint = ScreenTint(0, 0, EntityID.HP_TINT, self.fps)
+        # PLays a blue or red tint depending on if the player has shield left
+        tint = ScreenTint(0, 0, EntityID.SHIELD_TINT, self.fps) if self.player_ship.shield > 0 else \
+            ScreenTint(0, 0, EntityID.HP_TINT, self.fps)
         # Checks if the current tint is already playing
         tint_number = 0
         for effect in self.effects:
             if effect.entity_id == tint.entity_id:
                 tint_number += 1
-        if tint_number <= 8:
+        if tint_number <= 6:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
         if self.player_ship.dead:

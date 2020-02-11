@@ -2,7 +2,7 @@ import random
 
 from src.entities.projectiles.projectile import Projectile
 
-"""A really bad missile."""
+"""A really bad missile. Is currently the behavior for the weapon Diamond Dust."""
 
 
 class BadMissile(Projectile):
@@ -21,9 +21,7 @@ class BadMissile(Projectile):
         self.target = target
         self.size = size
         self.target_destroyed = False
-        self.orientation = 1
-        if self.direction > 0:
-            self.orientation = -1
+        self.orientation = -1 if self.direction > 0 else 1
 
     """Gives the missile a new target.
 
@@ -51,7 +49,6 @@ class BadMissile(Projectile):
                 self.x += random_speed
             elif self.x > self.target.x:
                 self.x -= random_speed
-            if self.target.dead:
-                self.target_destroyed = True
+            self.target_destroyed = self.target.dead
         else:
             self.target_destroyed = True

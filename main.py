@@ -21,6 +21,7 @@ def main():
     game_fps = 60
     ship_size = 100
     finished = False
+    # Looks until finished
     while not finished:
         menu_view = MenuView(display_width, display_height, game_title, ship_size, game_fps)
         menu_controller = MenuController(menu_view, game_fps)

@@ -20,9 +20,7 @@ class Missile(Projectile):
         super().__init__(speed, x, y, damage, size, entity_id)
         self.direction = direction
         # -1 if going up, 1 if going down
-        self.orientation = 1
-        if self.direction < 0:
-            self.orientation = -1
+        self.orientation = 1 if self.direction >= 0 else -1
         self.has_splash = True
         self.target = target
         self.size = size
@@ -105,10 +103,8 @@ class Missile(Projectile):
             difference = abs(target_angle - self.direction)
             complement_difference = 360 - abs(difference)
             if not (-self.speed < difference < self.speed):
-                if difference < complement_difference:
-                    delta = int(-self.speed / 4) * self.orientation
-                else:
-                    delta = int(self.speed / 4) * self.orientation
+                delta = int(-self.speed / 4) * self.orientation if difference < complement_difference \
+                    else int(self.speed / 4) * self.orientation
                 self.direction -= delta
 
 

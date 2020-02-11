@@ -96,6 +96,7 @@ class MenuController:
         for gallery in ship_descriptions:
             gallery.root = gallery_ships
         hangar_tree = MenuTree(hangar_layer, [gallery_ships, gallery_weapons, gallery_enemies], [0, 0, 0])
+        # Outer menu layer (after title screen)
         first_layer = ["STORY (COMING SOON)", "SURVIVAL", "CHALLENGE",
                        "TUTORIAL", "HANGAR", "SETTINGS (COMING SOON)"]
         main_menu_tree = MenuTree(first_layer, [-1, survival_tree, challenge_tree, 0, hangar_tree, -1],

@@ -116,6 +116,7 @@ class Enemy(Ship):
         # If the enemy ship has any spread
         x_pos = self.x
         y_pos = self.y
+        # Base ship size is 100x100 px
         if self.size > 100:
             x_pos = self.x + ((self.size - 100) // 2)
             y_pos = self.y + ((self.size - 100) // 2)

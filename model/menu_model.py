@@ -181,7 +181,6 @@ class MenuModel(Model):
        """
 
     def check_collisions(self):
-        # TODO: Spatial partitioning?
         # Checks friendly projectiles vs. enemy ships
         self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
                                         if not self.check_if_hit(projectile, self.enemy_ships, EntityID.BLUE_EXPLOSION)]

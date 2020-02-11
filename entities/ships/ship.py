@@ -33,8 +33,7 @@ class Ship:
         # Maximum shield
         self.max_shield = shield
         self.shield_recharge_rate = (self.max_shield // 20) / fps
-        if self.shield_recharge_rate == 0:
-            self.shield_recharge_rate = 1
+        self.shield_recharge_rate = 1 if self.shield_recharge_rate == 0 else self.shield_recharge_rate
         # Delay before shield recharges
         self.shield_delay = fps
         # Keeps count of when to regenerate
@@ -47,6 +46,8 @@ class Ship:
     """
     def damage(self, damage):
         self.isDamaged = True
+        # Intended mechanic, any amount of shield will block a huge chunk of damage
+        # that will exceed the current shield value
         if self.shield > 0:
             self.shield -= damage
             self.shield_recharge = 0
@@ -59,8 +60,10 @@ class Ship:
     """
     def recharge_shield(self):
         if not self.dead:
+            # Delay to recharge shield
             if self.shield_recharge < self.shield_delay:
                 self.shield_recharge += 1
+            # Increases shield gradually until it hits the limit
             elif self.shield < self.max_shield:
                 self.shield += self.shield_recharge_rate
                 if self.shield > self.max_shield:
