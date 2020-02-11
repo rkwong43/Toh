@@ -28,8 +28,6 @@ health, leveling experience, and game events such as spawning more enemies
 
 # Current
 # TODO: Add descriptions to menu
-# TODO: UNIT TESTING
-# TODO: EXCEPTION CHECKING
 # TODO: REFACTOR EVERYTHING
 # TODO: Write player ship choice and high scores to a JSON file?
 # TODO: Have a builder for enemy ships?
@@ -86,8 +84,6 @@ class Model:
     effects = []
     # Game over?
     game_over = False
-    # Game is paused:
-    paused = False
 
     """Initializes the model with the width and height of the window and the size of ships
 
@@ -111,11 +107,8 @@ class Model:
         self.width = width
         self.height = height
         self.ship_size = ship_size
-        self.ships = []
         self.fps = fps
-        self.tick_counter = 0
         # Starts near the bottom center of the screen
-        # TODO: Change for new ships
         player_stats = get_ship_stats(player_id)
         self.reload_bonus = 1 - (player_stats["RELOAD MODIFIER"] - 1)
         self.damage_bonus = player_stats["DAMAGE MULTIPLIER"]
@@ -123,24 +116,12 @@ class Model:
                                   player_stats["SHIELD"], player_id, fps, player_stats["SPEED"])
         self.friendly_ships.append(self.player_ship)
         # The current enemy AI module
-        if game_mode == EntityID.SURVIVAL:
-            self.AI = EnemyWaveAI(self, difficulty)
-        elif game_mode == EntityID.MANDIBLE_MADNESS:
-            self.AI = EnemyMandibleMadnessAI(self, difficulty)
-        elif game_mode == EntityID.TITAN_SLAYER:
-            self.AI = EnemyTitanSlayerAI(self, difficulty)
-        elif game_mode == EntityID.HEAVEN:
-            self.AI = EnemyHeavenAI(self, difficulty)
-        elif game_mode == EntityID.TUTORIAL:
-            self.AI = EnemyTutorialAI(self)
-        else:
-            raise ValueError("Given game mode is not supported:", game_mode)
-        # TODO: ADOPT OTHER GAME MODES
+        self.AI = self.init_enemy_ai(game_mode, difficulty)
 
         # Reload time for the player's weapon, measured in frames
-        self.max_fire_speed = fps // 5
+        self.max_fire_speed = 0
         # Current progress until weapon is reloaded
-        self.reload = self.max_fire_speed
+        self.reload = 0
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
         resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
@@ -157,7 +138,30 @@ class Model:
         self.explosion_sound.set_volume(.2)
         path = os.path.join(sound_path, 'railgun_sound.ogg')
         self.railgun_sound = pygame.mixer.Sound(file=path)
+        # This sets all the weapon stats
         self.switch_weapon(weapon_chosen)
+
+    """Initializes the enemy artificial intelligence behavior depending on the given gamemode.
+    :param game_mode: Game mode to grab the AI from.
+    :type game_mode: EntityID
+    :param difficulty: The difficulty of the game
+    :type difficulty: EntityID
+    :returns: the enemy AI
+    :rtype: EnemyAI
+    """
+    def init_enemy_ai(self, game_mode, difficulty):
+        if game_mode == EntityID.SURVIVAL:
+            self.AI = EnemyWaveAI(self, difficulty)
+        elif game_mode == EntityID.MANDIBLE_MADNESS:
+            self.AI = EnemyMandibleMadnessAI(self, difficulty)
+        elif game_mode == EntityID.TITAN_SLAYER:
+            self.AI = EnemyTitanSlayerAI(self, difficulty)
+        elif game_mode == EntityID.HEAVEN:
+            self.AI = EnemyHeavenAI(self, difficulty)
+        elif game_mode == EntityID.TUTORIAL:
+            self.AI = EnemyTutorialAI(self)
+        else:
+            raise ValueError("Given game mode is not supported:", game_mode)
 
     """Represents a tick in the game. Handles reloads and moves all projectiles and updates the AI module to
     move enemies. Also rotates enemies to face the player.

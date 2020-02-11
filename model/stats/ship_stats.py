@@ -1,6 +1,6 @@
 from src.utils.entity_id import EntityID
 
-"""Returns a dictionary of the given ship's statistics.
+"""Returns a dictionary of the given ship's statistics. Called upon creation of enemy ship.
 :param entity_id: ID of ship
 :type entity_id: EntityID
 :returns: dictionary of ship statistics
