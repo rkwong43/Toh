@@ -48,13 +48,11 @@ class MenuTree:
     """
     def switch_selection(self, direction):
         if direction == Direction.UP:
-            self.current_selection -= 1
-            if self.current_selection < 0:
-                self.current_selection = self.number_of_options - 1
+            self.current_selection = self.current_selection - 1 \
+                if self.current_selection - 1 >= 0 else self.number_of_options - 1
         elif direction == Direction.DOWN:
-            self.current_selection += 1
-            if self.current_selection >= self.number_of_options:
-                self.current_selection = 0
+            self.current_selection = self.current_selection + 1 \
+                if self.current_selection + 1 < self.number_of_options else 0
 
     """Returns the current selection's child.
     
