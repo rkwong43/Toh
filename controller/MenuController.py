@@ -28,7 +28,9 @@ class MenuController:
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
         resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
         music_path = os.path.join(resource_path, 'music')  # the music folder path
-        self.start_menu_music_path = os.path.join(music_path, 'undertow.mp3')
+        # Loads the start menu music
+        pygame.mixer.music.load(os.path.join(music_path, 'undertow.mp3'))
+        pygame.mixer.music.play(-1, 0)
         self.difficulty_selection_tree = None
         self.weapon_selection_tree = None
         self.ship_selection_tree = None
@@ -225,9 +227,6 @@ class MenuController:
     """
 
     def start_screen(self, clock):
-        # Loads the start menu music
-        pygame.mixer.music.load(self.start_menu_music_path)
-        pygame.mixer.music.play(-1, 0)
         finished = False
         # Loops until the user quits or presses space to begin
         while not finished:
