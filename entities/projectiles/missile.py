@@ -1,6 +1,7 @@
 import math
 
 from src.entities.projectiles.projectile import Projectile
+from src.ids.projectile_id import ProjectileID
 
 """A missile that moves down/up at a constant rate but tracks the closest target in the x-position."""
 
@@ -30,6 +31,8 @@ class Missile(Projectile):
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed
         self.target_destroyed = False
+        if self.entity_id == ProjectileID.HOMING_BULLET:
+            self.has_splash = False
 
     """Moves the missile depending on where the enemy is.
     """
