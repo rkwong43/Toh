@@ -18,27 +18,19 @@ from src.view.view import View
 
 
 def start_game():
-    # Display settings and constants
-    # Default, will allow resizing in future.
-    display_width = 1000
-    display_height = 750
-    game_title = 'Tears Over Heaven'
-    game_fps = 60
-    ship_size = 100
     finished = False
     # Loops until finished
     while not finished:
-        menu_view = MenuView(display_width, display_height, game_title, ship_size, game_fps)
-        menu_controller = MenuController(menu_view, game_fps)
+        menu_view = MenuView()
+        menu_controller = MenuController(menu_view)
         game_mode, difficulty, weapon_selected, player = menu_controller.run_menus()
         # If window is closed
         if weapon_selected is None:
             break
-        view = View(display_width, display_height, game_title, ship_size, game_mode, game_fps)
-        model = Model(display_width, display_height, ship_size, game_fps, weapon_selected, difficulty,
-                      game_mode, player)
+        view = View(game_mode)
+        model = Model(weapon_selected, difficulty, game_mode, player)
         model.clear()
-        controller = Controller(model, view, game_fps)
+        controller = Controller(model, view)
         finished = not controller.run_game()
 
 
