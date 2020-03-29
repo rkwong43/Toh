@@ -29,36 +29,6 @@ health, leveling experience, and game events such as spawning more enemies
 """
 
 
-# Current
-# TODO: Add descriptions to menu
-# TODO: REFACTOR EVERYTHING
-# TODO: Write player ship choice and high scores to a JSON file?
-# TODO: Have a builder for enemy ships?
-# TODO: ADD MENU CLICK SOUND
-# TODO: ADD MORE GAME MODES AND OPTIONS
-# TODO: Maybe a reversal game mode with switched sides?
-# TODO: Use profiler to see what's giving the big performance hits
-
-
-# Future:
-# TODO: Spatial partitioning? Quadtrees?
-# TODO: Story mode (dialogue etc)
-# Story: Arms race, first level enemies do nothing. They steadily arm themselves and develop weapons to fight back
-# TODO: Resolution support
-# TODO: More enemy types?
-# TODO: make your own ship?
-
-
-# TODO: Maybe if performance suffers, remove shields for enemies
-
-# CURRENT SHIP IDEAS FOR PLAYER
-# More HP and Shield, slower movement
-# Less HP, faster
-# Slower ship, more damage
-# Faster ship, less shield, faster fire rate
-# less HP and shield, more fire rate and damage
-# Increase all stats, very slow movement
-
 class Model:
     # Friendly ships and player
     friendly_ships = []
@@ -626,6 +596,14 @@ class Model:
 
     def get_effects(self):
         return self.effects
+
+    """Returns the player ship.
+    
+    :returns: Player
+    :rtype: Player
+    """
+    def get_player(self):
+        return self._player_ship
 
     """Resets the model, emptying all lists of entities other than the player.
     """

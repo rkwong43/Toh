@@ -80,7 +80,7 @@ class Controller:
                 self.model.pause()
             # Renders the view and removes lasting effects
             self.model.remove_effects()
-            self.view.render(self.model.player_ship, self.model.get_projectiles(),
+            self.view.render(self.model.get_player(), self.model.get_projectiles(),
                              self.model.get_enemies(), self.model.get_effects())
             if self.model.game_over:
                 game_over_countdown -= 1
