@@ -1,5 +1,6 @@
 from src.entities.ships.enemies.terminus import Terminus
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Judicator enemy fighter."""
 
@@ -29,12 +30,12 @@ class Judicator(Terminus):
     :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, effects):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, effects)
-        self.entity_id = EntityID.JUDICATOR
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, effects):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, effects)
+        self.entity_id = EnemyID.JUDICATOR
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 3)
-        self.projectile_type = EntityID.RAILGUN
+        self.projectile_type = ProjectileID.RAILGUN_BLAST
         self.move_again = True
 
     """Judicator fires multiple bullets and a railgun blast at the enemy.
@@ -47,7 +48,7 @@ class Judicator(Terminus):
 
     def fire(self, target, projectiles):
         super().fire(target, projectiles)
-        self.projectile_type = EntityID.BAD_MISSILE
+        self.projectile_type = ProjectileID.DIAMOND_DUST
         temp = self.projectile_speed
         self.projectile_speed = 10
         self.fire_variance = 15
@@ -55,4 +56,4 @@ class Judicator(Terminus):
         super().fire(target, projectiles)
         self.fire_variance = 0
         self.projectile_speed = temp
-        self.projectile_type = EntityID.RAILGUN
+        self.projectile_type = ProjectileID.RAILGUN_BLAST

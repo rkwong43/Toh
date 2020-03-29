@@ -1,5 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
 
 """Represents a Mandible enemy fighter."""
 
@@ -27,11 +27,9 @@ class Mandible(Enemy):
     :type shield: int
     :param move_again: determines if it continuously moves
     :type move_again: bool
-    :param fps: Frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again, fps):
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again):
         super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield,
-                         move_again, fps, EntityID.MANDIBLE)
+                         move_again, EnemyID.MANDIBLE)
 

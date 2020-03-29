@@ -1,6 +1,7 @@
 
 """Represents a generic ship.
 """
+from src.utils import config
 
 
 class Ship:
@@ -16,28 +17,37 @@ class Ship:
     :type shield: int
     :param size: size of ship
     :type size: int
-    :param fps: frames per second
-    :type fps: int
     """
 
-    def __init__(self, x, y, hp, shield, size, fps):
-        self.speed = 0
+    def __init__(self, x, y, speed, hp, shield, size):
+        # Speed, constant along an angle (vector)
+        self.speed = speed * (30 // config.game_fps)
+        # Position
         self.x = int(x)
         self.y = int(y)
+        # Size of the ship (not scaling, should be a value in pixels)
+        self.size = size
+        #############################################
+        # Health
         self.hp = hp
         self.max_hp = hp
-        self.size = size
-        self.isDamaged = False
-        self.dead = False
+        #############################################
+        # Shield
         self.shield = shield
         # Maximum shield
         self.max_shield = shield
-        self.shield_recharge_rate = (self.max_shield // 20) / fps
+        # Shield recharge rate
+        self.shield_recharge_rate = (self.max_shield // 20) / config.game_fps
         self.shield_recharge_rate = 1 if self.shield_recharge_rate == 0 else self.shield_recharge_rate
         # Delay before shield recharges
-        self.shield_delay = fps
+        self.shield_delay = config.game_fps
         # Keeps count of when to regenerate
         self.shield_recharge = self.shield_delay
+        #############################################
+        # Status indicators
+        # is_damaged is used for telling when the shop
+        self.is_damaged = False
+        self.is_dead = False
 
     """Lowers the health of the ship and switches states to a damaged one.
     
@@ -45,7 +55,7 @@ class Ship:
     :type damage: int
     """
     def damage(self, damage):
-        self.isDamaged = True
+        self.is_damaged = True
         # Intended mechanic, any amount of shield will block a huge chunk of damage
         # that will exceed the current shield value
         if self.shield > 0:
@@ -53,18 +63,19 @@ class Ship:
             self.shield_recharge = 0
         else:
             self.hp -= damage
+        # Indicating that the ship is destroyed
         if self.hp <= 0:
-            self.dead = True
+            self.is_dead = True
 
     """Recharges the shield of the ship.
     """
     def recharge_shield(self):
-        if not self.dead:
-            # Delay to recharge shield
-            if self.shield_recharge < self.shield_delay:
-                self.shield_recharge += 1
-            # Increases shield gradually until it hits the limit
-            elif self.shield < self.max_shield:
-                self.shield += self.shield_recharge_rate
-                if self.shield > self.max_shield:
-                    self.shield = self.max_shield
+        # Delay to recharge shield
+        if self.shield_recharge < self.shield_delay:
+            self.shield_recharge += 1
+        # Increases shield gradually until it hits the limit
+        elif self.shield < self.max_shield:
+            self.shield += self.shield_recharge_rate
+            # Makes sure it caps to account for rounding errors
+            if self.shield > self.max_shield:
+                self.shield = self.max_shield

@@ -1,3 +1,4 @@
+from src.utils import config
 from src.utils.direction import Direction
 from src.entities.ships.ship import Ship
 
@@ -8,23 +9,19 @@ class Player(Ship):
 
     """Constructor to make the player ship
 
-    :param ship_size: size the image should be scaled to
-    :type ship_size: int
     :param x: starting x coordinate of player
     :type x: int
     :param y: starting y coordinate of player
     :type y: int
     :param entity_id: ID of images to use!
     :type entity_id: EntityID
-    :param fps: Frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, shield, entity_id, fps, speed):
-        super().__init__(x, y, hp, shield, ship_size, fps)
+    def __init__(self, x, y, hp, shield, entity_id, speed):
+        super().__init__(x, y, speed, hp, shield, config.ship_size)
         self.max_hp = hp
         self.entity_id = entity_id
-        self.speed = speed * (32 / fps)
+        # Current score/experience
         self.score = 0
         self.angle = 90
 

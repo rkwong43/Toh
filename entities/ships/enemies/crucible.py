@@ -1,6 +1,7 @@
 
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Crucible enemy fighter."""
 
@@ -26,17 +27,15 @@ class Crucible(Enemy):
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param fps: Frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.CRUCIBLE)
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.CRUCIBLE)
         # fire rate in seconds
         self.fire_rate = int(fire_rate // 2.5)
-        self.projectile_type = EntityID.ENEMY_BULLET
         self.fire_variance = 20
 
+    # Overrides fire() in enemy
     def fire(self, target, projectiles):
         # Crucible ships fire twice
         temp = self.fire_variance

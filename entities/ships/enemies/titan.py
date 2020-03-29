@@ -1,7 +1,9 @@
 from src.entities.ships.enemies.enemy import Enemy
 from src.entities.ships.enemies.mantis import Mantis
 from src.entities.ships.enemies.terminus import Terminus
-from src.utils.entity_id import EntityID
+from src.utils import config
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Titan enemy cruiser."""
 
@@ -35,12 +37,11 @@ class Titan(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, ai, effects):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, False, fps, EntityID.TITAN)
-        self.entity_id = EntityID.TITAN
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, ai, effects):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, False, EnemyID.TITAN)
         # fire rate in seconds
         self.fire_rate = fire_rate * 8
-        self.projectile_type = EntityID.ENEMY_MISSILE
+        self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 45
         self.ai = ai
         self.turrets = []
@@ -51,7 +52,7 @@ class Titan(Enemy):
 
     def spawn_turrets(self):
         # Terminus center turret
-        base_size = self.ai.model.ship_size
+        base_size = config.ship_size
         center_x = self.x + (self.size // 2)
         left_x = center_x - base_size
         right_x = center_x + base_size
@@ -60,40 +61,40 @@ class Titan(Enemy):
         # Upper middle
         mantis1 = Mantis(base_size, left_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
                          self.fire_rate // 5, 0,
-                         False, self.fps)
+                         False)
         mantis2 = Mantis(base_size, right_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
                          self.fire_rate // 5, 0,
-                         False, self.fps)
+                         False)
         # Lower middle
         mantis3 = Mantis(base_size, left_x - base_size, center_y, self.max_hp, 0, 0, 0,
                          self.fire_rate // 4, 0,
-                         False, self.fps)
+                         False)
         mantis4 = Mantis(base_size, right_x, center_y, self.max_hp, 0, 0, 0,
                          self.fire_rate // 4, 0,
-                         False, self.fps)
+                         False)
         # Far left
         mantis5 = Mantis(base_size, left_x - (1.5 * base_size), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 3, 0, False, self.fps)
+                         0, self.fire_rate // 3, 0, False)
         mantis5.burst_max = 8
         mantis5.burst_curr = 8
         # Far right
         mantis6 = Mantis(base_size, right_x + (base_size // 2), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 3, 0, False, self.fps)
+                         0, self.fire_rate // 3, 0, False)
         mantis6.burst_max = 8
         mantis6.burst_curr = 8
         # Middle
         mantis7 = Mantis(base_size, center_x - (base_size // 2), center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 6, 0, False, self.fps)
+                         self.fire_rate // 6, 0, False)
         # Middle Terminus
         terminus = Terminus(base_size * 1.5, center_x - (base_size * .75),
                             center_y - base_size, self.max_hp, center_x - (base_size * .75),
-                            center_y, 0, self.fire_rate // 4, 0, self.fps, self.effects)
+                            center_y, 0, self.fire_rate // 4, 0, self.effects)
         terminus.move_again = False
         terminus.projectile_damage = 20
         self.turrets = [mantis1, mantis2, mantis3, mantis4, mantis5, mantis6, mantis7, terminus]
         for ship in self.turrets:
             ship.finished_moving = True
-        self.ai.model.enemy_ships.extend(self.turrets)
+        return self.turrets
 
     """Doesn't rotate at all.
     """
@@ -105,8 +106,6 @@ class Titan(Enemy):
     """
 
     def move(self):
-        if len(self.turrets) == 0:
-            self.spawn_turrets()
         # Just moves down:
         if self.y != -self.size // 4:
             self.y += self.speed
@@ -129,11 +128,11 @@ class Titan(Enemy):
         super().fire(target, projectiles)
         super().fire(target, projectiles)
         self.fire_variance = 0
-        self.projectile_speed = 15 * (32 / self.fps)
+        self.projectile_speed = 15 * (30 // config.game_fps)
         super().fire(target, projectiles)
         if self.ships_spawned < 6:
             for i in range(self.ships_spawned):
-                ship = self.ai.spawn_enemy(EntityID.CRUCIBLE)
+                ship = self.ai.spawn_enemy(EnemyID.CRUCIBLE)
                 ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
         self.fire_variance = temp
         self.projectile_speed = temp_speed

@@ -1,5 +1,7 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils import config
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Mothership enemy fighter that spawns smaller Mandibles."""
 
@@ -33,16 +35,15 @@ class Mothership(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, ai):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.MOTHERSHIP)
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, ai):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.MOTHERSHIP)
         # fire rate in seconds
         self.fire_rate = fire_rate * 2
-        self.projectile_type = EntityID.ENEMY_MISSILE
+        self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 30
         self.ai = ai
 
-
-    """Despoiler fires multiple flak rounds at the target.
+    """Mothership fires multiple missiles at the target.
 
     :param target: Target to fire at.
     :type target: Ship
@@ -53,15 +54,16 @@ class Mothership(Enemy):
     def fire(self, target, projectiles):
         temp = self.fire_variance
         temp_speed = self.projectile_speed
-        # Fires 3 missiles
+        # Fires 2 slow missiles
         super().fire(target, projectiles)
         super().fire(target, projectiles)
         self.fire_variance = 0
-        self.projectile_speed = 15 * (32 / self.fps)
+        # Fires one fast missile
+        self.projectile_speed = 15 * (30 / config.game_fps)
         super().fire(target, projectiles)
         if self.ai is not None:
             for i in range(self.ships_spawned):
-                ship = self.ai.spawn_enemy(EntityID.MANDIBLE)
+                ship = self.ai.spawn_enemy(EnemyID.MANDIBLE)
                 ship.x, ship.y = self.x, self.y
         self.fire_variance = temp
         self.projectile_speed = temp_speed

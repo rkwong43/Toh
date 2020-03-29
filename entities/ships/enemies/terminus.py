@@ -2,7 +2,10 @@ import math
 
 from src.entities.effects.charge_up import ChargeUp
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils import config
+from src.utils.ids.effect_id import EffectID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Terminus enemy fighter."""
 
@@ -32,14 +35,13 @@ class Terminus(Enemy):
     :type effects: List of Effect
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps, effects):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.TERMINUS)
-        self.entity_id = EntityID.TERMINUS
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, effects):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.TERMINUS)
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 5)
-        self.projectile_type = EntityID.RAILGUN
+        self.projectile_type = ProjectileID.RAILGUN_BLAST
         self.effects = effects
-        self.projectile_damage *= (30 / fps)
+        self.projectile_damage *= (30 / config.game_fps)
 
     """Moves, but adds a charge-up effect for when it's about to fire.
     """
@@ -48,5 +50,5 @@ class Terminus(Enemy):
         if self.fire_rate - 16 == self.ticks:
             offset_x = int(math.sin(math.radians(self.angle)) * (self.size // 4))
             offset_y = int(math.cos(math.radians(self.angle)) * (self.size // 5))
-            charge = ChargeUp(self.x + offset_x, self.y + offset_y, EntityID.RED_CHARGE, self.fps)
+            charge = ChargeUp(self.x + offset_x, self.y + offset_y, EffectID.RED_CHARGE)
             self.effects.append(charge)

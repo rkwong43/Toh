@@ -1,10 +1,11 @@
-from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
+
+from src.utils.ids.enemy_id import EnemyID
 
 """Represents a Mantis enemy fighter. Fires a burst of bullets."""
 
 
-class Mantis(Enemy):
+class Mantis(BurstFireEnemy):
     """Constructor to make the enemy.
 
     :param ship_size: size the ship is
@@ -27,26 +28,12 @@ class Mantis(Enemy):
     :type shield: int
     :param move_again: determines if it continuously moves
     :type move_again: bool
-    :param fps: Frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again, fps):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again, fps, EntityID.MANTIS)
-        # fire rate in frames
-        # Mantis has different fire rate mechanics
-        # Fire rate affects an internal burst counter to determine
-        # when to fire a burst
-        self.fire_rate = 1 * (fps // 30)
-        self.projectile_type = EntityID.ENEMY_BULLET
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again, EnemyID.MANTIS, 5)
 
-        # Fires a burst
-        self.burst_max = 5 * (fps // 30)
-        self.burst_curr = self.burst_max
-        self.reload_speed = fire_rate
-        self.reload_curr = fire_rate
-
-    """Moves the Mantis to its predetermined location. Will also reload its gun.
+    """Moves the Mantis to its predetermined location. Will also reload its gun. Overrides move() in Enemy.
     """
 
     def move(self):
@@ -59,17 +46,3 @@ class Mantis(Enemy):
                 self.y -= self.speed
         else:
             super().move()
-
-    """Reloads the burst weapon.
-    """
-
-    def reload(self):
-        self.burst_curr -= 1
-        if self.burst_curr <= 0:
-            self.ready_to_fire = False
-            self.reload_curr -= 1
-
-        if self.reload_curr <= 0:
-            self.reload_curr = self.reload_speed
-            self.burst_curr = self.burst_max
-            self.ready_to_fire = True

@@ -1,5 +1,6 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Arbitrator enemy fighter."""
 
@@ -25,12 +26,10 @@ class Arbitrator(Enemy):
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param fps: frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.ARBITRATOR)
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.ARBITRATOR)
         self.fire_variance = 20
 
     """Arbitrator fires multiple bullets and multiple missiles at the target.
@@ -49,10 +48,10 @@ class Arbitrator(Enemy):
         self.fire_variance = 0
         super().fire(target, projectiles)
         # Fires 2 missiles
-        self.projectile_type = EntityID.ENEMY_MISSILE
+        self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.projectile_damage = 20
         super().fire(target, projectiles)
         self.fire_variance = temp
         super().fire(target, projectiles)
-        self.projectile_type = EntityID.ENEMY_BULLET
+        self.projectile_type = ProjectileID.ENEMY_BULLET
         self.projectile_damage = 10

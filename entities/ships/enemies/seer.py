@@ -1,5 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
 
 """Represents a Seer enemy fighter."""
 
@@ -25,13 +25,9 @@ class Seer(Enemy):
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param fps: frames per second
-    :type fps: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, fps):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, fps, EntityID.SEER)
-        self.entity_id = EntityID.SEER
+    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
+        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.SEER)
         # fire rate in seconds
         self.fire_rate = fire_rate * 2
-        self.projectile_type = EntityID.ENEMY_BULLET
