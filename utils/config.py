@@ -2,7 +2,7 @@
 """
 
 
-def init_values():
+def init_variables():
     global display_width
     display_width = 1000
     global display_height
