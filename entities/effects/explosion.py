@@ -1,5 +1,5 @@
 from src.entities.effects.effect import Effect
-from src.utils.entity_id import EntityID
+from src.utils import config
 
 """Represents an explosion. Is 4 frames in length"""
 
@@ -14,13 +14,11 @@ class Explosion(Effect):
     :type y: int
     :param entity_id: ID representing what effect it is
     :type entity_id: EntityID
-    :param fps: frames per second
-    :type fps: int
     """
 
-    def __init__(self, x, y, entity_id, fps):
+    def __init__(self, x, y, entity_id):
         super().__init__(x, y, entity_id)
         # Explosions have 4 frames of animation
-        self.max_frame = 4 * int(fps / 30)
+        self.max_frame = 4 * int(config.game_fps / 30)
 
 

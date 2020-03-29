@@ -2,10 +2,12 @@ import random
 
 from src.entities.projectiles.projectile import Projectile
 
-"""A really bad missile. Is currently the behavior for the weapon Diamond Dust."""
+"""A really bad missile. Is currently the behavior for the weapon Diamond Dust.
+Was the initial buggy missile behavior that I turned into a feature and made more random and bad.
+"""
 
 
-class BadMissile(Projectile):
+class DiamondDust(Projectile):
     """Constructor that initializes the missile.
 
     :param direction: angle the missile should be going
@@ -14,12 +16,11 @@ class BadMissile(Projectile):
     :type target: Ship
     """
 
-    def __init__(self, speed, x, y, direction, damage, size, entity_id, target):
-        super().__init__(speed, x, y, damage, size, entity_id)
+    def __init__(self, speed, x, y, direction, damage, entity_id, target):
+        super().__init__(speed, x, y, damage, entity_id)
         self.direction = direction
         self.has_splash = True
         self.target = target
-        self.size = size
         self.target_destroyed = False
         self.orientation = -1 if self.direction > 0 else 1
 

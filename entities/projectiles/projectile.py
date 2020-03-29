@@ -15,13 +15,12 @@ class Projectile:
     :type damage: int
     """
 
-    def __init__(self, speed, x, y, damage, size, entity_id):
+    def __init__(self, speed, x, y, damage, entity_id):
         self.speed = speed
         self.x = x
         self.y = y
         self.damage = damage
         self.entity_id = entity_id
-        self.size = size
         self.has_splash = False
         self.air_burst = False
 
@@ -29,10 +28,4 @@ class Projectile:
     """
 
     def move(self):
-        pass
-
-    """Animates the item, switching sprites.
-    """
-
-    def animate(self):
         pass

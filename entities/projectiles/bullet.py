@@ -1,7 +1,7 @@
 import math
 
 from src.entities.projectiles.projectile import Projectile
-from src.utils.entity_id import EntityID
+from src.utils.ids.projectile_id import ProjectileID
 
 """A bullet that travels in a straight line."""
 
@@ -13,13 +13,13 @@ class Bullet(Projectile):
     :type direction: int
     """
 
-    def __init__(self, speed, x, y, direction, damage, size, entity_id):
-        super().__init__(speed, x, y, damage, size, entity_id)
+    def __init__(self, speed, x, y, direction, damage, entity_id):
+        super().__init__(speed, x, y, damage, entity_id)
         self.direction = direction
 
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed
-        if entity_id == EntityID.ENEMY_FLAK or entity_id == EntityID.FRIENDLY_FLAK or entity_id == EntityID.RAILGUN:
+        if entity_id in [ProjectileID.ENEMY_FLAK, ProjectileID.FRIENDLY_FLAK, ProjectileID.RAILGUN_BLAST]:
             self.has_splash = True
             self.air_burst = True
 

@@ -1,7 +1,8 @@
 import math
 
 from src.entities.projectiles.projectile import Projectile
-from src.ids.projectile_id import ProjectileID
+from src.utils import config
+from src.utils.ids.projectile_id import ProjectileID
 
 """A missile that moves down/up at a constant rate but tracks the closest target in the x-position."""
 
@@ -13,20 +14,17 @@ class Missile(Projectile):
     :type direction: int
     :param target: target to follow
     :type target: Ship
-    :param fps: Frames per second
-    :type fps: int
     """
 
-    def __init__(self, speed, x, y, direction, damage, size, entity_id, fps, target):
-        super().__init__(speed, x, y, damage, size, entity_id)
+    def __init__(self, speed, x, y, direction, damage, entity_id, target):
+        super().__init__(speed, x, y, damage, entity_id)
         self.direction = direction
         # -1 if going up, 1 if going down
         self.orientation = 1 if self.direction >= 0 else -1
         self.has_splash = True
         self.target = target
-        self.size = size
         # How many ticks does the missile have to prep before tracking
-        self.ticks = int(4 * (fps / 30))
+        self.ticks = int(4 * (config.game_fps / 30))
         # Initial direction when fired
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed
@@ -44,28 +42,33 @@ class Missile(Projectile):
             self.y += self.y_change
             self.ticks -= 1
         else:
-            # No target
-            if self.target == 0:
-                # Continues moving in the direction it is initially going
-                self.x += self.x_change
-                self.y += self.y_change
-                self.target_destroyed = True
-            elif self.target.dead:
-                # Target is dead
-                # Continues moving along its current angle
-                self.move_along_angle()
-                self.target_destroyed = True
-            else:
-                # Target is alive
-                self.target_destroyed = False
-                target_center = (self.target.x, self.target.y)
-                # 100 is the base ship size
-                if self.target.size > 100:
-                    target_center = (self.target.x + ((self.target.size - 100) // 2),
-                                     self.target.y + ((self.target.size - 100) // 2))
-                angle = int(-math.degrees(math.atan2(self.y - target_center[1], self.x - target_center[0])))
-                self.adjust_angle(angle)
-                self.move_along_angle()
+            self.seek_target()
+
+    """Alters the direction it is facing to align with a path onto the target.
+    """
+    def seek_target(self):
+        # No target
+        if self.target == 0:
+            # Continues moving in the direction it is initially going
+            self.x += self.x_change
+            self.y += self.y_change
+            self.target_destroyed = True
+        elif self.target.dead:
+            # Target is dead
+            # Continues moving along its current angle
+            self.move_along_angle()
+            self.target_destroyed = True
+        else:
+            # Target is alive
+            self.target_destroyed = False
+            target_center = (self.target.x, self.target.y)
+            # 100 is the base ship size
+            if self.target.size > config.ship_size:
+                target_center = (self.target.x + ((self.target.size - config.ship_size) // 2),
+                                 self.target.y + ((self.target.size - config.ship_size) // 2))
+            angle = int(-math.degrees(math.atan2(self.y - target_center[1], self.x - target_center[0])))
+            self.adjust_angle(angle)
+            self.move_along_angle()
 
     """Gives the missile a new target.
     
