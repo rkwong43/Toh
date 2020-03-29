@@ -1,7 +1,11 @@
 import os
 import pygame
 
-from src.utils.entity_id import EntityID
+from src.ids.effect_id import EffectID
+from src.ids.enemy_id import EnemyID
+from src.ids.game_id import GameID
+from src.ids.player_id import PlayerID
+from src.ids.projectile_id import ProjectileID
 from src.view.image_containers.charge_up_images import ChargeUpImages
 from src.view.image_containers.explosion_images import ExplosionImages
 from src.view.image_containers.image_holder import ImageHolder
@@ -19,6 +23,24 @@ class View:
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     image_path = os.path.join(resource_path, 'images')  # the image folder path
+
+    # Backgrounds
+    backgrounds = {GameID.TITAN_SLAYER: os.path.join(image_path, 'titan_background.png'),
+                   GameID.MANDIBLE_MADNESS: os.path.join(image_path, 'mandible_background.png'),
+                   GameID.SURVIVAL: os.path.join(image_path, 'survival_background.png'),
+                   GameID.HEAVEN: os.path.join(image_path, 'heaven_background.png')}
+
+    # Ship scaling (what the default ship size should be multiplied by in their rendering)
+    ship_scaling = {
+        EnemyID.MANDIBLE: 1, EnemyID.MANTIS: 1, EnemyID.CRUCIBLE: 1, EnemyID.MOSQUITO: 1,
+        EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1,
+        EnemyID.ARBITRATOR: 1.5, EnemyID.TERMINUS: 1.5, EnemyID.JUDICATOR: 1.5,
+        EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2,
+        EnemyID.TITAN: 8
+    }
+    # All player ships are by default x1 size
+    for player_ship in PlayerID:
+        ship_scaling[player_ship] = 1
 
     """Constructor to initialize the game display.
 
@@ -45,15 +67,10 @@ class View:
         # Title of the window
         pygame.display.set_caption(game_title)
         # Background image is 1920 x 1080
-        background_path = os.path.join(self.image_path, 'background.png')
-        if game_mode == EntityID.TITAN_SLAYER:
-            background_path = os.path.join(self.image_path, 'titan_background.png')
-        elif game_mode == EntityID.MANDIBLE_MADNESS:
-            background_path = os.path.join(self.image_path, 'mandible_background.png')
-        elif game_mode == EntityID.HEAVEN:
-            background_path = os.path.join(self.image_path, 'heaven_background.png')
-        elif game_mode == EntityID.SURVIVAL:
-            background_path = os.path.join(self.image_path, 'survival_background.png')
+        try:
+            background_path = self.backgrounds[game_mode]
+        except KeyError:
+            background_path = os.path.join(self.image_path, 'background.png')
         self.background = pygame.image.load(background_path).convert_alpha()
         self.background = pygame.transform.scale(self.background, (display_width, display_height))
         self.background_y = 0
@@ -95,59 +112,15 @@ class View:
     def init_images(self, fps):
         # Result to return:
         result = {}
-        # Standard sized player ships to render:
-        players_to_init = [EntityID.CITADEL, EntityID.AEGIS, EntityID.GHOST, EntityID.ARCHANGEL, EntityID.STORM,
-                           EntityID.ORIGIN]
-        # Standard sized ships to render
-        ships_to_init = [EntityID.MANDIBLE, EntityID.MANTIS, EntityID.CRUCIBLE, EntityID.MOSQUITO,
-                         EntityID.SUBJUGATOR, EntityID.SEER]
-        # Larger ships to render (1.5 * ship_size)
-        large_ships_to_init = [EntityID.ARBITRATOR, EntityID.TERMINUS, EntityID.JUDICATOR]
-        # Larger ships to render (2 * ship_size)
-        larger_ships_to_init = [EntityID.MOTHERSHIP, EntityID.DESPOILER]
-        # Largest ships to render
-        largest_ships_to_init = [EntityID.TITAN]
         # Projectiles to render
-        projectiles_to_init = [EntityID.FRIENDLY_FLAK, EntityID.FRIENDLY_BULLET, EntityID.FRIENDLY_MISSILE,
-                               EntityID.ENEMY_MISSILE, EntityID.ENEMY_BULLET, EntityID.ENEMY_FLAK]
+        projectiles_to_init = [e for e in ProjectileID if e != ProjectileID.RAILGUN_BLAST]
         # Effects to render
-        effects_to_init = [EntityID.EXPLOSION, EntityID.RED_EXPLOSION, EntityID.BLUE_EXPLOSION]
-
-        # Renders each ship (standard sized)
-        for id_name in ships_to_init + players_to_init:
+        effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION]
+        # Renders each ship
+        for id_name, size in self.ship_scaling:
             ship_name = id_name.name
-            image_paths = [os.path.join(self.image_path, ship_name + '_base.png'),
-                           os.path.join(self.image_path, ship_name + '_animation.png'),
-                           os.path.join(self.image_path, ship_name + '_damaged.png'),
-                           os.path.join(self.image_path, ship_name + '_shield.png')]
-            container = ImageHolder(image_paths, self.ship_size)
-            result[id_name] = container
-        # Larger ships to render
-        for id_name in large_ships_to_init:
-            ship_name = id_name.name
-            image_paths = [os.path.join(self.image_path, ship_name + '_base.png'),
-                           os.path.join(self.image_path, ship_name + '_animation.png'),
-                           os.path.join(self.image_path, ship_name + '_damaged.png'),
-                           os.path.join(self.image_path, ship_name + '_shield.png')]
-            container = ImageHolder(image_paths, int(self.ship_size * 1.5))
-            result[id_name] = container
-        # Even larger ships to render:
-        for id_name in larger_ships_to_init:
-            ship_name = id_name.name
-            image_paths = [os.path.join(self.image_path, ship_name + '_base.png'),
-                           os.path.join(self.image_path, ship_name + '_animation.png'),
-                           os.path.join(self.image_path, ship_name + '_damaged.png'),
-                           os.path.join(self.image_path, ship_name + '_shield.png')]
-            container = ImageHolder(image_paths, int(self.ship_size * 2))
-            result[id_name] = container
-        # Largest ships to render:
-        for id_name in largest_ships_to_init:
-            ship_name = id_name.name
-            image_paths = [os.path.join(self.image_path, ship_name + '_base.png'),
-                           os.path.join(self.image_path, ship_name + '_animation.png'),
-                           os.path.join(self.image_path, ship_name + '_damaged.png'),
-                           os.path.join(self.image_path, ship_name + '_shield.png')]
-            container = ImageHolder(image_paths, int(self.ship_size * 8))
+            image_paths = self.get_image_paths(ship_name)
+            container = ImageHolder(image_paths, self.ship_size * size)
             result[id_name] = container
         # Renders each projectile
         projectile_size = self.ship_size // 2
@@ -168,21 +141,35 @@ class View:
             container = ExplosionImages(image_paths, int(self.ship_size * 1.5), fps)
             if effect_name == "EXPLOSION":
                 big_container = ExplosionImages(image_paths, int(self.ship_size * 8), fps)
-                result[EntityID.TITAN_EXPLOSION] = big_container
+                result[EffectID.TITAN_EXPLOSION] = big_container
             elif effect_name == "RED_EXPLOSION":
                 charge_effect_container = ChargeUpImages(image_paths, int(self.ship_size * 1.5), fps)
-                result[EntityID.RED_CHARGE] = charge_effect_container
+                result[EffectID.RED_CHARGE] = charge_effect_container
             result[id_name] = container
         # Screen tints
         blue_tint = os.path.join(self.image_path, 'shield_damage_screen_effect.png')
         red_tint = os.path.join(self.image_path, 'damage_screen_effect.png')
         shield_damage_tint = ScreenTintImages(blue_tint, self.width, self.height)
         damage_tint = ScreenTintImages(red_tint, self.width, self.height)
-        result[EntityID.SHIELD_TINT] = shield_damage_tint
-        result[EntityID.HP_TINT] = damage_tint
+        result[EffectID.SHIELD_TINT] = shield_damage_tint
+        result[EffectID.HP_TINT] = damage_tint
         # Popup text
-        result[EntityID.POPUP] = PopUpImage(self.text_font, self.width, self.height)
+        result[EffectID.POPUP] = PopUpImage(self.text_font, self.width, self.height)
         return result
+
+    """Returns a list of the image paths for a ship.
+    
+    :param ship_name: Name of the ship and the image file
+    :type ship_name: str
+    :returns: list of image paths
+    :rtype: str
+    """
+
+    def get_image_paths(self, ship_name):
+        return [os.path.join(self.image_path, ship_name + '_base.png'),
+                os.path.join(self.image_path, ship_name + '_animation.png'),
+                os.path.join(self.image_path, ship_name + '_damaged.png'),
+                os.path.join(self.image_path, ship_name + '_shield.png')]
 
     """Switches a field to determine when to animate images.
     """
@@ -259,7 +246,6 @@ class View:
 
     def render_ship(self, ship, angle):
         image_holder = self.image_dict.get(ship.entity_id)
-
         image = image_holder.base_image
         # Decides which image to use:
         # damaged image, base image, or second base image for animation for engines
@@ -282,7 +268,7 @@ class View:
     """
 
     def render_projectile(self, projectile):
-        if projectile.entity_id != EntityID.RAILGUN:
+        if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
             image = self.image_dict.get(projectile.entity_id)
             # Rotates the projectile depending on its angle
             projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
