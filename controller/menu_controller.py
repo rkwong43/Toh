@@ -11,7 +11,6 @@ from src.view.menu_tree import MenuTree
 
 
 class MenuController:
-
     """Constructor that takes in a view to run the menus.
 
     :param menus: the menu view
@@ -38,7 +37,7 @@ class MenuController:
         # To keep background continuity between the two views:
 
     """Constructs the menu tree for the menus.
-    
+
     :returns: the root
     :rtype: MenuTree
     """
@@ -112,7 +111,7 @@ class MenuController:
         return main_menu_tree
 
     """Figures out what to do depending on the key inputs.
-    
+
     :param key: key released
     :type key: pygame key constant
     """
