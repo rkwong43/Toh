@@ -1,4 +1,5 @@
 from src.entities.ships.enemies.enemy import Enemy
+from src.utils import config
 from src.utils.ids.enemy_id import EnemyID
 
 """Represents a Mandible enemy fighter."""
@@ -23,6 +24,6 @@ class Mandible(Enemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
-        super().__init__(EnemyID.MANDIBLE, hp, shield, x, y, speed, ship_size, fire_rate,)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+        super().__init__(EnemyID.MANDIBLE, hp, shield, x, y, speed, config.ship_size, fire_rate)
 

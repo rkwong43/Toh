@@ -47,12 +47,14 @@ class Enemy(Ship):
         # fire rate in seconds
         self.fire_rate = fire_rate
         # Angle it is facing
-        self._angle = 0
+        self.angle = 0
         # If it is ready to fire again
         self.ready_to_fire = True
         # Angle offset to fire in
         # If greater than 0, fires in a cone of 2 * fire_variance degrees
         self.fire_variance = 0
+        # Ticks to determine when to fire
+        self.ticks = 0
         ##################################################
         # Determines the final moving position
         self.end_x, self.end_y = self._generate_pos()
@@ -95,7 +97,7 @@ class Enemy(Ship):
 
     def rotate(self, target):
         # Rotates the ship to face the target ship
-        self._angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) - 90
+        self.angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) - 90
 
     """Fires projectiles from the enemy to the given target, at the given speed, damage, and size.
 
@@ -117,7 +119,7 @@ class Enemy(Ship):
             x_pos = self.x + ((self.size - default_size) // 2)
             y_pos = self.y + ((self.size - default_size) // 2)
         offset = random.randint(-self.fire_variance, self.fire_variance)
-        angle = self._angle - 90 + offset
+        angle = self.angle - 90 + offset
         weapon_type = self.projectile_type
         projectile = Bullet(self.projectile_speed, x_pos, y_pos,
                             angle + offset, self.projectile_damage,

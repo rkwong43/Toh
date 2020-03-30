@@ -1,4 +1,5 @@
 from src.entities.ships.enemies.terminus import Terminus
+from src.utils import config
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
 
@@ -8,8 +9,6 @@ from src.utils.ids.projectile_id import ProjectileID
 class Judicator(Terminus):
     """Constructor to make the Judicator ship
 
-    :param ship_size: size the ship should be
-    :type ship_size: int
     :param x: starting x coordinate of ship
     :type x: int
     :param y: starting y coordinate of ship
@@ -26,8 +25,8 @@ class Judicator(Terminus):
     :type effects: List of Effect
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, effects, *args):
-        super().__init__(hp, shield, x, y, speed, ship_size, fire_rate, effects)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, *args):
+        super().__init__(hp, shield, x, y, speed, int(1.5 * config.ship_size), fire_rate, effects)
         self.entity_id = EnemyID.JUDICATOR
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 3)

@@ -1,4 +1,5 @@
 from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
+from src.utils import config
 
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
@@ -9,8 +10,6 @@ from src.utils.ids.projectile_id import ProjectileID
 class Despoiler(BurstFireEnemy):
     """Constructor to make the Despoiler ship
 
-    :param ship_size: size the ship should be
-    :type ship_size: int
     :param x: starting x coordinate of ship
     :type x: int
     :param y: starting y coordinate of ship
@@ -25,8 +24,8 @@ class Despoiler(BurstFireEnemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
-        super().__init__(EnemyID.DESPOILER, hp, shield, x, y, speed, ship_size, fire_rate, 8)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+        super().__init__(EnemyID.DESPOILER, hp, shield, x, y, speed, int(2 * config.ship_size), fire_rate, 8)
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 10
         self._reload_speed = fire_rate * 2

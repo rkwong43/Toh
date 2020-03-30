@@ -13,8 +13,6 @@ class Titan(Enemy):
     ships_spawned = 1
     """Constructor to make the Titan ship
 
-    :param ship_size: size the ship should be
-    :type ship_size: int
     :param x: starting x coordinate of ship
     :type x: int
     :param y: starting y coordinate of ship
@@ -37,8 +35,8 @@ class Titan(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, ai, effects, *args):
-        super().__init__(EnemyID.TITAN, hp, shield, x, y, speed, ship_size, fire_rate)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, effects, *args):
+        super().__init__(EnemyID.TITAN, hp, shield, x, y, speed, int(8 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = fire_rate * 8
         self.projectile_type = ProjectileID.ENEMY_MISSILE

@@ -11,32 +11,24 @@ class Mothership(Enemy):
     ships_spawned = 2
     """Constructor to make the Mothership
 
-    :param ship_size: size the ship should be
-    :type ship_size: int
     :param x: starting x coordinate of ship
     :type x: int
     :param y: starting y coordinate of ship
     :type y: int
     :param hp: hit points of ship
     :type hp: int
-    :param end_x: ending x position
-    :type end_x: int
-    :param end_y: ending y position
-    :type end_y: int
     :param speed: speed it moves towards the ending position
     :type speed: int
     :param fire_rate: fire rate of the enemy
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param fps: frames per second
-    :type fps: int
     :param ai: enemy AI to control
     :type ai: EnemyAI
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, ai, *args):
-        super().__init__(EnemyID.MOTHERSHIP, hp, shield, x, y, speed, ship_size, fire_rate)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, *args):
+        super().__init__(EnemyID.MOTHERSHIP, hp, shield, x, y, speed, int(2 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = fire_rate * 2
         self.projectile_type = ProjectileID.ENEMY_MISSILE

@@ -13,8 +13,6 @@ from src.utils.ids.projectile_id import ProjectileID
 class Terminus(Enemy):
     """Constructor to make the Terminus ship
 
-    :param ship_size: size the ship should be
-    :type ship_size: int
     :param x: starting x coordinate of ship
     :type x: int
     :param y: starting y coordinate of ship
@@ -31,8 +29,8 @@ class Terminus(Enemy):
     :type effects: List of Effect
     """
 
-    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, effects, *args):
-        super().__init__(EnemyID.TERMINUS, hp, shield, x, y, speed, ship_size, fire_rate)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, *args):
+        super().__init__(EnemyID.TERMINUS, hp, shield, x, y, speed, int(1.5 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 5)
         self.projectile_type = ProjectileID.RAILGUN_BLAST
