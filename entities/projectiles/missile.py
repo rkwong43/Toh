@@ -21,7 +21,6 @@ class Missile(Projectile):
         self.direction = direction
         # -1 if going up, 1 if going down
         self.orientation = 1 if self.direction >= 0 else -1
-        self.has_splash = True
         self.target = target
         # How many ticks does the missile have to prep before tracking
         self.ticks = int(4 * (config.game_fps / 30))
@@ -29,8 +28,10 @@ class Missile(Projectile):
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed
         self.target_destroyed = False
-        if self.entity_id == ProjectileID.HOMING_BULLET:
+        if self.entity_id == ProjectileID.FRIENDLY_BULLET:
             self.has_splash = False
+        else:
+            self.has_splash = True
 
     """Moves the missile depending on where the enemy is.
     """
@@ -53,7 +54,7 @@ class Missile(Projectile):
             self.x += self.x_change
             self.y += self.y_change
             self.target_destroyed = True
-        elif self.target.dead:
+        elif self.target.is_dead:
             # Target is dead
             # Continues moving along its current angle
             self.move_along_angle()

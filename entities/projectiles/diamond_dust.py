@@ -50,6 +50,6 @@ class DiamondDust(Projectile):
                 self.x += random_speed
             elif self.x > self.target.x:
                 self.x -= random_speed
-            self.target_destroyed = self.target.dead
+            self.target_destroyed = self.target.is_dead
         else:
             self.target_destroyed = True

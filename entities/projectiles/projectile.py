@@ -1,5 +1,6 @@
 """A basic projectile, can be extended into different types such as bullets or missiles.
 """
+from src.utils import config
 
 
 class Projectile:
@@ -23,6 +24,7 @@ class Projectile:
         self.entity_id = entity_id
         self.has_splash = False
         self.air_burst = False
+        self.size = config.ship_size
 
     """Moves the projectile, to be done in child classes
     """
