@@ -438,15 +438,22 @@ class Model:
     def _projectile_generator(self):
         stats = self._player_stats
         # Offset and angle partitions based on number of projectiles
-        partition = ((2 * stats["SPREAD"]) // stats["COUNT"]) + 5
         firing_position = self._player_ship.y - config.ship_size / 4
         # Generating the required number of projectiles:
-        for _ in range(stats["COUNT"]):
+        if stats["COUNT"] > 1:
+            offset = -stats["SPREAD"]
+            partition = ((2 * stats["SPREAD"]) // stats["COUNT"]) + 5
+            for _ in range(stats["COUNT"]):
+                projectile = self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position,
+                                                       offset + 90,
+                                                       stats["DAMAGE"], stats["TYPE"])
+                offset += partition
+                self.friendly_projectiles.append(projectile)
+        else:
             offset = random.randint(-stats["SPREAD"], stats["SPREAD"])
-            projectile = self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position, offset + 90,
-                                                   stats["DAMAGE"], stats["TYPE"])
-            offset += partition
-            self.friendly_projectiles.append(projectile)
+            self.friendly_projectiles.append(
+                self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position, offset + 90,
+                                          stats["DAMAGE"], stats["TYPE"]))
 
     """Generates a single projectile and returns it.
     
@@ -610,6 +617,7 @@ class Model:
     :returns: Player
     :rtype: Player
     """
+
     def get_player(self):
         return self._player_ship
 
