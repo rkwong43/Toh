@@ -27,7 +27,7 @@ class Mothership(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, **args):
         super().__init__(EnemyID.MOTHERSHIP, hp, shield, x, y, speed, int(2 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = fire_rate * 2

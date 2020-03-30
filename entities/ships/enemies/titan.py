@@ -35,7 +35,7 @@ class Titan(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, effects, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, effects, **args):
         super().__init__(EnemyID.TITAN, hp, shield, x, y, speed, int(8 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = fire_rate * 8

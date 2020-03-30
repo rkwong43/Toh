@@ -25,9 +25,10 @@ class Judicator(Terminus):
     :type effects: List of Effect
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, *args):
-        super().__init__(hp, shield, x, y, speed, int(1.5 * config.ship_size), fire_rate, effects)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
+        super().__init__(hp, shield, x, y, speed, fire_rate, effects)
         self.entity_id = EnemyID.JUDICATOR
+        self.size = int(config.ship_size * 1.5)
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 3)
         self.projectile_type = ProjectileID.RAILGUN_BLAST

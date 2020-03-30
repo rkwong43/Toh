@@ -29,7 +29,7 @@ class Terminus(Enemy):
     :type effects: List of Effect
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
         super().__init__(EnemyID.TERMINUS, hp, shield, x, y, speed, int(1.5 * config.ship_size), fire_rate)
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 5)

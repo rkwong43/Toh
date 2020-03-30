@@ -75,7 +75,7 @@ class EnemyWaveAI:
     """
 
     def tick(self):
-        player = self._model.player_ship
+        player = self._model.get_player()
         # Makes each enemy tick to fire their weapons
         # Also makes them move
         if player.score >= self._level_up_exp:

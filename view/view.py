@@ -196,7 +196,7 @@ class View:
         # Scrolling background
         self.draw_background()
         # If the player isn't dead, it is rendered
-        if not player.dead:
+        if not player.is_dead:
             self.render_ship(player, 0)
         # Renders enemies to face the player
         for enemy in enemies:

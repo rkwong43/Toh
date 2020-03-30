@@ -23,7 +23,7 @@ class Crucible(Enemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, **args):
         super().__init__(EnemyID.CRUCIBLE, hp, shield, x, y, speed, config.ship_size, fire_rate)
         # fire rate in seconds
         self.fire_rate = int(fire_rate // 2.5)

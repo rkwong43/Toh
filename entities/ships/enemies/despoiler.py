@@ -24,7 +24,7 @@ class Despoiler(BurstFireEnemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, **args):
         super().__init__(EnemyID.DESPOILER, hp, shield, x, y, speed, int(2 * config.ship_size), fire_rate, 8)
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 10

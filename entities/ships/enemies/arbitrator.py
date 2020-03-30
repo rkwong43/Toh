@@ -23,7 +23,7 @@ class Arbitrator(Enemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, **args):
         super().__init__(EnemyID.ARBITRATOR, hp, shield, x, y, speed, int(1.5 * config.ship_size), fire_rate)
         self.fire_variance = 20
 

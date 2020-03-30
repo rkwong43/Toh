@@ -24,6 +24,6 @@ class Mandible(Enemy):
     :type shield: int
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, *args):
+    def __init__(self, hp, shield, x, y, speed, fire_rate, **args):
         super().__init__(EnemyID.MANDIBLE, hp, shield, x, y, speed, config.ship_size, fire_rate)
 
