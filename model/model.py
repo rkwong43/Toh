@@ -8,21 +8,22 @@ from src.entities.effects.explosion import Explosion
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint
 from src.entities.projectiles.bullet import Bullet
+from src.entities.projectiles.diamond_dust import DiamondDust
 from src.entities.projectiles.missile import Missile
 from src.entities.ships.player import Player
-from src.ids.effect_id import EffectID
-from src.ids.enemy_id import EnemyID
-from src.ids.game_id import GameID
-from src.ids.projectile_id import ProjectileID
-from src.ids.weapon_id import WeaponID
 from src.model.ai.enemy_ai_heaven import EnemyHeavenAI
 from src.model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
 from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
 from src.model.ai.enemy_ai_tutorial import EnemyTutorialAI
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.model.stats.ship_stats import get_ship_stats
-from src.model.stats.weapon_stats import get_weapon_stats
+from src.model.stats import ship_stats, weapon_stats
+from src.utils import config
 from src.utils.direction import Direction
+from src.utils.ids.effect_id import EffectID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
+from src.utils.ids.projectile_id import ProjectileID
+from src.utils.ids.weapon_id import WeaponID
 
 """Represents the model that handles controlling the player, firing, enemies, and other game mechanics such as
 health, leveling experience, and game events such as spawning more enemies
@@ -75,12 +76,7 @@ class Model:
     :type game_mode: EntityID
     """
 
-    def __init__(self, width, height, ship_size, fps, weapon_chosen, difficulty, game_mode, player_id):
-        # General parameters
-        self.width = width
-        self.height = height
-        self.ship_size = ship_size
-        self.fps = fps
+    def __init__(self, weapon_chosen, difficulty, game_mode, player_id):
         # Initializing the player and its bonuses from ship choice
         self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(player_id)
         self.friendly_ships.append(self._player_ship)
@@ -104,12 +100,12 @@ class Model:
     """
 
     def _init_player(self, player_id):
-        player_stats = get_ship_stats(player_id)
+        player_stats = ship_stats.stats[player_id]
         # Bonuses from ship choice
         reload = 1 - (player_stats["RELOAD MODIFIER"] - 1)
         damage = player_stats["DAMAGE MULTIPLIER"]
-        player = Player(self.ship_size, self.width / 2 - self.ship_size / 2, self.height / 2, player_stats["HP"],
-                        player_stats["SHIELD"], player_id, self.fps, player_stats["SPEED"])
+        player = Player(config.display_width / 2 - config.ship_size / 2, config.display_height / 2, player_stats["HP"],
+                        player_stats["SHIELD"], player_id, player_stats["SPEED"])
         return reload, damage, player
 
     """Initializes all the sound effects in the game.
@@ -192,6 +188,23 @@ class Model:
             # Recharges shield for player
             self._player_ship.recharge_shield()
 
+    """Plays the corresponding sound effect for the projectile fired.
+
+    :param entity_id: ID of the projectile
+    :type entity_id: ProjectileID
+    """
+
+    def play_sound(self, entity_id):
+        if entity_id in [ProjectileID.FRIENDLY_FLAK, ProjectileID.FRIENDLY_BULLET,
+                         ProjectileID.ENEMY_FLAK, ProjectileID.ENEMY_BULLET, ProjectileID.HOMING_BULLET]:
+            self.sounds["BULLET"].play()
+        elif entity_id in [ProjectileID.ENEMY_MISSILE, ProjectileID.FRIENDLY_MISSILE]:
+            self.sounds["MISSILE"].play()
+        elif entity_id in [ProjectileID.DIAMOND_DUST, ProjectileID.RAILGUN_BLAST]:
+            self.sounds["RAILGUN"].play()
+        else:
+            raise ValueError("Sound for ", entity_id, "doesn't exist yet!")
+
     """Removes effects that are over.
     """
 
@@ -208,18 +221,17 @@ class Model:
     """
 
     def _is_dead(self, ship):
-        if ship.dead:
+        if ship.is_dead:
             # Adds to score
             self._player_ship.score += ship.score
             self.sounds["EXPLOSION"].play()
-            offset = ((self.ship_size * 1.5) - ship.size) // 2
+            offset = ((config.ship_size * 1.5) - ship.size) // 2
             self.effects.append(Explosion(ship.x - offset, ship.y - offset,
-                                          EffectID.EXPLOSION, self.fps))
+                                          EffectID.EXPLOSION))
             # Clears all if a Titan is killed
             if ship.entity_id == EnemyID.TITAN:
-                del self.enemy_ships[:]
                 self.popup_text("TITAN SLAIN", -1, -1, 3)
-                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION, self.fps))
+                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
         else:
             ship.rotate(self._player_ship)
             ship.recharge_shield()
@@ -236,20 +248,21 @@ class Model:
         # Player
         # Firing
         if Direction.FIRE in keys:
-            if not self._player_ship.dead:
+            if not self._player_ship.is_dead:
                 if self._reload == self._reload_time:
                     self._projectile_generator()
                     self._reload = 0
         # Up and down
-        if Direction.UP in keys and self._boundary_check(Direction.UP, self.ship_size):
+        size = config.ship_size
+        if Direction.UP in keys and self._boundary_check(Direction.UP, size):
             self._player_ship.move_player(Direction.UP)
-        elif Direction.DOWN in keys and self._boundary_check(Direction.DOWN, self.ship_size):
+        elif Direction.DOWN in keys and self._boundary_check(Direction.DOWN, size):
             self._player_ship.move_player(Direction.DOWN)
 
         # Left and right
-        if Direction.LEFT in keys and self._boundary_check(Direction.LEFT, self.ship_size):
+        if Direction.LEFT in keys and self._boundary_check(Direction.LEFT, size):
             self._player_ship.move_player(Direction.LEFT)
-        elif Direction.RIGHT in keys and self._boundary_check(Direction.RIGHT, self.ship_size):
+        elif Direction.RIGHT in keys and self._boundary_check(Direction.RIGHT, size):
             self._player_ship.move_player(Direction.RIGHT)
 
     """Removes all off screen objects such as projectiles or ships.
@@ -268,11 +281,11 @@ class Model:
     """
 
     def _is_off_screen(self, entity):
-        size = entity.size / 2
+        size = entity.size // 2
         center = (entity.x + size, entity.y + size)
         # if off screen:
-        x_off = center[0] > self.width + size or center[0] < -size
-        y_off = center[1] > self.height + size or center[1] < -size
+        x_off = center[0] > config.display_width + size or center[0] < -size
+        y_off = center[1] > config.display_height + size or center[1] < -size
         return x_off or y_off
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
@@ -288,7 +301,7 @@ class Model:
         self.enemy_projectiles = [projectile for projectile in self.enemy_projectiles
                                   if not self._check_if_hit(projectile, self.friendly_ships, EffectID.RED_EXPLOSION)]
         # If the player is damaged, then plays a screen effect
-        if self._player_ship.isDamaged:
+        if self._player_ship.is_damaged:
             self._play_screen_effect()
 
     """Checks whether to remove the projectile.
@@ -305,11 +318,12 @@ class Model:
 
     def _check_if_hit(self, projectile, ships, splash_color):
         weapon_type = projectile.entity_id
-        if weapon_type == WeaponID.RAILGUN:
-            self.effects.append(Explosion(projectile.x - self.ship_size / 4,
-                                          projectile.y - self.ship_size / 4,
-                                          splash_color, self.fps))
-        elif weapon_type == WeaponID.FRIENDLY_MISSILE:
+        ship_size = config.ship_size
+        if weapon_type == ProjectileID.RAILGUN_BLAST:
+            self.effects.append(Explosion(projectile.x - ship_size / 4,
+                                          projectile.y - ship_size / 4,
+                                          splash_color))
+        elif weapon_type == ProjectileID.FRIENDLY_MISSILE:
             # Projectile is missile and its target has been destroyed, gives it a new target
             if projectile.target_destroyed:
                 projectile.acquire_target(self._find_closest_enemy(projectile))
@@ -317,7 +331,7 @@ class Model:
             # Hit box
             ship_bounding_box = ship.size / 4
             # Radius for air burst
-            air_burst_box = int(self.ship_size * .7)
+            air_burst_box = int(ship_size * .7)
             air_burst_distance = projectile.air_burst and self._check_distance(projectile, ship, air_burst_box)
             # Checks if the projectile makes direct contact with the ship or is in air burst range
             if self._check_distance(projectile, ship, ship_bounding_box) or air_burst_distance:
@@ -329,7 +343,7 @@ class Model:
                     self._check_splash_damage(projectile, ship, ships)
                     self.effects.append(Explosion(projectile.x - (projectile.size // 4),
                                                   projectile.y,
-                                                  splash_color, self.fps))
+                                                  splash_color))
                     self.sounds["EXPLOSION"].play()
                 # Removes projectile if it is not a railgun shot
                 if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
@@ -342,8 +356,8 @@ class Model:
 
     def _play_screen_effect(self):
         # PLays a blue or red tint depending on if the player has shield left
-        tint = ScreenTint(0, 0, EffectID.SHIELD_TINT, self.fps) if self._player_ship.shield > 0 else \
-            ScreenTint(0, 0, EffectID.HP_TINT, self.fps)
+        tint = ScreenTint(0, 0, EffectID.SHIELD_TINT) if self._player_ship.shield > 0 else \
+            ScreenTint(0, 0, EffectID.HP_TINT)
         # Checks if the current tint is already playing
         # Allows layer of tints for more intensity
         tint_number = 0
@@ -353,7 +367,7 @@ class Model:
         if tint_number <= 6:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
-        if self._player_ship.dead:
+        if self._player_ship.is_dead:
             self.game_over = True
             self.popup_text("Game Over", -1, -1, 4)
 
@@ -371,7 +385,7 @@ class Model:
         for ship in ships:
             if ship == ship_to_remove:
                 continue
-            if self._check_distance(projectile, ship, self.ship_size * .75):
+            if self._check_distance(projectile, ship, config.ship_size * .75):
                 ship.damage(projectile.damage)
 
     """Checks if the projectile and ship are within a given distance.
@@ -402,21 +416,21 @@ class Model:
 
     def switch_weapon(self, weapon):
         # Grabs the weapon stats and sets buffer for frame rate
-        weapon_stats = get_weapon_stats(weapon)
-        self._player_stats["SPEED"] = int(weapon_stats["PROJECTILE SPEED"] * (30 / self.fps))
-        self._player_stats["SPREAD"] = weapon_stats["SPREAD"]
-        self._player_stats["TYPE"] = weapon_stats["PROJECTILE TYPE"]
-        self._player_stats["DAMAGE"] = int(weapon_stats["DAMAGE"] * self._player_stats["DMOD"] * self._damage_bonus)
-        self._reload_time = int(weapon_stats["RELOAD"] * self._player_stats["RMOD"] *
-                                (self.fps / 30) * self._reload_bonus)
-        self._player_stats["COUNT"] = weapon_stats["PROJECTILE COUNT"]
+        stats = weapon_stats.stats[weapon]
+        self._player_stats["SPEED"] = int(stats["PROJECTILE SPEED"] * (30 / config.game_fps))
+        self._player_stats["SPREAD"] = stats["SPREAD"]
+        self._player_stats["TYPE"] = stats["PROJECTILE TYPE"]
+        self._player_stats["DAMAGE"] = int(stats["DAMAGE"] * self._player_stats["DMOD"] * self._damage_bonus)
+        self._reload_time = int(stats["RELOAD"] * self._player_stats["RMOD"] *
+                                (config.ship_size / 30) * self._reload_bonus)
+        self._player_stats["COUNT"] = stats["PROJECTILE COUNT"]
         # Sets the reload times
         if self._reload_time <= 0:
             self._reload_time = 1
         if self._reload > self._reload_time:
             self._reload = self._reload_time
 
-        self._player_stats["TYPE"] = weapon
+        self._player_stats["WEAPON"] = weapon
 
     """Generates projectiles based on the current type and given angle.
     """
@@ -425,12 +439,12 @@ class Model:
         stats = self._player_stats
         # Offset and angle partitions based on number of projectiles
         partition = ((2 * stats["SPREAD"]) // stats["COUNT"]) + 5
-        firing_position = self._player_ship.y - self.ship_size / 4
+        firing_position = self._player_ship.y - config.ship_size / 4
         # Generating the required number of projectiles:
         for _ in range(stats["COUNT"]):
             offset = random.randint(-stats["SPREAD"], stats["SPREAD"])
             projectile = self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position, offset + 90,
-                                                   stats["DAMAGE"], self.ship_size, stats["TYPE"])
+                                                   stats["DAMAGE"], stats["TYPE"])
             offset += partition
             self.friendly_projectiles.append(projectile)
 
@@ -446,32 +460,26 @@ class Model:
     :type angle: int
     :param damage: damage it will deal
     :type damage: int
-    :param size: size of the projectile
-    :type size: int
     :param entity_id: ID of the projectile type
     :type entity_id: ProjectileID
     :raises: ValueError if current projectile type is not supported
     """
 
-    def _generate_projectile(self, speed, x, y, angle, damage, size, entity_id):
+    def _generate_projectile(self, speed, x, y, angle, damage, entity_id):
+        self.play_sound(entity_id)
         if entity_id == ProjectileID.FRIENDLY_BULLET or entity_id == ProjectileID.FRIENDLY_FLAK:
-            self.sounds["BULLET"].play()
-            return Bullet(speed, x, y, angle, damage, size, entity_id)
+            return Bullet(speed, x, y, angle, damage, entity_id)
         elif entity_id == ProjectileID.FRIENDLY_MISSILE:
-            self.sounds["MISSILE"].play()
             closest_enemy = self._find_closest_enemy(self._player_ship)
-            return Missile(speed, x, y, angle, damage, size, entity_id, self.fps, closest_enemy)
+            return Missile(speed, x, y, angle, damage, entity_id, closest_enemy)
         elif entity_id == ProjectileID.DIAMOND_DUST:
-            self.sounds["BULLET"].play()
             closest_enemy = self._find_closest_enemy(self._player_ship)
-            return DiamondDust(speed, x, y, angle, damage, size, ProjectileID.FRIENDLY_BULLET, closest_enemy)
+            return DiamondDust(speed, x, y, angle, damage, ProjectileID.FRIENDLY_BULLET, closest_enemy)
         elif entity_id == ProjectileID.HOMING_BULLET:
-            self.sounds["BULLET"].play()
             closest_enemy = self._find_closest_enemy(self._player_ship)
-            return Missile(speed, x, y, angle, damage, size, ProjectileID.FRIENDLY_BULLET, self.fps, closest_enemy)
+            return Missile(speed, x, y, angle, damage, ProjectileID.FRIENDLY_BULLET, closest_enemy)
         elif entity_id == ProjectileID.RAILGUN_BLAST:
-            self.sounds["RAILGUN"].play()
-            return Bullet(speed, x, y, angle, damage, size, ProjectileID.RAILGUN_BLAST)
+            return Bullet(speed, x, y, angle, damage, ProjectileID.RAILGUN_BLAST)
         else:
             raise ValueError("Invalid projectile type:", entity_id)
 
@@ -486,7 +494,7 @@ class Model:
     def _find_closest_enemy(self, source):
         x = source.x
         y = source.y
-        minimum = self.width * 3
+        minimum = config.display_width * 3
         # Sets the first enemy as the closest ship
         if len(self.enemy_ships) > 0:
             closest_enemy = self.enemy_ships[0]
@@ -519,9 +527,9 @@ class Model:
         if direction == Direction.UP:
             return entity.y - entity.speed > 0
         elif direction == Direction.DOWN:
-            return entity.y + entity.speed < self.height - offset
+            return entity.y + entity.speed < config.display_height - offset
         elif direction == Direction.RIGHT:
-            return entity.x + entity.speed < self.width - offset
+            return entity.x + entity.speed < config.display_width - offset
         elif direction == Direction.LEFT:
             return entity.x - entity.speed > 0
         else:
@@ -537,14 +545,14 @@ class Model:
         player.hp = player.max_hp
         # Increases max shield and restores it
         player.max_shield += (player.max_hp // 10)
-        player.shield_recharge_rate = (player.max_shield // 20 / self.fps)
+        player.shield_recharge_rate = (player.max_shield // 20 / config.game_fps)
         player.shield = player.max_shield
         # Increases damage and fire rate
         self._player_stats["DMOD"] += .2
         self._player_stats["RMOD"] -= .05
         if self._player_stats["RMOD"] <= 0:
             self._player_stats["RMOD"] -= .1
-        self.popup_text("Level Up", -1, self.height // 3, 3)
+        self.popup_text("Level Up", -1, config.display_height // 3, 3)
         # Refreshes the weapon stats for the player
         self.switch_weapon(self._player_stats["WEAPON"])
 
@@ -562,15 +570,15 @@ class Model:
 
     def popup_text(self, text, x, y, seconds):
         if x == -1:
-            x = self.width // 2
+            x = config.display_width // 2
         if y == -1:
-            y = self.height // 2
+            y = config.display_height // 2
         # Moves the popup down if it is in the same space as another popup
         for effect in self.effects:
             if effect.entity_id == EffectID.POPUP:
                 if effect.y == y and effect.text != text:
-                    y += self.ship_size
-        self.effects.append(PopUp(text, self.fps, seconds, x, y))
+                    y += config.ship_size
+        self.effects.append(PopUp(text, seconds, x, y))
 
     """Returns all the projectiles in play.
 
@@ -621,9 +629,9 @@ class Model:
 
     def pause(self):
         self.clear_popups()
-        self.popup_text("PAUSED", -1, self.height // 3, 1 / self.fps)
+        self.popup_text("PAUSED", -1, config.display_height // 3, 1 / config.game_fps)
         self.popup_text("[BACKSPACE] TO RETURN TO TITLE", -1,
-                        (self.height // 3) + (self.ship_size // 2), 1 / self.fps)
+                        (config.display_height // 3) + (config.ship_size // 2), 1 / config.game_fps)
 
     """Clears all popup texts in the effects.
     """

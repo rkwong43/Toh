@@ -2,8 +2,9 @@ import random
 
 from src.entities.ships.enemies.crucible import Crucible
 from src.entities.ships.enemies.titan import Titan
-from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -33,11 +34,11 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
 
     def change_difficulty(self, difficulty):
         fps = self.model.fps
-        if difficulty == EntityID.EASY:
-            self.stats[EntityID.TITAN] = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
+        if difficulty == GameID.EASY:
+            self.stats[EnemyID.TITAN] = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
             self.fire_rate = fps * 1.5
-        elif difficulty == EntityID.HARD:
-            self.stats[EntityID.TITAN] = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
+        elif difficulty == GameID.HARD:
+            self.stats[EnemyID.TITAN] = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
             self.fire_rate = fps * .75
 
     """Represents a tick to keep track of enemy spawning, firing, and movement.
@@ -45,7 +46,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
 
     def tick(self):
         if not self.started_game:
-            self.spawn_enemy(EntityID.TITAN)
+            self.spawn_enemy(EnemyID.TITAN)
             self.started_game = True
             self.model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
         player = self.model.player_ship
@@ -67,12 +68,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
                 # Fires projectile at player
                 if enemy.ready_to_fire:
                     enemy.fire(player, self.model.enemy_projectiles)
-                    if enemy.projectile_type == EntityID.ENEMY_BULLET or enemy.projectile_type == EntityID.ENEMY_FLAK:
-                        self.model.bullet_sound.play()
-                    elif enemy.projectile_type == EntityID.ENEMY_MISSILE:
-                        self.model.missile_sound.play()
-                    elif enemy.projectile_type == EntityID.RAILGUN:
-                        self.model.railgun_sound.play()
+                    self.model.play_sound(enemy.projectile_type)
         if len(self.model.enemy_ships) == 0 and not self.model.game_over:
             victory_time = "VICTORY: " + str(self.ticks // self.model.fps) + " SECONDS"
             self.model.popup_text(victory_time, -1, self.model.height * (2 / 3), 5)
@@ -101,17 +97,14 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         fire_rate = random.randint(int(self.fire_rate), int(self.fire_rate * 1.5))
         ship = None
         # TODO: Parameterize
-        if entity_id == EntityID.CRUCIBLE:
+        if entity_id == EnemyID.CRUCIBLE:
             ship = Crucible(self.model.ship_size, 0, -self.model.ship_size, self.stats[entity_id].get("HP"), final_x,
-                            final_y, self.stats[entity_id].get("SPEED"), fire_rate, self.stats[entity_id].get("SHIELD"),
-                            self.model.fps)
-
-        elif entity_id == EntityID.TITAN:
+                            final_y, self.stats[entity_id].get("SPEED"), fire_rate, self.stats[entity_id].get("SHIELD"))
+        elif entity_id == EnemyID.TITAN:
             middle_of_screen = (self.model.width - (self.model.ship_size * 8)) // 2
             ship = Titan(self.model.ship_size * 8, middle_of_screen, -self.model.ship_size * 8,
-                         self.stats[EntityID.TITAN].get("HP"),
-                         middle_of_screen, -self.model.ship_size * 8, self.stats[EntityID.TITAN].get("SPEED"),
-                         self.fire_rate, self.stats[EntityID.TITAN].get("SHIELD"),
-                         self.model.fps, self, self.model.effects)
+                         self.stats[EnemyID.TITAN].get("HP"),
+                         middle_of_screen, -self.model.ship_size * 8, self.stats[EnemyID.TITAN].get("SPEED"),
+                         self.fire_rate, self.stats[EnemyID.TITAN].get("SHIELD"), self, self.model.effects)
         self.model.enemy_ships.append(ship)
         return ship

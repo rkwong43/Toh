@@ -14,17 +14,18 @@ from src.utils import config
 from src.utils.ids.enemy_id import EnemyID
 
 entities = {EnemyID.MANDIBLE: Mandible,
-         EnemyID.MANTIS: Mantis,
-         EnemyID.CRUCIBLE: Crucible,
-         EnemyID.SUBJUGATOR: Subjugator,
-         EnemyID.MOSQUITO: Mosquito,
-         EnemyID.SEER: Seer,
-         EnemyID.ARBITRATOR: Arbitrator,
-         EnemyID.TERMINUS: Terminus,
-         EnemyID.JUDICATOR: Judicator,
-         EnemyID.MOTHERSHIP: Mothership,
-         EnemyID.DESPOILER: Despoiler,
-         EnemyID.TITAN: Titan}
+            EnemyID.MANTIS: Mantis,
+            EnemyID.CRUCIBLE: Crucible,
+            EnemyID.SUBJUGATOR: Subjugator,
+            EnemyID.MOSQUITO: Mosquito,
+            EnemyID.SEER: Seer,
+            EnemyID.ARBITRATOR: Arbitrator,
+            EnemyID.TERMINUS: Terminus,
+            EnemyID.JUDICATOR: Judicator,
+            EnemyID.MOTHERSHIP: Mothership,
+            EnemyID.DESPOILER: Despoiler,
+            EnemyID.TITAN: Titan
+            }
 
 """Generates the specified enemy and returns it.
 
@@ -53,7 +54,6 @@ entities = {EnemyID.MANDIBLE: Mandible,
 """
 
 
-def generate_enemy(entity_id, x, y, hp=10000, speed=0, fire_rate=config.game_fps, shield=0, ship_size=config.ship_size,
-                   ai=None, effects=None):
-    enemy = entities[entity_id](hp, shield, x, y, speed, ship_size, fire_rate, ai=ai, effects=effects)
+def generate_enemy(entity_id, x, y, hp=10000, speed=0, fire_rate=config.game_fps, shield=0, ai=None, effects=None):
+    enemy = entities[entity_id](hp, shield, x, y, speed, fire_rate, ai=ai, effects=effects)
     return enemy

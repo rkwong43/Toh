@@ -1,8 +1,11 @@
 import random
 
-from src.entities.ships.enemies.mandible import Mandible
-from src.model.stats.ship_stats import get_ship_stats
-from src.utils.entity_id import EntityID
+from src.model.ai.enemy_ai_waves import EnemyWaveAI
+from src.model.stats import ship_stats
+from src.utils import config, enemy_generator
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -10,30 +13,21 @@ This is the game mode Mandible Madness
 """
 
 
-class EnemyMandibleMadnessAI:
+class EnemyMandibleMadnessAI(EnemyWaveAI):
     # Ship stats
     # Mandible
-    mandible_stats = get_ship_stats(EntityID.MANDIBLE)
-    mandible_combat_rating = 10
-    # Initial wave
-    wave = 0
+    _mandible_stats = ship_stats.stats[EnemyID.MANDIBLE]
+    _mandible_combat_rating = 10
     # These are the default scores for medium difficulty
     # Enemy combat rating is based on their score
     # This is the maximum combat rating currently allowed
-    max_combat_rating = 10
-    # Amount each wave increases the combat ratio
-    combat_ratio = 10
-
-    # Seconds between each wave
-    wave_rest = 3
+    _max_combat_rating = 10
 
     # How often the enemies are buffed
-    enemy_buff_wave = 4
+    _enemy_buff_wave = 4
 
-    # Level up wave interval:
-    level_up_exp = 100
     # Max number of Mandibles that can be onscreen
-    max_mandibles = 12
+    _max_mandibles = 12
 
     """Constructor for the AI. Takes in the model used to run the game.
 
@@ -44,150 +38,85 @@ class EnemyMandibleMadnessAI:
     """
 
     def __init__(self, model, difficulty):
-        # Model to work with
-        self.model = model
-        self.ticks = 0
-        random.seed()
-        fps = self.model.fps
-        # Range in fire rate for enemies, chosen randomly
-        self.fire_rate_range = (fps * .75, fps * 2)
-        self.change_difficulty(difficulty)
-        self.mandible_stats["SPEED"] *= (30 / fps)
+        super().__init__(model, difficulty)
+        self._change_difficulty(difficulty)
 
     """Changes the difficulty to the given setting.
     """
 
-    def change_difficulty(self, difficulty):
-        fps = self.model.fps
-        if difficulty == EntityID.EASY:
-            self.fire_rate_range = (fps, fps * 3)
-            self.enemy_buff_wave = 6
-            self.level_up_exp = 50
-            self.max_mandibles = 8
-        elif difficulty == EntityID.HARD:
-            self.max_combat_rating = 30
-            self.combat_ratio = 20
-            self.buff_enemies()
-            self.enemy_buff_wave = 2
-            self.fire_rate_range = (fps / 2, fps * 1.5)
-            self.wave_rest = 0
-            self.max_mandibles = 16
-
-    """Represents a tick to keep track of enemy spawning, firing, and movement.
-    """
-
-    def tick(self):
-        player = self.model.player_ship
-        # Makes each enemy tick to fire their weapons
-        # Also makes them move
-        if player.score >= self.level_up_exp:
-            self.model.level_up()
-            self.level_up_exp *= 2
-        for enemy in self.model.enemy_ships:
-            enemy.ticks += 1
-            # Provides continuous movement for certain enemies
-            if enemy.finished_moving and enemy.move_again:
-                # Generates a new position to move to
-                new_pos = self.generate_pos()
-                enemy.end_x = new_pos[0]
-                enemy.end_y = new_pos[1]
-                enemy.finished_moving = False
-            enemy.move()
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self.model.enemy_projectiles)
-                    self.model.bullet_sound.play()
-        if len(self.model.enemy_ships) == 0:
-            # Leveling up!
-            if self.wait_for_next_wave():
-                self.spawn_enemies()
-
-    """Waits for the next wave. Returns true if ready.
-
-    :returns: true if next wave is ready
-    :rtype: bool
-    """
-
-    def wait_for_next_wave(self):
-        self.ticks += 1
-        if self.ticks >= self.wave_rest * self.model.fps:
-            self.ticks = 0
-            return True
-        else:
-            return False
+    def _change_difficulty(self, difficulty):
+        fps = config.game_fps
+        if difficulty == GameID.EASY:
+            self._fire_rate_range = (fps, fps * 3)
+            self._enemy_buff_wave = 6
+            self._level_up_exp = 50
+            self._max_mandibles = 8
+        elif difficulty == GameID.HARD:
+            self._max_combat_rating = 30
+            self._combat_ratio = 20
+            self._buff_enemies()
+            self._enemy_buff_wave = 2
+            self._fire_rate_range = (fps / 2, fps * 1.5)
+            self._wave_rest = 0
+            self._max_mandibles = 16
 
     """Increases the shield stats of most smaller enemies.
     """
 
     def buff_enemies(self):
-        self.mandible_stats["SHIELD"] += 10
-        self.mandible_stats["HP"] += 10
-        if self.mandible_stats["SPEED"] < 10:
-            self.mandible_stats["SPEED"] += 1
+        self._mandible_stats["SHIELD"] += 10
+        self._mandible_stats["HP"] += 10
+        if self._mandible_stats["SPEED"] < 10:
+            self._mandible_stats["SPEED"] += 1
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """
 
     def spawn_enemies(self):
-        if self.wave == 0:
-            self.model.popup_text("OH NO NOT THE MANDIBLES", -1, -1, 3)
-        self.wave += 1
-        if self.max_combat_rating // 10 >= self.max_mandibles:
-            for i in range(self.max_mandibles):
-                self.spawn_enemy(EntityID.ENEMY_BULLET)
+        if self._wave == 0:
+            self._model.popup_text("OH NO NOT THE MANDIBLES", -1, -1, 3)
+        self._wave += 1
+        if self._max_combat_rating // 10 >= self._max_mandibles:
+            for i in range(self._max_mandibles):
+                self.spawn_enemy(ProjectileID.ENEMY_BULLET)
             self.buff_enemies()
         else:
-            rating = self.max_combat_rating
+            rating = self._max_combat_rating
 
             while rating > 0:
-                self.spawn_enemy(EntityID.ENEMY_BULLET)
-                rating -= self.mandible_combat_rating
-            self.max_combat_rating += self.combat_ratio
+                self.spawn_enemy(ProjectileID.ENEMY_BULLET)
+                rating -= self._mandible_combat_rating
+            self._max_combat_rating += self._combat_ratio
             # Doubles the enemies spawned every few waves and buffs them
-        if self.wave % self.enemy_buff_wave == 0 and self.wave != 0:
+        if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
             self.buff_enemies()
-            self.model.popup_text("MORE MANDIBLES APPROACHING", -1, -1, 3)
-            self.combat_ratio *= 2
-            self.max_mandibles += 2
-            self.spawn_enemy(EntityID.RAILGUN)
-
-    """Generates a random (x,y) coordinate within the upper half of the screen.
-    :returns: an (x,y) position within the upper half of the screen
-    :rtype: (int, int)
-    """
-
-    def generate_pos(self):
-        x = random.randint(self.model.ship_size, self.model.width - self.model.ship_size)
-        y = random.randint(0, self.model.height / 3)
-        return x, y
+            self._model.popup_text("MORE MANDIBLES APPROACHING", -1, -1, 3)
+            self._combat_ratio *= 2
+            self._max_mandibles += 2
+            self.spawn_enemy(ProjectileID.RAILGUN_BLAST)
 
     """Spawns a single Mandible.
-    
+
     :param weapon: given weapon to give the Mandible
     :type weapon: EntityID
     """
 
     def spawn_enemy(self, weapon):
         # Creates a random starting position
-        x_pos = random.randint(self.model.ship_size, self.model.width - self.model.ship_size)
+        x_pos = random.randint(config.ship_size, config.display_width - config.ship_size)
         # The final coordinates it moves to
-        new_pos = self.generate_pos()
-        final_x = new_pos[0]
-        final_y = new_pos[1]
         # Sets their fire rate randomly, from .75 seconds to 2 seconds
-        fire_rate = random.randint(self.fire_rate_range[0], self.fire_rate_range[1])
-        ship = Mandible(self.model.ship_size, x_pos, -self.model.ship_size, self.mandible_stats.get("HP"),
-                        final_x, final_y,
-                        self.mandible_stats.get("SPEED"), fire_rate, self.mandible_stats.get("SHIELD"),
-                        True, self.model.fps)
-        if weapon == EntityID.RAILGUN:
+        fire_rate = random.randint(self._fire_rate_range[0], self._fire_rate_range[1])
+        ship = enemy_generator.generate_enemy(EnemyID.MANDIBLE, x_pos, -config.ship_size,
+                                              hp=self._mandible_stats.get("HP"),
+                                              shield=self._mandible_stats.get("SHIELD"),
+                                              speed=self._mandible_stats.get("SPEED"),
+                                              fire_rate=fire_rate)
+        if weapon == ProjectileID.RAILGUN_BLAST:
             ship.hp *= 2
             ship.shield *= 1.5
             ship.projectile_speed *= 2
-        ship.score_value = (self.mandible_combat_rating * self.wave) + self.mandible_combat_rating
-        ship.projectile_damage += (self.wave // 2)
+        ship.score_value = (self._mandible_combat_rating * self._wave) + self._mandible_combat_rating
+        ship.projectile_damage += (self._wave // 2)
         ship.projectile_type = weapon
-        self.model.enemy_ships.append(ship)
+        self._model.enemy_ships.append(ship)

@@ -1,6 +1,8 @@
 import random
-from src.utils.entity_id import EntityID
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
+from src.utils import config
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -10,25 +12,17 @@ Heaven mode is only larger and difficult ships.
 
 class EnemyHeavenAI(EnemyWaveAI):
     # Combat ratings:
-    combat_ratings = {EntityID.ARBITRATOR: 200, EntityID.TERMINUS: 250, EntityID.DESPOILER: 400,
-                      EntityID.MOTHERSHIP: 400, EntityID.JUDICATOR: 300, EntityID.TITAN: 1000}
-    # Initial wave
-    wave = 0
+    _combat_ratings = {EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250, EnemyID.DESPOILER: 400,
+                       EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300, EnemyID.TITAN: 1000}
     # These are the default scores for medium difficulty
     # Enemy combat rating is based on their score
     # This is the maximum combat rating currently allowed
-    max_combat_rating = 200
+    _max_combat_rating = 200
     # Amount each wave increases the combat ratio
-    combat_ratio = 50
-
-    # Seconds between each wave
-    wave_rest = 3
+    _combat_ration = 50
 
     # How often the enemies are buffed
-    enemy_buff_wave = 10
-
-    # Level up wave interval:
-    level_up_exp = 100
+    _enemy_buff_wave = 10
 
     """Constructor for the AI. Takes in the model used to run the game.
 
@@ -41,107 +35,56 @@ class EnemyHeavenAI(EnemyWaveAI):
     def __init__(self, model, difficulty):
         # Model to work with
         super().__init__(model, difficulty)
-        self.change_difficulty(difficulty)
+        self._change_difficulty(difficulty)
 
     """Changes the difficulty to the given setting.
     """
 
-    def change_difficulty(self, difficulty):
-        fps = self.model.fps
-        if difficulty == EntityID.EASY:
-            self.fire_rate_range = (fps, fps * 3)
-            self.enemy_buff_wave = 15
-            self.level_up_exp = 50
-            for enemy, values in self.stats.items():
-                if enemy != EntityID.MANDIBLE:
+    def _change_difficulty(self, difficulty):
+        fps = config.game_fps
+        if difficulty == GameID.EASY:
+            self._fire_rate_range = (fps, fps * 3)
+            self._enemy_buff_wave = 15
+            self._level_up_exp = 50
+            for enemy, values in self._stats.items():
+                if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] -= 50
                     values["HP"] -= 50
-        elif difficulty == EntityID.NORMAL:
-            for enemy, values in self.stats.items():
-                if enemy != EntityID.MANDIBLE:
+        elif difficulty == GameID.NORMAL:
+            for enemy, values in self._stats.items():
+                if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] -= 50
                     values["HP"] -= 50
-        elif difficulty == EntityID.HARD:
-            self.max_combat_rating = 400
-            self.combat_ratio = 100
-            self.buff_enemies()
-            for enemy, values in self.stats.items():
-                if enemy != EntityID.MANDIBLE:
+        elif difficulty == GameID.HARD:
+            self._max_combat_rating = 400
+            self._combat_ration = 100
+            self._buff_enemies()
+            for enemy, values in self._stats.items():
+                if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] += 50
                     values["HP"] += 50
-            self.enemy_buff_wave = 5
-            self.fire_rate_range = (fps / 2, fps * 1.5)
-            self.wave_rest = 0
-
-    """Represents a tick to keep track of enemy spawning, firing, and movement.
-    """
-
-    def tick(self):
-        player = self.model.player_ship
-        # Makes each enemy tick to fire their weapons
-        # Also makes them move
-        if player.score >= self.level_up_exp:
-            self.model.level_up()
-            self.level_up_exp *= 2
-        for enemy in self.model.enemy_ships:
-            enemy.ticks += 1
-            # Provides continuous movement for certain enemies
-            if enemy.finished_moving and enemy.move_again:
-                # Generates a new position to move to
-                new_pos = self.generate_pos()
-                enemy.end_x = new_pos[0]
-                enemy.end_y = new_pos[1]
-                enemy.finished_moving = False
-            enemy.move()
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self.model.enemy_projectiles)
-                    if enemy.projectile_type == EntityID.ENEMY_BULLET or enemy.projectile_type == EntityID.ENEMY_FLAK:
-                        self.model.bullet_sound.play()
-                    elif enemy.projectile_type == EntityID.ENEMY_MISSILE:
-                        self.model.missile_sound.play()
-                    elif enemy.projectile_type == EntityID.RAILGUN:
-                        self.model.railgun_sound.play()
-        if len(self.model.enemy_ships) == 0:
-            if self.wait_for_next_wave():
-                self.spawn_enemies()
-                self.wave += 1
-
-    """Waits for the next wave. Returns true if ready.
-
-    :returns: true if next wave is ready
-    :rtype: bool
-    """
-
-    def wait_for_next_wave(self):
-        self.ticks += 1
-        if self.ticks >= self.wave_rest * self.model.fps:
-            self.ticks = 0
-            return True
-        else:
-            return False
+            self._enemy_buff_wave = 5
+            self._fire_rate_range = (fps / 2, fps * 1.5)
+            self._wave_rest = 0
 
     """Increases the shield stats of most smaller enemies.
     """
 
     def buff_enemies(self):
-        for enemy, values in self.stats.items():
-            if enemy != EntityID.MANDIBLE:
-                values["SHIELD"] += 50
+        for enemy, values in self._stats.items():
+            if enemy != EnemyID.MANDIBLE:
+                values["SHIELD"] += 100
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """
 
     def spawn_enemies(self):
-        if self.wave == 0:
-            self.model.popup_text("WARNING: ENEMY FLEET DETECTED", -1, -1, 3)
-        rating = self.max_combat_rating
+        if self._wave == 0:
+            self._model.popup_text("WARNING: ENEMY FLEET DETECTED", -1, -1, 3)
+        rating = self._max_combat_rating
         # List of entity IDs of available enemies to grab from
         available_enemies = []
-        for enemy, value in self.combat_ratings.items():
+        for enemy, value in self._combat_ratings.items():
             if value <= rating:
                 available_enemies.append(enemy)
         while len(available_enemies) > 0:
@@ -149,19 +92,19 @@ class EnemyHeavenAI(EnemyWaveAI):
             chosen = random.randint(0, len(available_enemies) - 1)
             # Subtracts their score from the current combat rating
             enemy = available_enemies[chosen]
-            combat_value = self.combat_ratings.get(available_enemies[chosen])
+            combat_value = self._combat_ratings.get(available_enemies[chosen])
             if combat_value <= rating:
                 rating -= combat_value
                 self.spawn_enemy(enemy)
-                if enemy == EntityID.TITAN:
-                    self.model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
-                    self.stats[EntityID.TITAN]["HP"] += 500
+                if enemy == EnemyID.TITAN:
+                    self._model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
+                    self._stats[EnemyID.TITAN]["HP"] += 500
                     available_enemies.remove(enemy)
             else:
                 available_enemies.remove(enemy)
-        self.max_combat_rating += self.combat_ratio
+        self._max_combat_rating += self._combat_ration
         # Doubles the enemies spawned every given number of waves and buffs them
-        if self.wave % self.enemy_buff_wave == 0 and self.wave != 0:
-            self.buff_enemies()
-            self.model.popup_text("REINFORCEMENTS DETECTED", -1, int(self.model.height * .6), 3)
-            self.combat_ratio *= 2
+        if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
+            self._buff_enemies()
+            self._model.popup_text("REINFORCEMENTS DETECTED", -1, int(config.display_height * .6), 3)
+            self._combat_ration *= 2
