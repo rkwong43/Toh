@@ -1,6 +1,8 @@
-from src.utils.entity_id import EntityID
-from src.model.stats.ship_stats import get_ship_stats
-from src.model.stats.weapon_stats import get_weapon_stats
+
+from src.utils.ids.game_id import GameID
+from src.utils.ids.weapon_id import WeaponID
+from src.model.stats import ship_stats
+from src.model.stats import weapon_stats
 
 """Represents a description and image of an entity along with its associated stats.
 """
@@ -15,10 +17,10 @@ class MenuGallery:
 
     def __init__(self, entity_id):
         self.entity_id = entity_id
-        self.name = entity_id.name
+        self.name = entity_id.name.replace("_", " ")
         self.stats = []
         self.root = 0
-        self.entity_type = EntityID.SHIP
+        self.entity_type = GameID.SHIP
         self.description = self.form_description()
 
     """Returns the root of the gallery.
@@ -44,21 +46,19 @@ class MenuGallery:
     """
 
     def form_description(self):
-        weapon_stats = get_weapon_stats(self.entity_id)
-        if len(weapon_stats) > 0:
-            self.entity_type = EntityID.WEAPON
-            for tag, value in weapon_stats.items():
-                if tag == "PROJECTILE TYPE" or tag == "DESCRIPTION" or tag == "NAME":
+        if self.entity_id in WeaponID:
+            stats = weapon_stats.stats[self.entity_id]
+            self.entity_type = GameID.WEAPON
+            for tag, value in stats.items():
+                if tag == "PROJECTILE TYPE" or tag == "DESCRIPTION":
                     continue
                 self.stats.append(tag + ": " + str(value))
-            self.name = weapon_stats["NAME"]
-            return weapon_stats["DESCRIPTION"]
         else:
-            self.entity_type = EntityID.SHIP
-            ship_stats = get_ship_stats(self.entity_id)
-            for tag, value in ship_stats.items():
-                if tag == "SHIP TYPE" or tag == "DESCRIPTION" or tag == "NAME":
+            self.entity_type = GameID.SHIP
+            stats = ship_stats.stats[self.entity_id]
+            for tag, value in stats.items():
+                if tag == "SHIP TYPE" or tag == "DESCRIPTION":
                     continue
                 self.stats.append(tag + ": " + str(value))
-            self.name = ship_stats["NAME"]
-            return ship_stats["DESCRIPTION"]
+
+        return stats["DESCRIPTION"]

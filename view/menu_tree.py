@@ -22,6 +22,11 @@ class MenuTree:
         # if it does nothing
         self.children = children
         assert(len(children) == len(options))
+        for child in children:
+            try:
+                child.root = self
+            except AttributeError:
+                continue
         self.current_selection = 0
         self.number_of_options = len(options)
 

@@ -13,6 +13,6 @@ class WeaponID(Enum):
     SHOTGUN = auto()
     MISSILE_LAUNCHER = auto()
     MULTI_MISSILE = auto()
-    BAD_MISSILE_LAUNCHER = auto()
+    DIAMOND_DUST = auto()
     RAILGUN = auto()
     STRIKER = auto()

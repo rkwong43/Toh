@@ -1,5 +1,7 @@
 import pygame
 
+from src.utils import config
+
 """Container to hold and render text.
 """
 
@@ -9,13 +11,9 @@ class PopUpImage:
 
     :param font: Font object to use to render text
     :type font: pygame Font
-    :param width: width of screen
-    :type width: int
-    :param height: height of screen
-    :type height: int
     """
 
-    def __init__(self, font, width, height):
+    def __init__(self, font):
         self.current_text = ''
         self.font = font
         # How much the text fades
@@ -23,8 +21,8 @@ class PopUpImage:
         # Maximum transparency
         self.max_alpha = 200
         self.current_alpha = self.max_alpha
-        self.width = width
-        self.height = height
+        self.width = config.display_width
+        self.height = config.display_height
 
     """Returns the given frame of the image.
 

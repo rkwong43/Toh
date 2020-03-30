@@ -1,11 +1,12 @@
 import os
 import pygame
 
-from src.ids.effect_id import EffectID
-from src.ids.enemy_id import EnemyID
-from src.ids.game_id import GameID
-from src.ids.player_id import PlayerID
-from src.ids.projectile_id import ProjectileID
+from src.utils import config
+from src.utils.ids.effect_id import EffectID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
+from src.utils.ids.player_id import PlayerID
+from src.utils.ids.projectile_id import ProjectileID
 from src.view.image_containers.charge_up_images import ChargeUpImages
 from src.view.image_containers.explosion_images import ExplosionImages
 from src.view.image_containers.image_holder import ImageHolder
@@ -28,7 +29,10 @@ class View:
     backgrounds = {GameID.TITAN_SLAYER: os.path.join(image_path, 'titan_background.png'),
                    GameID.MANDIBLE_MADNESS: os.path.join(image_path, 'mandible_background.png'),
                    GameID.SURVIVAL: os.path.join(image_path, 'survival_background.png'),
-                   GameID.HEAVEN: os.path.join(image_path, 'heaven_background.png')}
+                   GameID.HEAVEN: os.path.join(image_path, 'heaven_background.png'),
+                   GameID.MENU: os.path.join(image_path, 'background.png'),
+                   GameID.TUTORIAL: os.path.join(image_path, 'background.png')
+                   }
 
     # Ship scaling (what the default ship size should be multiplied by in their rendering)
     ship_scaling = {
@@ -58,69 +62,73 @@ class View:
     :type fps: int
     """
 
-    def __init__(self, display_width, display_height, game_title, ship_size, game_mode, fps):
+    def __init__(self, game_mode):
+        self.width = config.display_width
+        self.height = config.display_height
+        #######################################################
         # Determines when to switch images for animation
         self.animation_switch = True
         # Sets up the game window surface
-        self.game_display = pygame.display.set_mode((display_width, display_height))
-        self.ship_size = ship_size
+        self.game_display = pygame.display.set_mode((self.width, self.height))
+        self.ship_size = config.ship_size
         # Title of the window
-        pygame.display.set_caption(game_title)
+        pygame.display.set_caption(config.game_title)
         # Background image is 1920 x 1080
-        try:
-            background_path = self.backgrounds[game_mode]
-        except KeyError:
-            background_path = os.path.join(self.image_path, 'background.png')
+        #######################################################
+        background_path = self.backgrounds[game_mode]
         self.background = pygame.image.load(background_path).convert_alpha()
-        self.background = pygame.transform.scale(self.background, (display_width, display_height))
+        self.background = pygame.transform.scale(self.background, (self.width, self.height))
         self.background_y = 0
         # How much the background scrolls
-        self.background_change = 2 * (30 / fps)
+        self.background_change = 2 * (30 / config.game_fps)
+        #######################################################
         # Display parameters
-        self.width = display_width
-        self.height = display_height
-        self.font_size = display_height / 24
+        self.font_size = self.height / 24
         font_path = os.path.join(self.resource_path, 'fonts')
         font_path = os.path.join(font_path, 'insane_hours_2.ttf')
         self.text_font = pygame.font.Font(font_path, int(self.font_size))
         self.hp_text = self.text_font.render("HP", 1, (255, 255, 255)).convert_alpha()
         hp_width, hp_height = pygame.font.Font.size(self.text_font, "HP")
-        self.red_bar = pygame.rect.Rect(hp_width, display_height - self.font_size + self.font_size / 3,
-                                        display_width / 3, self.font_size / 3)
+        #######################################################
+        self.red_bar = pygame.rect.Rect(hp_width, self.height - self.font_size + self.font_size / 3,
+                                        self.width / 3, self.font_size / 3)
         self.hp_bar = self.red_bar.copy()
         # Shield bar for player
-        self.shield_bar = pygame.rect.Rect(hp_width, display_height - self.font_size + self.font_size / 5,
-                                           display_width / 3, self.font_size / 4)
+        # TODO: Change to just copying then adjusting height
+        self.shield_bar = pygame.rect.Rect(hp_width, self.height - self.font_size + self.font_size / 5,
+                                           self.width / 3, self.font_size / 4)
+        #######################################################
         # Score
         self.score_text = self.text_font.render("Score:", 1, (255, 255, 255)).convert_alpha()
-        self.score_x = hp_width + (display_width / 3) + self.font_size
+        self.score_x = hp_width + (self.width / 3) + self.font_size
         self.score_width = pygame.font.Font.size(self.text_font, "Score:")[0]
+        #######################################################
         # FPS ticker
         self.fps_text = self.text_font.render("FPS:", 1, (255, 255, 255)).convert_alpha()
 
+        #######################################################
         # Grabs the image dictionary
-        self.image_dict = self.init_images(fps)
+        self.image_dict = self.init_images()
 
     """Initializes all the images used in the game.
     
-    :param fps: frames per second to pass to image holders
-    :type fps: int
     :returns: dictionary of entity ID to images
     :rtype: {EntityID : ImageHolder}
     """
 
-    def init_images(self, fps):
+    def init_images(self):
         # Result to return:
         result = {}
         # Projectiles to render
-        projectiles_to_init = [e for e in ProjectileID if e != ProjectileID.RAILGUN_BLAST]
+        projectiles_to_init = [e for e in ProjectileID if e not in
+                               [ProjectileID.RAILGUN_BLAST, ProjectileID.DIAMOND_DUST, ProjectileID.HOMING_BULLET]]
         # Effects to render
         effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION]
         # Renders each ship
-        for id_name, size in self.ship_scaling:
+        for id_name, size in self.ship_scaling.items():
             ship_name = id_name.name
             image_paths = self.get_image_paths(ship_name)
-            container = ImageHolder(image_paths, self.ship_size * size)
+            container = ImageHolder(image_paths, int(self.ship_size * size))
             result[id_name] = container
         # Renders each projectile
         projectile_size = self.ship_size // 2
@@ -138,23 +146,24 @@ class View:
                            os.path.join(self.image_path, effect_name + '_frame3.png'),
                            os.path.join(self.image_path, effect_name + '_frame4.png'),
                            os.path.join(self.image_path, effect_name + '_frame5.png')]
-            container = ExplosionImages(image_paths, int(self.ship_size * 1.5), fps)
+            container = ExplosionImages(image_paths, int(self.ship_size * 1.5))
+            # Two additional effects that do not have different sprites
             if effect_name == "EXPLOSION":
-                big_container = ExplosionImages(image_paths, int(self.ship_size * 8), fps)
+                big_container = ExplosionImages(image_paths, int(self.ship_size * 8))
                 result[EffectID.TITAN_EXPLOSION] = big_container
             elif effect_name == "RED_EXPLOSION":
-                charge_effect_container = ChargeUpImages(image_paths, int(self.ship_size * 1.5), fps)
+                charge_effect_container = ChargeUpImages(image_paths, int(self.ship_size * 1.5))
                 result[EffectID.RED_CHARGE] = charge_effect_container
             result[id_name] = container
         # Screen tints
         blue_tint = os.path.join(self.image_path, 'shield_damage_screen_effect.png')
         red_tint = os.path.join(self.image_path, 'damage_screen_effect.png')
-        shield_damage_tint = ScreenTintImages(blue_tint, self.width, self.height)
-        damage_tint = ScreenTintImages(red_tint, self.width, self.height)
+        shield_damage_tint = ScreenTintImages(blue_tint)
+        damage_tint = ScreenTintImages(red_tint)
         result[EffectID.SHIELD_TINT] = shield_damage_tint
         result[EffectID.HP_TINT] = damage_tint
         # Popup text
-        result[EffectID.POPUP] = PopUpImage(self.text_font, self.width, self.height)
+        result[EffectID.POPUP] = PopUpImage(self.text_font)
         return result
 
     """Returns a list of the image paths for a ship.
@@ -249,7 +258,7 @@ class View:
         image = image_holder.base_image
         # Decides which image to use:
         # damaged image, base image, or second base image for animation for engines
-        if ship.isDamaged:
+        if ship.is_damaged:
             if ship.shield > 0:
                 image = image_holder.shield_damage_image
             else:

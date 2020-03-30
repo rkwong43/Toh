@@ -1,8 +1,9 @@
 import os
 import pygame
 
-from src.utils.entity_id import EntityID
 from src.model.menu_model import MenuModel
+from src.utils import config
+from src.utils.ids.game_id import GameID
 from src.view.view import View
 
 """View to render the game, uses pygame to render images. Represents the menus in game.
@@ -31,23 +32,17 @@ class MenuView(View):
     :type fps: int
     """
 
-    def __init__(self, display_width, display_height, game_title, ship_size, fps):
+    def __init__(self):
         # Sets up the game window surface
-        super().__init__(display_width, display_height, game_title, ship_size, None, fps)
-        self.game_display = pygame.display.set_mode((display_width, display_height))
-        # Title of the window
-        pygame.display.set_caption(game_title)
+        super().__init__(GameID.MENU)
         # Background image is 1920 x 1080
         # For scrolling background
         self.background = pygame.image.load(self.background_path).convert_alpha()
         self.background_x = 0
-        self.background_y = 0
-        self.background_change = 1 * (30 / fps)
-        self.width = display_width
-        self.height = display_height
-        self.font_size = display_height / 20
+        self.background_change = 1 * (30 / config.game_fps)
+        self.font_size = config.display_height / 20
         # Title font size
-        self.title_font_size = display_height / 10
+        self.title_font_size = config.display_height / 10
         font_path = os.path.join(self.resource_path, 'fonts')
         font_path = os.path.join(font_path, 'insane_hours_2.ttf')
         self.text_font = pygame.font.Font(font_path, int(self.font_size))
@@ -56,16 +51,16 @@ class MenuView(View):
         # TODO: ADD SCROLLING
         self.current = 0
         # Title attributes
-        self.title = self.text_font.render(game_title, 1, (255, 255, 255)).convert_alpha()
+        self.title = self.text_font.render(config.game_title, 1, (255, 255, 255)).convert_alpha()
         # Title dimensions
-        title_width, title_height = pygame.font.Font.size(self.text_font, game_title)
-        self.title_x = display_width / 2 - title_width / 2
-        self.title_y = display_height / 2 - title_height
+        title_width, title_height = pygame.font.Font.size(self.text_font, config.game_title)
+        self.title_x = config.display_width / 2 - title_width / 2
+        self.title_y = config.display_width / 2 - title_height
         # Prompt to start the game
         self.start_font = pygame.font.Font(font_path, int(self.title_font_size / 4))
         self.start_prompt = self.start_font.render("Press [Space] to Begin", 1, (255, 255, 255)).convert_alpha()
         prompt_width, prompt_height = pygame.font.Font.size(self.start_font, "Press [Space] to Begin")
-        self.prompt_x = (display_width / 2) - (prompt_width / 2)
+        self.prompt_x = (config.display_width / 2) - (prompt_width / 2)
         self.prompt_y = self.title_y + title_height + (2 * prompt_height)
         self.prompt_alpha = 200
         self.prompt_alpha_change = -2
@@ -75,7 +70,7 @@ class MenuView(View):
         # When to switch animations:
         self.animation_switch = False
         # Mock model to simulate gallery items
-        self.model = MenuModel(display_width, display_height, ship_size, fps)
+        self.model = MenuModel()
 
     """Renders menu options.
     
@@ -149,11 +144,11 @@ class MenuView(View):
         # Name of the current entity being viewed
         self.render_background()
         # Render a ship or weapon?
-        if gallery.entity_type == EntityID.WEAPON:
+        if gallery.entity_type == GameID.WEAPON:
             self.model.switch_weapon(gallery.entity_id)
         else:
             self.model.spawn_ship(gallery.entity_id)
-        self.render(self.model.player_ship, self.model.get_projectiles(),
+        self.render(self.model.get_player(), self.model.get_projectiles(),
                     self.model.get_enemies(), self.model.get_effects())
         # Title and description
         name_displayed = self.text_font.render(str(gallery.name), 1, (255, 255, 255)).convert_alpha()

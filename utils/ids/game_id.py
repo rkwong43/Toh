@@ -20,3 +20,4 @@ class GameID(Enum):
     TUTORIAL = auto()
     # Menu IDs
     GALLERY = auto()
+    MENU = auto()
