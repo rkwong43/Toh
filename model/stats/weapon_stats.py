@@ -1,123 +1,40 @@
-from src.utils.entity_id import EntityID
+from src.utils.ids.projectile_id import ProjectileID
+from src.utils.ids.weapon_id import WeaponID
 
-"""Returns a dictionary of the given weapon's statistics.
-:param entity_id: ID of weapon
-:type entity_id: EntityID
-:returns: dictionary of weapon statistics
-:rtype: dictionary
+"""Initializes all weapon stats in the game for the player.
 """
 
-
-def get_weapon_stats(entity_id):
-    result = {}
-    if entity_id == EntityID.GUN:
-        # DPS: 100
-        result["PROJECTILE SPEED"] = 20
-        result["SPREAD"] = 0
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_BULLET
-        result["DAMAGE"] = 20
-        result["RELOAD"] = 6
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 100
-        result["DESCRIPTION"] = "Fires lethal blasts of plasma in a straight line."
-        result["NAME"] = "GUN"
-    elif entity_id == EntityID.FLAK_CANNON:
-        # DPS: 90
-        result["PROJECTILE SPEED"] = 10
-        result["SPREAD"] = 25
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_FLAK
-        result["DAMAGE"] = 10
-        result["RELOAD"] = 10
-        result["PROJECTILE COUNT"] = 3
-        result["DPS"] = 90
-        result["DESCRIPTION"] = "Fires an array of volatile plasma that detonate near enemies."
-        result["NAME"] = "FLAK CANNON"
-    elif entity_id == EntityID.MACHINE_GUN:
-        # DPS: 100
-        result["PROJECTILE SPEED"] = 15
-        result["SPREAD"] = 10
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_BULLET
-        result["DAMAGE"] = 10
-        result["RELOAD"] = 3
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 100
-        result["DESCRIPTION"] = "Fires an orb of explosive plasma that detonates near enemies."
-        result["NAME"] = "MACHINE GUN"
-    elif entity_id == EntityID.SHOTGUN:
-        # DPS: 120
-        result["PROJECTILE SPEED"] = 15
-        result["SPREAD"] = 15
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_BULLET
-        result["DAMAGE"] = 5
-        result["RELOAD"] = 8
-        result["PROJECTILE COUNT"] = 6
-        result["DPS"] = 120
-        result["DESCRIPTION"] = "Fires an inaccurate spread of plasma rounds."
-        result["NAME"] = "SHOTGUN"
-    elif entity_id == EntityID.FLAK_GUN:
-        # DPS: 60
-        result["PROJECTILE SPEED"] = 15
-        result["SPREAD"] = 5
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_FLAK
-        result["DAMAGE"] = 15
-        result["RELOAD"] = 8
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 60
-        result["DESCRIPTION"] = "Fires an orb of explosive plasma that detonates near enemies."
-        result["NAME"] = "FLAK GUN"
-    elif entity_id == EntityID.MISSILE_LAUNCHER:
-        # DPS: 60
-        result["PROJECTILE SPEED"] = 25
-        result["SPREAD"] = 0
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_MISSILE
-        result["DAMAGE"] = 30
-        result["RELOAD"] = 16
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 50
-        result["DESCRIPTION"] = "Launches a high-velocity plasma missile that homes in on foes."
-        result["NAME"] = "MISSILE LAUNCHER"
-    elif entity_id == EntityID.MULTI_MISSILE:
-        # DPS: 40
-        result["PROJECTILE SPEED"] = 18
-        result["SPREAD"] = 20
-        result["PROJECTILE TYPE"] = EntityID.FRIENDLY_MISSILE
-        result["DAMAGE"] = 5
-        result["RELOAD"] = 16
-        result["PROJECTILE COUNT"] = 4
-        result["DPS"] = 40
-        result["DESCRIPTION"] = "Launches an array of homing plasma missiles at enemies."
-        result["NAME"] = "MISSILE BATTERY"
-    elif entity_id == EntityID.BAD_MISSILE_LAUNCHER:
-        # DPS: 50
-        result["PROJECTILE SPEED"] = 10
-        result["SPREAD"] = 45
-        result["PROJECTILE TYPE"] = EntityID.BAD_MISSILE
-        result["DAMAGE"] = 5
-        result["RELOAD"] = 16
-        result["PROJECTILE COUNT"] = 5
-        result["DPS"] = 50
-        result["DESCRIPTION"] = "Creates a burst of compressed plasma shards that track enemies."
-        result["NAME"] = "DIAMOND DUST"
-    elif entity_id == EntityID.RAILGUN:
-        # DPS: 25 - 100+ depending on size of enemy
-        result["PROJECTILE SPEED"] = 40
-        result["SPREAD"] = 0
-        result["PROJECTILE TYPE"] = EntityID.RAILGUN
-        result["DAMAGE"] = 25
-        result["RELOAD"] = 32
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = (25, 100)
-        result["DESCRIPTION"] = "Generates a high-velocity blast of super-compressed plasma."
-        result["NAME"] = "RAILGUN"
-    elif entity_id == EntityID.STRIKER:
-        # DPS:
-        result["PROJECTILE SPEED"] = 25
-        result["SPREAD"] = 0
-        result["PROJECTILE TYPE"] = EntityID.HOMING_BULLET
-        result["DAMAGE"] = 8
-        result["RELOAD"] = 3
-        result["PROJECTILE COUNT"] = 1
-        result["DPS"] = 80
-        result["DESCRIPTION"] = "Rapidly fires homing plasma rounds at enemies."
-        result["NAME"] = "STRIKER"
-    return result
+stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.FRIENDLY_BULLET,
+                        "DAMAGE": 20, "RELOAD": 6, "PROJECTILE COUNT": 1, "DPS": 100,
+                        "DESCRIPTION": "Fires lethal blasts of plasma in a straight line."},
+         WeaponID.FLAK_CANNON: {"PROJECTILE SPEED": 10, "SPREAD": 25, "PROJECTILE TYPE": ProjectileID.FRIENDLY_FLAK,
+                                "DAMAGE": 10, "RELOAD": 10, "PROJECTILE COUNT": 3, "DPS": 90,
+                                "DESCRIPTION": "Fires an array of volatile plasma that detonate near enemies."},
+         WeaponID.MACHINE_GUN: {"PROJECTILE SPEED": 15, "SPREAD": 10,
+                                "PROJECTILE TYPE": ProjectileID.FRIENDLY_BULLET,
+                                "DAMAGE": 10, "RELOAD": 3, "PROJECTILE COUNT": 1, "DPS": 100,
+                                "DESCRIPTION": "Fires an orb of explosive plasma that detonates near enemies."},
+         WeaponID.SHOTGUN: {"PROJECTILE SPEED": 15, "SPREAD": 15, "PROJECTILE TYPE": ProjectileID.FRIENDLY_BULLET,
+                            "DAMAGE": 5, "RELOAD": 8, "PROJECTILE COUNT": 6, "DPS": 120,
+                            "DESCRIPTION": "Fires an inaccurate spread of plasma rounds."},
+         WeaponID.FLAK_GUN: {"PROJECTILE SPEED": 15, "SPREAD": 5, "PROJECTILE TYPE": ProjectileID.FRIENDLY_FLAK,
+                             "DAMAGE": 15, "RELOAD": 8, "PROJECTILE COUNT": 1, "DPS": 60,
+                             "DESCRIPTION": "Fires an orb of explosive plasma that detonates near enemies."},
+         WeaponID.MISSILE_LAUNCHER: {"PROJECTILE SPEED": 25, "SPREAD": 0,
+                                     "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
+                                     "DAMAGE": 30, "RELOAD": 16, "PROJECTILE COUNT": 1, "DPS": 50,
+                                     "DESCRIPTION": "Launches a plasma missile that homes in on foes."},
+         WeaponID.MULTI_MISSILE: {"PROJECTILE SPEED": 18, "SPREAD": 20,
+                                  "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
+                                  "DAMAGE": 20, "RELOAD": 16, "PROJECTILE COUNT": 4, "DPS": 40,
+                                  "DESCRIPTION": "Launches an array of homing plasma missiles at enemies."},
+         WeaponID.DIAMOND_DUST: {"PROJECTILE SPEED": 10, "SPREAD": 45, "PROJECTILE TYPE": ProjectileID.DIAMOND_DUST,
+                                 "DAMAGE": 5, "RELOAD": 16, "PROJECTILE COUNT": 5, "DPS": 50,
+                                 "DESCRIPTION": "Creates a burst of compressed plasma shards that track enemies."},
+         WeaponID.RAILGUN: {"PROJECTILE SPEED": 40, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.RAILGUN_BLAST,
+                            "DAMAGE": 25, "RELOAD": 32, "PROJECTILE COUNT": 1, "DPS": (25, 100),
+                            "DESCRIPTION": "Generates a high-velocity blast of super-compressed plasma."},
+         WeaponID.STRIKER: {"PROJECTILE SPEED": 25, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.HOMING_BULLET,
+                            "DAMAGE": 8, "RELOAD": 3, "PROJECTILE COUNT": 1, "DPS": 80,
+                            "DESCRIPTION": "Rapidly fires homing plasma rounds at enemies."}
+         }
