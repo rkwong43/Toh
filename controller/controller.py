@@ -1,6 +1,7 @@
 import pygame
 import os
 
+from src.utils import config
 from src.utils.direction import Direction
 
 """Controller that keeps track of time and key inputs to pass onto the view and model. Will also handle music
@@ -25,10 +26,10 @@ class Controller:
     :type fps: int
     """
 
-    def __init__(self, model, view, fps):
+    def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.fps = fps
+        self.fps = config.game_fps
         # Music by Scott Buckley – www.scottbuckley.com.au
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder

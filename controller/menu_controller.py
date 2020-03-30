@@ -1,8 +1,12 @@
 import pygame
 import os
 
+from src.utils import config
 from src.utils.direction import Direction
-from src.utils.entity_id import EntityID
+from src.utils.ids.enemy_id import EnemyID
+from src.utils.ids.game_id import GameID
+from src.utils.ids.player_id import PlayerID
+from src.utils.ids.weapon_id import WeaponID
 from src.view.image_containers.menu_gallery import MenuGallery
 from src.view.menu_tree import MenuTree
 
@@ -15,13 +19,12 @@ class MenuController:
 
     :param menus: the menu view
     :type menus: MenuView
-    :param fps: Frames per second to run game on
     :type fps: int
     """
 
-    def __init__(self, menus, fps):
+    def __init__(self, menus):
         self.menus = menus
-        self.fps = fps
+        self.fps = config.game_fps
         # Music by Scott Buckley – www.scottbuckley.com.au
         current_path = os.path.dirname(__file__)  # where this file is located
         outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
@@ -44,64 +47,47 @@ class MenuController:
 
     def construct_tree(self):
         # WEAPONS
-        weapon_selection = ["GUN", "SHOTGUN", "MACHINE GUN", "FLAK GUN", "FLAK CANNON", "MISSILE LAUNCHER",
-                            "MISSILE BATTERY",
-                            "DIAMOND DUST", "STRIKER", "RAILGUN"]
-        weapon_ids = [EntityID.GUN, EntityID.SHOTGUN, EntityID.MACHINE_GUN, EntityID.FLAK_GUN, EntityID.FLAK_CANNON,
-                      EntityID.MISSILE_LAUNCHER, EntityID.MULTI_MISSILE, EntityID.BAD_MISSILE_LAUNCHER,
-                      EntityID.STRIKER, EntityID.RAILGUN]
+        weapon_ids = [weapon for weapon in WeaponID]
+        weapon_selection = [weapon.name.replace("_", " ") for weapon in weapon_ids]
         # ENEMIES
-        enemy_selection = ["MANDIBLE", "MANTIS", "MOSQUITO", "SEER", "SUBJUGATOR", "CRUCIBLE", "ARBITRATOR", "TERMINUS",
-                           "JUDICATOR", "DESPOILER", "MOTHERSHIP"]
-        enemy_ids = [EntityID.MANDIBLE, EntityID.MANTIS, EntityID.MOSQUITO, EntityID.SEER, EntityID.SUBJUGATOR,
-                     EntityID.CRUCIBLE, EntityID.ARBITRATOR, EntityID.TERMINUS, EntityID.JUDICATOR, EntityID.DESPOILER,
-                     EntityID.MOTHERSHIP]
+        enemy_ids = [enemy for enemy in EnemyID if enemy != EnemyID.TITAN]
+        enemy_selection = [enemy.name for enemy in enemy_ids]
         # PLAYER SHIPS
-        ship_selection = ["CITADEL", "AEGIS", "GHOST", "ARCHANGEL", "STORM", "ORIGIN"]
-        ship_ids = [EntityID.CITADEL, EntityID.AEGIS, EntityID.GHOST, EntityID.ARCHANGEL, EntityID.STORM,
-                    EntityID.ORIGIN]
+        ship_ids = [ship for ship in PlayerID]
+        ship_selection = [ship.name for ship in ship_ids]
         # Tree to select ships
         self.ship_selection_tree = MenuTree(ship_selection, ship_ids, None)
         # Tree to select weapons
         self.weapon_selection_tree = MenuTree(weapon_selection, weapon_ids, None)
         # Tree to select difficulty
         difficulty_selection = ["EASY", "NORMAL", "HARD"]
-        difficulty_ids = [EntityID.EASY, EntityID.NORMAL, EntityID.HARD]
+        difficulty_ids = [GameID.EASY, GameID.NORMAL, GameID.HARD]
         self.difficulty_selection_tree = MenuTree(difficulty_selection, difficulty_ids, None)
         self.ship_selection_tree.root = self.weapon_selection_tree
         self.weapon_selection_tree.root = self.difficulty_selection_tree
         # Challenge Options
         challenge_layer = ["TITAN SLAYER"]
-        challenge_tree = MenuTree(challenge_layer, [0], [EntityID.TITAN_SLAYER])
+        challenge_tree = MenuTree(challenge_layer, [0], [GameID.TITAN_SLAYER])
         # Survival options
         survival_layer = ["CLASSIC", "MANDIBLE MADNESS", "HEAVEN", "TERMINUS TERRORS (COMING SOON)",
                           "TIME ATTACK (COMING SOON)"]
-        survival_tree = MenuTree(survival_layer, [0, 0, 0, -1, -1], [EntityID.SURVIVAL, EntityID.MANDIBLE_MADNESS,
-                                                                     EntityID.HEAVEN])
+        survival_tree = MenuTree(survival_layer, [0, 0, 0, -1, -1], [GameID.SURVIVAL, GameID.MANDIBLE_MADNESS,
+                                                                     GameID.HEAVEN])
         # MENUS
         # Hangar
         hangar_layer = ["SHIPS", "WEAPONS", "ENEMIES"]
         weapon_descriptions = self.construct_gallery(weapon_ids)
         enemy_descriptions = self.construct_gallery(enemy_ids)
         ship_descriptions = self.construct_gallery(ship_ids)
-        gallery_list_weapons = [EntityID.GALLERY] * (len(weapon_selection))
-        gallery_list_enemies = [EntityID.GALLERY] * (len(enemy_selection))
-        gallery_list_ships = [EntityID.GALLERY] * (len(ship_selection))
-        gallery_weapons = MenuTree(weapon_selection, weapon_descriptions, gallery_list_weapons)
-        gallery_enemies = MenuTree(enemy_selection, enemy_descriptions, gallery_list_enemies)
-        gallery_ships = MenuTree(ship_selection, ship_descriptions, gallery_list_ships)
-        for gallery in weapon_descriptions:
-            gallery.root = gallery_weapons
-        for gallery in enemy_descriptions:
-            gallery.root = gallery_enemies
-        for gallery in ship_descriptions:
-            gallery.root = gallery_ships
+        gallery_weapons = MenuTree(weapon_selection, weapon_descriptions, [GameID.GALLERY] * (len(weapon_selection)))
+        gallery_enemies = MenuTree(enemy_selection, enemy_descriptions, [GameID.GALLERY] * (len(enemy_selection)))
+        gallery_ships = MenuTree(ship_selection, ship_descriptions, [GameID.GALLERY] * (len(ship_selection)))
         hangar_tree = MenuTree(hangar_layer, [gallery_ships, gallery_weapons, gallery_enemies], [0, 0, 0])
         # Outer menu layer (after title screen)
         first_layer = ["STORY (COMING SOON)", "SURVIVAL", "CHALLENGE",
                        "TUTORIAL", "HANGAR", "SETTINGS (COMING SOON)"]
         main_menu_tree = MenuTree(first_layer, [-1, survival_tree, challenge_tree, 0, hangar_tree, -1],
-                                  [0, 0, 0, EntityID.TUTORIAL, 0, -1])
+                                  [0, 0, 0, GameID.TUTORIAL, 0, -1])
         gallery_enemies.root = hangar_tree
         gallery_weapons.root = hangar_tree
         gallery_ships.root = hangar_tree
@@ -136,7 +122,7 @@ class MenuController:
         game_mode = None
         difficulty = None
         weapon_chosen = None
-        player = EntityID.CITADEL
+        player = PlayerID.CITADEL
         # In game clock for FPS and time
         clock = pygame.time.Clock()
         # Defines if the game is done
@@ -169,8 +155,8 @@ class MenuController:
                         if new_tree == 0:
                             if self.tree.name is not None:
                                 game_mode = self.tree.name[self.tree.current_selection]
-                                if game_mode == EntityID.TUTORIAL:
-                                    return game_mode, EntityID.EASY, EntityID.GUN, EntityID.CITADEL
+                                if game_mode == GameID.TUTORIAL:
+                                    return game_mode, GameID.EASY, WeaponID.GUN, PlayerID.CITADEL
                             select_difficulty = True
                             self.difficulty_selection_tree.root = self.tree
                             self.tree = self.difficulty_selection_tree
@@ -188,7 +174,7 @@ class MenuController:
                             player = new_tree
                             done = True
                         elif new_tree != -1:
-                            if self.tree.name[self.tree.current_selection] == EntityID.GALLERY:
+                            if self.tree.name[self.tree.current_selection] == GameID.GALLERY:
                                 self.menus.gallery = True
                             self.tree = new_tree
                     # Goes back a layer
