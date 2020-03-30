@@ -17,10 +17,6 @@ class Crucible(Enemy):
     :type y: int
     :param hp: hit points of ship
     :type hp: int
-    :param end_x: ending x position
-    :type end_x: int
-    :param end_y: ending y position
-    :type end_y: int
     :param speed: speed it moves towards the ending position
     :type speed: int
     :param fire_rate: fire rate of the enemy
@@ -29,8 +25,8 @@ class Crucible(Enemy):
     :type shield: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.CRUCIBLE)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
+        super().__init__(EnemyID.CRUCIBLE, hp, shield, x, y, speed, ship_size, fire_rate)
         # fire rate in seconds
         self.fire_rate = int(fire_rate // 2.5)
         self.fire_variance = 20

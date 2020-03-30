@@ -16,27 +16,22 @@ class Judicator(Terminus):
     :type y: int
     :param hp: hit points of ship
     :type hp: int
-    :param end_x: ending x position
-    :type end_x: int
-    :param end_y: ending y position
-    :type end_y: int
     :param speed: speed it moves towards the ending position
     :type speed: int
     :param fire_rate: fire rate of the enemy
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param fps: frames per second
-    :type fps: int
+    :param effects: Effects to add onto when firing
+    :type effects: List of Effect
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, effects):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, effects)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, effects, *args):
+        super().__init__(hp, shield, x, y, speed, ship_size, fire_rate, effects)
         self.entity_id = EnemyID.JUDICATOR
         # fire rate in seconds
         self.fire_rate = int(fire_rate * 3)
         self.projectile_type = ProjectileID.RAILGUN_BLAST
-        self.move_again = True
 
     """Judicator fires multiple bullets and a railgun blast at the enemy.
 

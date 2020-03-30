@@ -28,7 +28,7 @@ class Subjugator(Enemy):
     :type shield: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.SUBJUGATOR)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
+        super().__init__(EnemyID.SUBJUGATOR, hp, shield, x, y, speed, ship_size, fire_rate)
         self.projectile_type = ProjectileID.ENEMY_MISSILE
 

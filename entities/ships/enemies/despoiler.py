@@ -17,10 +17,6 @@ class Despoiler(BurstFireEnemy):
     :type y: int
     :param hp: hit points of ship
     :type hp: int
-    :param end_x: ending x position
-    :type end_x: int
-    :param end_y: ending y position
-    :type end_y: int
     :param speed: speed it moves towards the ending position
     :type speed: int
     :param fire_rate: fire rate of the enemy
@@ -29,12 +25,12 @@ class Despoiler(BurstFireEnemy):
     :type shield: int
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, True, EnemyID.DESPOILER, 8)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
+        super().__init__(EnemyID.DESPOILER, hp, shield, x, y, speed, ship_size, fire_rate, 8)
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 10
-        self.reload_speed = fire_rate * 2
-        self.reload_curr = fire_rate * 2
+        self._reload_speed = fire_rate * 2
+        self._reload_curr = fire_rate * 2
 
     """Added the ability to reload the burst every time it moves. Overrides move() in Enemy"""
 

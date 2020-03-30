@@ -21,7 +21,7 @@ class Ship:
 
     def __init__(self, x, y, speed, hp, shield, size):
         # Speed, constant along an angle (vector)
-        self.speed = speed * (30 // config.game_fps)
+        self.speed = speed * (30 / config.game_fps)
         # Position
         self.x = int(x)
         self.y = int(y)

@@ -1,7 +1,7 @@
 from src.entities.ships.enemies.enemy import Enemy
 from src.entities.ships.enemies.mantis import Mantis
 from src.entities.ships.enemies.terminus import Terminus
-from src.utils import config
+from src.utils import config, enemy_generator
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
 
@@ -37,15 +37,15 @@ class Titan(Enemy):
     :type ai: EnemyAI
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, ai, effects):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, False, EnemyID.TITAN)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, ai, effects, *args):
+        super().__init__(EnemyID.TITAN, hp, shield, x, y, speed, ship_size, fire_rate)
         # fire rate in seconds
         self.fire_rate = fire_rate * 8
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 45
-        self.ai = ai
-        self.turrets = []
-        self.effects = effects
+        self._ai = ai
+        self._turrets = []
+        self._effects = effects
 
     """Spawns turrets for itself.
     """
@@ -59,42 +59,33 @@ class Titan(Enemy):
         center_y = self.y + (self.size // 2)
         # Mantis side turrets
         # Upper middle
-        mantis1 = Mantis(base_size, left_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 5, 0,
-                         False)
-        mantis2 = Mantis(base_size, right_x - (base_size // 2), center_y - base_size, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 5, 0,
-                         False)
+        mantis1 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - (base_size // 2), center_y - base_size,
+                                                 hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
+        mantis2 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
+                                                 hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
         # Lower middle
-        mantis3 = Mantis(base_size, left_x - base_size, center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 4, 0,
-                         False)
-        mantis4 = Mantis(base_size, right_x, center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 4, 0,
-                         False)
+        mantis3 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - base_size, center_y, hp=self.max_hp,
+                                                 shield=self.max_shield, fire_rate=self.fire_rate // 4)
+        mantis4 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x, center_y, hp=self.max_hp,
+                                                 shield=self.max_shield, fire_rate=self.fire_rate // 4)
         # Far left
-        mantis5 = Mantis(base_size, left_x - (1.5 * base_size), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 3, 0, False)
-        mantis5.burst_max = 8
-        mantis5.burst_curr = 8
+        mantis5 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - (1.5 * base_size), center_y - base_size,
+                                                 hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 3)
         # Far right
-        mantis6 = Mantis(base_size, right_x + (base_size // 2), center_y - base_size, self.max_hp, 0, 0,
-                         0, self.fire_rate // 3, 0, False)
-        mantis6.burst_max = 8
-        mantis6.burst_curr = 8
+        mantis6 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
+                                                 hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 3)
         # Middle
         mantis7 = Mantis(base_size, center_x - (base_size // 2), center_y, self.max_hp, 0, 0, 0,
                          self.fire_rate // 6, 0, False)
+        mantis7 = enemy_generator.generate_enemy(EnemyID.MANTIS, center_x - (base_size // 2), center_y, hp=self.max_hp,
+                                                 shield=self.max_shield, fire_rate=self.fire_rate // 6)
         # Middle Terminus
-        terminus = Terminus(base_size * 1.5, center_x - (base_size * .75),
-                            center_y - base_size, self.max_hp, center_x - (base_size * .75),
-                            center_y, 0, self.fire_rate // 4, 0, self.effects)
-        terminus.move_again = False
+        terminus = enemy_generator.generate_enemy(EnemyID.TERMINUS, center_x - (.75 * base_size), center_y - base_size,
+                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 4,
+                                                  effects=self._effects)
         terminus.projectile_damage = 20
-        self.turrets = [mantis1, mantis2, mantis3, mantis4, mantis5, mantis6, mantis7, terminus]
-        for ship in self.turrets:
-            ship.finished_moving = True
-        return self.turrets
+        self._turrets = [mantis1, mantis2, mantis3, mantis4, mantis5, mantis6, mantis7, terminus]
+        return self._turrets
 
     """Doesn't rotate at all.
     """
@@ -109,7 +100,7 @@ class Titan(Enemy):
         # Just moves down:
         if self.y != -self.size // 4:
             self.y += self.speed
-            for turret in self.turrets:
+            for turret in self._turrets:
                 turret.y += self.speed
 
     """Despoiler fires multiple missiles at the target.
@@ -132,7 +123,15 @@ class Titan(Enemy):
         super().fire(target, projectiles)
         if self.ships_spawned < 6:
             for i in range(self.ships_spawned):
-                ship = self.ai.spawn_enemy(EnemyID.CRUCIBLE)
+                ship = self._ai.spawn_enemy(EnemyID.CRUCIBLE)
                 ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
         self.fire_variance = temp
         self.projectile_speed = temp_speed
+
+    """Damages itself and its turrets.
+    """
+
+    def damage(self, damage):
+        super().damage(damage)
+        for turret in self._turrets:
+            turret.damage(damage)

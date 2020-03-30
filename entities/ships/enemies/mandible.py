@@ -15,21 +15,14 @@ class Mandible(Enemy):
     :type y: int
     :param hp: hit points of ship
     :type hp: int
-    :param end_x: ending x position
-    :type end_x: int
-    :param end_y: ending y position
-    :type end_y: int
     :param speed: speed it moves towards the ending position
     :type speed: int
     :param fire_rate: fire rate of the enemy
     :type fire_rate: int
     :param shield: shield health
     :type shield: int
-    :param move_again: determines if it continuously moves
-    :type move_again: bool
     """
 
-    def __init__(self, ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield, move_again):
-        super().__init__(ship_size, x, y, hp, end_x, end_y, speed, fire_rate, shield,
-                         move_again, EnemyID.MANDIBLE)
+    def __init__(self, hp, shield, x, y, speed, ship_size, fire_rate, *args):
+        super().__init__(EnemyID.MANDIBLE, hp, shield, x, y, speed, ship_size, fire_rate,)
 
