@@ -3,18 +3,82 @@ import os
 
 from src.utils import config
 from src.utils.direction import Direction
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
+from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.view.image_containers.menu_gallery import MenuGallery
+from src.view.menu_selector import MenuSelector
 from src.view.menu_tree import MenuTree
+
+difficulties = [difficulty for difficulty in DifficultyID]
+
+"""Creates a dictionary of gallery objects to display information for.
+
+:param ids: list of IDs
+:type ids: EntityID
+:returns: list of gallery items
+:rtype: list of MenuGallery
+"""
+
+
+def construct_gallery(ids):
+    result = {}
+    for entity in ids:
+        gallery = MenuGallery(entity)
+        result[entity] = gallery
+    return result
+
+
+"""Constructs the menu tree for the menus.
+
+:returns: the root
+:rtype: MenuTree
+"""
+
+
+def construct_tree():
+    # TODO: Loadout menu
+    difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, None)
+    survival = MenuSelector([GameModeID.CLASSIC,
+                             GameModeID.MANDIBLE_MADNESS,
+                             GameModeID.HEAVEN],
+                            GameID.SELECTOR, difficulty_selector)
+    challenge = MenuSelector([GameModeID.TITAN_SLAYER],
+                             GameID.SELECTOR, difficulty_selector)
+    weapon_gallery = MenuTree(GameID.GALLERY, construct_gallery([weapon for weapon in WeaponID]))
+    ship_gallery = MenuTree(GameID.GALLERY, construct_gallery([ship for ship in PlayerID]))
+    enemy_gallery = MenuTree(GameID.GALLERY, construct_gallery([enemy for enemy in EnemyID if enemy != EnemyID.TITAN]))
+    hangar_page = MenuTree(GameID.HANGAR,
+                           {GameID.SHIP: ship_gallery,
+                            GameID.WEAPON: weapon_gallery,
+                            GameID.ENEMY: enemy_gallery})
+    main_menu = MenuTree(GameID.MENU,
+                         {GameID.STORY: None,
+                          GameID.SURVIVAL: survival,
+                          GameID.CHALLENGE: challenge,
+                          GameID.TUTORIAL: GameID.TUTORIAL,
+                          GameID.HANGAR: hangar_page,
+                          GameID.SETTINGS: None})
+    return main_menu
+
 
 """Controller that allows for traversing of the menus.
 """
 
 
 class MenuController:
+    current_path = os.path.dirname(__file__)  # where this file is located
+    outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
+    resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
+    music_path = os.path.join(resource_path, 'music')  # the music folder path
+    _tree = construct_tree()
+    _main_menu = _tree
+
+    _weapon_chosen = None
+    _player = PlayerID.CITADEL
     """Constructor that takes in a view to run the menus.
 
     :param menus: the menu view
@@ -23,78 +87,15 @@ class MenuController:
     """
 
     def __init__(self, menus):
-        self.menus = menus
-        self.fps = config.game_fps
+        self._menus = menus
+        self._fps = config.game_fps
+        self._difficulty = None
+        self._game_mode = None
         # Music by Scott Buckley – www.scottbuckley.com.au
-        current_path = os.path.dirname(__file__)  # where this file is located
-        outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
-        resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
-        music_path = os.path.join(resource_path, 'music')  # the music folder path
         # Loads the start menu music
-        pygame.mixer.music.load(os.path.join(music_path, 'undertow.mp3'))
+        pygame.mixer.music.load(os.path.join(self.music_path, 'undertow.mp3'))
         pygame.mixer.music.play(-1, 0)
-        self.difficulty_selection_tree = None
-        self.weapon_selection_tree = None
-        self.ship_selection_tree = None
-        self.tree = self.construct_tree()
         # To keep background continuity between the two views:
-
-    """Constructs the menu tree for the menus.
-
-    :returns: the root
-    :rtype: MenuTree
-    """
-
-    def construct_tree(self):
-        # WEAPONS
-        weapon_ids = [weapon for weapon in WeaponID]
-        weapon_selection = [weapon.name.replace("_", " ") for weapon in weapon_ids]
-        # ENEMIES
-        enemy_ids = [enemy for enemy in EnemyID if enemy != EnemyID.TITAN]
-        enemy_selection = [enemy.name for enemy in enemy_ids]
-        # PLAYER SHIPS
-        ship_ids = [ship for ship in PlayerID]
-        ship_selection = [ship.name for ship in ship_ids]
-        # Tree to select ships
-        self.ship_selection_tree = MenuTree(ship_selection, ship_ids, None)
-        # Tree to select weapons
-        self.weapon_selection_tree = MenuTree(weapon_selection, weapon_ids, None)
-        # Tree to select difficulty
-        difficulty_selection = ["EASY", "NORMAL", "HARD"]
-        difficulty_ids = [GameID.EASY, GameID.NORMAL, GameID.HARD]
-        self.difficulty_selection_tree = MenuTree(difficulty_selection, difficulty_ids, None)
-        self.ship_selection_tree.root = self.weapon_selection_tree
-        self.weapon_selection_tree.root = self.difficulty_selection_tree
-        # Challenge Options
-        challenge_layer = ["TITAN SLAYER"]
-        challenge_tree = MenuTree(challenge_layer, [0], [GameID.TITAN_SLAYER])
-        # Survival options
-        survival_layer = ["CLASSIC", "MANDIBLE MADNESS", "HEAVEN", "TERMINUS TERRORS (COMING SOON)",
-                          "TIME ATTACK (COMING SOON)"]
-        survival_tree = MenuTree(survival_layer, [0, 0, 0, -1, -1], [GameID.SURVIVAL, GameID.MANDIBLE_MADNESS,
-                                                                     GameID.HEAVEN])
-        # MENUS
-        # Hangar
-        hangar_layer = ["SHIPS", "WEAPONS", "ENEMIES"]
-        weapon_descriptions = self.construct_gallery(weapon_ids)
-        enemy_descriptions = self.construct_gallery(enemy_ids)
-        ship_descriptions = self.construct_gallery(ship_ids)
-        gallery_weapons = MenuTree(weapon_selection, weapon_descriptions, [GameID.GALLERY] * (len(weapon_selection)))
-        gallery_enemies = MenuTree(enemy_selection, enemy_descriptions, [GameID.GALLERY] * (len(enemy_selection)))
-        gallery_ships = MenuTree(ship_selection, ship_descriptions, [GameID.GALLERY] * (len(ship_selection)))
-        hangar_tree = MenuTree(hangar_layer, [gallery_ships, gallery_weapons, gallery_enemies], [0, 0, 0])
-        # Outer menu layer (after title screen)
-        first_layer = ["STORY (COMING SOON)", "SURVIVAL", "CHALLENGE",
-                       "TUTORIAL", "HANGAR", "SETTINGS (COMING SOON)"]
-        main_menu_tree = MenuTree(first_layer, [-1, survival_tree, challenge_tree, 0, hangar_tree, -1],
-                                  [0, 0, 0, GameID.TUTORIAL, 0, -1])
-        gallery_enemies.root = hangar_tree
-        gallery_weapons.root = hangar_tree
-        gallery_ships.root = hangar_tree
-        hangar_tree.root = main_menu_tree
-        survival_tree.root = main_menu_tree
-        challenge_tree.root = main_menu_tree
-        return main_menu_tree
 
     """Figures out what to do depending on the key inputs.
 
@@ -102,106 +103,130 @@ class MenuController:
     :type key: pygame key constant
     """
 
-    def parse_key_input(self, key):
-        if not self.menus.gallery:
+    def _parse_key_input(self, key):
+        if self._tree.name in GameID:
             direction = None
             if key == pygame.K_w:
                 direction = Direction.UP
             elif key == pygame.K_s:
                 direction = Direction.DOWN
-            self.tree.switch_selection(direction)
+            self._tree.switch_selection(direction)
 
     """Runs the menus, allowing for the player to select game mode, difficulty, and weapon.
 
-    :returns: tuple of game mode, difficulty, and weapon
-    :rtype: (EntityID, EntityID, EntityID)
+    :returns: tuple of game mode, difficulty, weapon, and ship chosen
+    :rtype: (GameModeID, DifficultyID, WeaponID, PlayerID)
     """
 
     def run_menus(self):
-        # Things to return:
-        game_mode = None
-        difficulty = None
-        weapon_chosen = None
-        player = PlayerID.CITADEL
         # In game clock for FPS and time
         clock = pygame.time.Clock()
-        # Defines if the game is done
-        done = False
-        select_difficulty = False
-        select_weapon = False
-        select_ship = False
-        if self.start_screen(clock):
-            done = True
+        quit_options = (None, None, None, None)
+        # _start_screen returns true if quit
+        while True:
+            if self._start_screen(clock):
+                return quit_options
+            """Flags:
+            1: start game
+            0: go back to title screen
+            -1: quit game
+            """
+            flag = self._run_menus_helper(clock)
+            if flag == 1:
+                return self._game_mode, self._difficulty, self._weapon_chosen, self._player
+            elif flag == 0:
+                continue
+            else:
+                return quit_options
 
+    """Runs the internal menu tree.
+    
+    :param clock: pygame clock
+    :type clock: pygame Clock
+    :returns: True if the start menu should be rerun, false otherwise
+    :rtype: bool
+    """
+
+    def _run_menus_helper(self, clock):
         ANIMATE = pygame.USEREVENT + 1
         pygame.time.set_timer(ANIMATE, 300)
-        # Loops on the menu
+        done = False
         while not done:
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
-            self.menus.render_menu(self.tree)
-            self.parse_key_input(keys)
+            self._menus.render_menu(self._tree)
+            self._parse_key_input(keys)
             # Gets game_events
             for game_event in pygame.event.get():
                 # Checks if quit
                 if game_event.type == pygame.QUIT:
-                    return None, None, None, None
+                    return -1
                 elif game_event.type == pygame.KEYUP:
-                    # TODO: Clean up
-                    self.parse_key_input(game_event.key)
+                    self._parse_key_input(game_event.key)
                     # Selects the current option if space is pressed
-                    if game_event.key == pygame.K_SPACE:
-                        new_tree = self.tree.select()
-                        if new_tree == 0:
-                            if self.tree.name is not None:
-                                game_mode = self.tree.name[self.tree.current_selection]
-                                if game_mode == GameID.TUTORIAL:
-                                    return game_mode, GameID.EASY, WeaponID.GUN, PlayerID.CITADEL
-                            select_difficulty = True
-                            self.difficulty_selection_tree.root = self.tree
-                            self.tree = self.difficulty_selection_tree
-                        elif select_difficulty:
-                            difficulty = new_tree
-                            select_weapon = True
-                            select_difficulty = False
-                            self.tree = self.weapon_selection_tree
-                        elif select_weapon:
-                            weapon_chosen = new_tree
-                            select_weapon = False
-                            select_ship = True
-                            self.tree = self.ship_selection_tree
-                        elif select_ship:
-                            player = new_tree
-                            done = True
-                        elif new_tree != -1:
-                            if self.tree.name[self.tree.current_selection] == GameID.GALLERY:
-                                self.menus.gallery = True
-                            self.tree = new_tree
+                    if game_event.key == pygame.K_SPACE and self._tree.name in GameID:
+                        # Selects the current option
+                        done = self._select_option()
                     # Goes back a layer
                     elif game_event.key == pygame.K_ESCAPE or game_event.key == pygame.K_BACKSPACE:
-                        new_tree = self.tree.goto_root()
-                        self.menus.gallery = False
-                        self.menus.model.clear()
-                        if select_ship:
-                            select_weapon = True
-                            select_ship = False
-                        elif select_weapon:
-                            select_weapon = False
-                            select_difficulty = True
-                        elif select_difficulty:
-                            select_difficulty = False
-                        if new_tree is not None:
-                            self.tree = new_tree
-                        else:
-                            if self.start_screen(clock):
-                                done = True
+                        if not self._go_back_menu():
+                            return 0
                 # Animates sprites
                 if game_event.type == ANIMATE:
-                    self.menus.animate()
+                    self._menus.animate()
             # Updates display
             pygame.display.update()
-            clock.tick(self.fps)
-        return game_mode, difficulty, weapon_chosen, player
+            clock.tick(self._fps)
+        return 1
+
+    """Selects the current option on the current tree. Returns true if entering gameplay.
+    
+    :returns: True if beginning game, False otherwise
+    :rtype: bool
+    """
+
+    def _select_option(self):
+        ID, destination = self._tree.select()
+        if self._tree.name == GameID.SELECTOR:
+            # Selecting options
+            if ID in DifficultyID:
+                self._difficulty = ID
+            else:
+                self._game_mode = ID
+            self._tree = destination
+            return False
+        elif self._tree.name == GameID.LOADOUT:
+            # Loadouts are preceded by a Selector
+            self._weapon_chosen, self._player = self._tree.select
+            return True
+        else:
+            # Tutorial selection
+            if destination == GameID.TUTORIAL:
+                # Preset values for gear
+                self._weapon_chosen = WeaponID.GUN
+                self._player = PlayerID.CITADEL
+                self._game_mode = GameID.TUTORIAL
+                self._difficulty = DifficultyID.EASY
+                return True
+            elif destination is not None:
+                self._tree = destination
+            # Covers cases where destination is a MenuTree or MenuGallery
+            return False
+
+    """Goes back to the current tree's roots.
+    
+    :returns: True if the root is a valid menu, false otherwise (main menu)
+    :rtype: bool
+    """
+
+    def _go_back_menu(self):
+        new_tree = self._tree.goto_root()
+        if new_tree is None:
+            self._tree = self._main_menu
+            return False
+        else:
+            self._tree = new_tree
+            return True
 
     """Defines the starting menu screen for the game. Returns a boolean whether the user exited the window.
 
@@ -211,7 +236,7 @@ class MenuController:
     :rtype: bool
     """
 
-    def start_screen(self, clock):
+    def _start_screen(self, clock):
         finished = False
         # Loops until the user quits or presses space to begin
         while not finished:
@@ -222,20 +247,6 @@ class MenuController:
                 elif game_event.type == pygame.KEYUP:
                     if game_event.key == pygame.K_SPACE:
                         return False
-            self.menus.render_menu(None)
+            self._menus.render_menu(None)
             pygame.display.update()
-            clock.tick(self.fps)
-
-    """Creates a list of gallery objects to display information for.
-    :param ids: list of IDs
-    :type ids: EntityID
-    :returns: list of gallery items
-    :rtype: list of MenuGallery
-    """
-
-    def construct_gallery(self, ids):
-        result = []
-        for entity in ids:
-            gallery = MenuGallery(entity)
-            result.append(gallery)
-        return result
+            clock.tick(self._fps)
