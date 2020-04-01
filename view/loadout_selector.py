@@ -22,7 +22,6 @@ class LoadoutSelector(MenuSelector):
         self.options = [ships, weapons]
         # Selection is a tuple because can move screens
         self._current_selection = [ships.index(config.player_ship), weapons.index(config.weapon)]
-        print(self._current_selection)
         self._number_of_options = [len(choices) for choices in self.options]
         self.current_list = 0
         # TODO: Description and stuff on the side

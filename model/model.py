@@ -320,6 +320,10 @@ class Model:
                 # Removes projectile if it is not a railgun shot
                 if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
                     return True
+                elif ship.entity_id == EnemyID.TITAN:
+                    # Railgun hits Titan
+                    ship.damage(projectile.damage * 3)
+                    return True
         return False
 
     """Plays a particular screen tint effect depending on what damage the player has taken.
@@ -626,3 +630,8 @@ class Model:
     """
     def is_game_over(self):
         return self._game_over
+
+    """Ends the game.
+    """
+    def end_game(self):
+        self._game_over = True

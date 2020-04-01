@@ -113,7 +113,8 @@ class Titan(Enemy):
         super().fire(target, projectiles)
         super().fire(target, projectiles)
         self.fire_variance = 0
-        self.projectile_speed = 15 * (30 // config.game_fps)
+        self.projectile_speed = int(15 * (30 / config.game_fps))
+        super().fire(target, projectiles)
         super().fire(target, projectiles)
         if self.ships_spawned < 6:
             for i in range(self.ships_spawned):
@@ -122,7 +123,7 @@ class Titan(Enemy):
         self.fire_variance = temp
         self.projectile_speed = temp_speed
 
-    """Damages itself and its turrets.
+    """Damages itself and removes turrets upon death.
     """
 
     def damage(self, damage):

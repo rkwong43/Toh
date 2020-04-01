@@ -177,7 +177,12 @@ class EnemyWaveAI:
         x_pos = random.randint(config.ship_size, config.display_width - config.ship_size)
         # Sets their fire rate randomly, from .75 seconds to 2 seconds
         fire_rate = random.randint(self._fire_rate_range[0], self._fire_rate_range[1])
-        ship = enemy_generator.generate_enemy(entity_id, x_pos, -config.ship_size, hp=enemy_stats["HP"],
+        y_pos = -config.ship_size
+        if entity_id == EnemyID.TITAN:
+            y_pos = -config.ship_size * 8
+            x_pos = (config.display_width - (config.ship_size * 8)) // 2
+
+        ship = enemy_generator.generate_enemy(entity_id, x_pos, y_pos, hp=enemy_stats["HP"],
                                               speed=enemy_stats["SPEED"], fire_rate=fire_rate,
                                               shield=enemy_stats["SHIELD"], ai=self, effects=self._model.get_effects())
         self._model.enemy_ships.append(ship)
