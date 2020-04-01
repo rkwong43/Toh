@@ -12,14 +12,14 @@ class MenuGallery:
     """Constructs the MenuGallery.
 
     :param entity_id: ID of entity to show
-    :type entity_id: EntityID
+    :type entity_id: PlayerID or EnemyID or WeaponID
     """
 
     def __init__(self, entity_id):
         self.entity_id = entity_id
         self.name = entity_id.name.replace("_", " ")
         self.stats = []
-        self.root = 0
+        self.root = None
         self.entity_type = GameID.SHIP
         self.description = self.form_description()
 
@@ -32,13 +32,13 @@ class MenuGallery:
     def goto_root(self):
         return self.root
 
-    """Returns -1 as a MenuGallery currently does not support selection or have any options.
+    """Returns itself because it currently has no other options.
     
-    :returns: -1
-    :rtype: int
+    :returns: itself
+    :rtype: MenuGallery
     """
     def select(self):
-        return -1
+        return self
 
     """Returns the description of the entity this is describing,
     :returns: Description of the entity

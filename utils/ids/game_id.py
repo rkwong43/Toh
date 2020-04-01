@@ -8,16 +8,19 @@ class GameID(Enum):
     # Different ID's to generalize different types of entities
     WEAPON = auto()
     SHIP = auto()
-    # Difficulties
-    EASY = auto()
-    NORMAL = auto()
-    HARD = auto()
-    # Game modes
-    SURVIVAL = auto()
-    MANDIBLE_MADNESS = auto()
-    TITAN_SLAYER = auto()
-    HEAVEN = auto()
+    ENEMY = auto()
+
     TUTORIAL = auto()
+    SURVIVAL = auto()
+    HANGAR = auto()
+    CHALLENGE = auto()
+
+    # Unimplemented:
+    STORY = auto()
+    SETTINGS = auto()
+
     # Menu IDs
     GALLERY = auto()
     MENU = auto()
+    SELECTOR = auto()
+    LOADOUT = auto()
