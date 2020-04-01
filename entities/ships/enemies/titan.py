@@ -55,9 +55,9 @@ class Titan(Enemy):
         center_y = self.y + (self.size // 2)
         # Mantis side turrets
         # Upper middle
-        mantis1 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - (base_size // 2), center_y - base_size,
+        mantis1 = enemy_generator.generate_enemy(EnemyID.SUBJUGATOR, left_x - (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
-        mantis2 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
+        mantis2 = enemy_generator.generate_enemy(EnemyID.SUBJUGATOR, right_x - (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
         # Lower middle
         mantis3 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - base_size, center_y, hp=self.max_hp,
@@ -68,7 +68,7 @@ class Titan(Enemy):
         mantis5 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - (1.5 * base_size), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 3)
         # Far right
-        mantis6 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
+        mantis6 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x + (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 3)
         # Middle
         mantis7 = enemy_generator.generate_enemy(EnemyID.MANTIS, center_x - (base_size // 2), center_y, hp=self.max_hp,
