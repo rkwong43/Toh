@@ -1,6 +1,7 @@
 import random
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.utils import config
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
 
@@ -16,13 +17,6 @@ class EnemyHeavenAI(EnemyWaveAI):
                        EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300, EnemyID.TITAN: 1000}
     # These are the default scores for medium difficulty
     # Enemy combat rating is based on their score
-    # This is the maximum combat rating currently allowed
-    _max_combat_rating = 200
-    # Amount each wave increases the combat ratio
-    _combat_ration = 50
-
-    # How often the enemies are buffed
-    _enemy_buff_wave = 10
 
     """Constructor for the AI. Takes in the model used to run the game.
 
@@ -35,6 +29,13 @@ class EnemyHeavenAI(EnemyWaveAI):
     def __init__(self, model, difficulty):
         # Model to work with
         super().__init__(model, difficulty)
+        # This is the maximum combat rating currently allowed
+        self._max_combat_rating = 200
+        # Amount each wave increases the combat ratio
+        self._combat_ration = 50
+
+        # How often the enemies are buffed
+        self._enemy_buff_wave = 10
         self._change_difficulty(difficulty)
 
     """Changes the difficulty to the given setting.
@@ -42,7 +43,7 @@ class EnemyHeavenAI(EnemyWaveAI):
 
     def _change_difficulty(self, difficulty):
         fps = config.game_fps
-        if difficulty == GameID.EASY:
+        if difficulty == DifficultyID.EASY:
             self._fire_rate_range = (fps, fps * 3)
             self._enemy_buff_wave = 15
             self._level_up_exp = 50
@@ -50,12 +51,12 @@ class EnemyHeavenAI(EnemyWaveAI):
                 if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] -= 50
                     values["HP"] -= 50
-        elif difficulty == GameID.NORMAL:
+        elif difficulty == DifficultyID.NORMAL:
             for enemy, values in self._stats.items():
                 if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] -= 50
                     values["HP"] -= 50
-        elif difficulty == GameID.HARD:
+        elif difficulty == DifficultyID.HARD:
             self._max_combat_rating = 400
             self._combat_ration = 100
             self._buff_enemies()

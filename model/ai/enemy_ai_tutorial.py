@@ -1,8 +1,8 @@
 from src.entities.projectiles.bullet import Bullet
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.utils import config
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
 from src.utils.ids.projectile_id import ProjectileID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
@@ -31,7 +31,7 @@ class EnemyTutorialAI(EnemyWaveAI):
 
     def __init__(self, model):
         # Model to work with
-        super().__init__(model, GameID.EASY)
+        super().__init__(model, DifficultyID.EASY)
         self.fps = config.game_fps
         self.popup_ticks = 0
         self.popup_duration = self.fps * 3
@@ -49,7 +49,7 @@ class EnemyTutorialAI(EnemyWaveAI):
             self.tutorial_stage += 1
             self._model.clear_popups()
             self.advance_tutorial()
-        player = self._model.player_ship
+        player = self._model.get_player()
         old_pos = self.player_pos
         self.player_pos = (player.x, player.y)
         if self.tutorial_stage == 0 and self.player_pos != old_pos:
@@ -85,13 +85,7 @@ class EnemyTutorialAI(EnemyWaveAI):
                 # Fires projectile at player
                 if enemy.ready_to_fire:
                     enemy.fire(player, self._model.enemy_projectiles)
-                    if enemy.projectile_type == ProjectileID.ENEMY_BULLET \
-                            or enemy.projectile_type == ProjectileID.ENEMY_FLAK:
-                        self._model.bullet_sound.play()
-                    elif enemy.projectile_type == ProjectileID.ENEMY_MISSILE:
-                        self._model.missile_sound.play()
-                    elif enemy.projectile_type == ProjectileID.RAILGUN:
-                        self._model.railgun_sound.play()
+                    self._model.play_sound(enemy.projectile_type)
 
     """Advances the stage of the tutorial this is in.
     """

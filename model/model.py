@@ -22,6 +22,7 @@ from src.utils.direction import Direction
 from src.utils.ids.effect_id import EffectID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
+from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.projectile_id import ProjectileID
 from src.utils.ids.weapon_id import WeaponID
 
@@ -31,52 +32,48 @@ health, leveling experience, and game events such as spawning more enemies
 
 
 class Model:
-    # Friendly ships and player
-    friendly_ships = []
-    # Enemy ships
-    enemy_ships = []
-    # Enemy projectiles
-    enemy_projectiles = []
-    # Friendly projectiles
-    friendly_projectiles = []
-    # Effects
-    effects = []
-
-    """
-    Player statistics:
-    Speed: projectile movement speed
-    Damage: projectile damage
-    Count: projectile count aka how many fired per round
-    Spread: +- projectile offset from where the player is shooting (angle)
-    Type: Type of projectile fired
-    Weapon: Current weapon
-    DMod: Damage modifier in which the projectile damage is multiplied by
-    RMod: Reload modifier in which the weapon reload time is affected by
-    """
-    _player_stats = {"SPEED": 10, "DAMAGE": 10, "COUNT": 1, "SPREAD": 0, "TYPE": ProjectileID.FRIENDLY_BULLET,
-                     "WEAPON": WeaponID.GUN, "DMOD": 1, "RMOD": 1}
-    # Game over?
-    game_over = False
+    current_path = os.path.dirname(__file__)  # where this file is located
+    outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
+    resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
+    sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
+    # Sound weapons make when they fire
 
     """Initializes the model with the width and height of the window and the size of ships
 
-    :param width: width of window
-    :type width: int
-    :param height: height of window
-    :type height: int
-    :param ship_size: size ships should be scaled to
-    :type ship_size: int
-    :param fps: frames per second
-    :type fps: int
     :param weapon_chosen: Starting weapon for the player
-    :type weapon_chosen: EntityID
+    :type weapon_chosen: WeaponID
     :param difficulty: Difficulty mode of the AI
-    :type difficulty: EntityID
+    :type difficulty: DifficultyID
     :param game_mode: Game mode to play
-    :type game_mode: EntityID
+    :type game_mode: GameModeID or GameID
     """
 
     def __init__(self, weapon_chosen, difficulty, game_mode, player_id):
+        # Friendly ships and player
+        self.friendly_ships = []
+        # Enemy ships
+        self.enemy_ships = []
+        # Enemy projectiles
+        self.enemy_projectiles = []
+        # Friendly projectiles
+        self.friendly_projectiles = []
+        # Effects
+        self.effects = []
+        """
+        Player statistics:
+        Speed: projectile movement speed
+        Damage: projectile damage
+        Count: projectile count aka how many fired per round
+        Spread: +- projectile offset from where the player is shooting (angle)
+        Type: Type of projectile fired
+        Weapon: Current weapon
+        DMod: Damage modifier in which the projectile damage is multiplied by
+        RMod: Reload modifier in which the weapon reload time is affected by
+        """
+        self._player_stats = {"SPEED": 10, "DAMAGE": 10, "COUNT": 1, "SPREAD": 0, "TYPE": ProjectileID.FRIENDLY_BULLET,
+                              "WEAPON": WeaponID.GUN, "DMOD": 1, "RMOD": 1}
+        # Game over?
+        self._game_over = False
         # Initializing the player and its bonuses from ship choice
         self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(player_id)
         self.friendly_ships.append(self._player_ship)
@@ -87,9 +84,16 @@ class Model:
         self._reload_time = 0
         # Current progress until weapon is reloaded
         self._reload = 0
-        self.sounds = self._init_sounds()
         # This sets all the weapon stats
         self.switch_weapon(weapon_chosen)
+
+        # Sounds
+        self.sounds = {}
+        for file_name, volume in {"bullet": .05, "missile": .05, "explosion": .3, "railgun": 1}.items():
+            path = os.path.join(self.sound_path, file_name + '_sound.ogg')
+            sound = pygame.mixer.Sound(file=path)
+            sound.set_volume(volume)
+            self.sounds[file_name.upper()] = sound
 
     """Initializes the player's ship.
 
@@ -108,36 +112,6 @@ class Model:
                         player_stats["SHIELD"], player_id, player_stats["SPEED"])
         return reload, damage, player
 
-    """Initializes all the sound effects in the game.
-
-    :returns: dictionary of sound effects
-    :rtype: {str: pygame.mixer.Sound}
-    """
-
-    def _init_sounds(self):
-        sounds = {}
-        current_path = os.path.dirname(__file__)  # where this file is located
-        outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
-        resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
-        sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
-        # Sound weapons make when they fire
-        path = os.path.join(sound_path, 'bullet_sound.ogg')
-        bullet_sound = pygame.mixer.Sound(file=path)
-        bullet_sound.set_volume(.05)
-        path = os.path.join(sound_path, 'missile_sound.ogg')
-        missile_sound = pygame.mixer.Sound(file=path)
-        missile_sound.set_volume(.1)
-        path = os.path.join(sound_path, 'explosion_sound.ogg')
-        explosion_sound = pygame.mixer.Sound(file=path)
-        explosion_sound.set_volume(.2)
-        path = os.path.join(sound_path, 'railgun_sound.ogg')
-        railgun_sound = pygame.mixer.Sound(file=path)
-        sounds["BULLET"] = bullet_sound
-        sounds["MISSILE"] = missile_sound
-        sounds["EXPLOSION"] = explosion_sound
-        sounds["RAILGUN"] = railgun_sound
-        return sounds
-
     """Initializes the enemy artificial intelligence behavior depending on the given gamemode.
     :param game_mode: Game mode to grab the AI from.
     :type game_mode: EntityID
@@ -151,13 +125,13 @@ class Model:
     def _init_enemy_ai(self, game_mode, difficulty):
         # Using if-else instead of dictionary so each instance isn't
         # instantiated without being used
-        if game_mode == GameID.SURVIVAL:
+        if game_mode == GameModeID.CLASSIC:
             AI = EnemyWaveAI(self, difficulty)
-        elif game_mode == GameID.MANDIBLE_MADNESS:
+        elif game_mode == GameModeID.MANDIBLE_MADNESS:
             AI = EnemyMandibleMadnessAI(self, difficulty)
-        elif game_mode == GameID.TITAN_SLAYER:
+        elif game_mode == GameModeID.TITAN_SLAYER:
             AI = EnemyTitanSlayerAI(self, difficulty)
-        elif game_mode == GameID.HEAVEN:
+        elif game_mode == GameModeID.HEAVEN:
             AI = EnemyHeavenAI(self, difficulty)
         elif game_mode == GameID.TUTORIAL:
             AI = EnemyTutorialAI(self)
@@ -368,7 +342,7 @@ class Model:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
         if self._player_ship.is_dead:
-            self.game_over = True
+            self._game_over = True
             self.popup_text("Game Over", -1, -1, 4)
 
     """Checks if the projectile's splash damage collides with any surrounding ships
@@ -442,7 +416,9 @@ class Model:
         # Generating the required number of projectiles:
         if stats["COUNT"] > 1:
             offset = -stats["SPREAD"]
-            partition = ((2 * stats["SPREAD"]) // stats["COUNT"]) + 5
+            partition = int(((2 * stats["SPREAD"]) / stats["COUNT"]))
+            if stats["TYPE"] in [ProjectileID.FRIENDLY_MISSILE, ProjectileID.FRIENDLY_FLAK]:
+                partition += 5
             for _ in range(stats["COUNT"]):
                 projectile = self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position,
                                                        offset + 90,
@@ -646,3 +622,11 @@ class Model:
 
     def clear_popups(self):
         self.effects[:] = [effect for effect in self.effects if not effect.entity_id == EffectID.POPUP]
+
+    """Is it game over?
+    
+    :returns: true if the game is over, false otherwise
+    :rtype bool:
+    """
+    def is_game_over(self):
+        return self._game_over

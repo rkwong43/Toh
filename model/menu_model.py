@@ -1,9 +1,10 @@
 
 from src.model.model import Model
 from src.utils import config, enemy_generator
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.effect_id import EffectID
 from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
+from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 
@@ -29,16 +30,24 @@ class MenuModel(Model):
     """
 
     def __init__(self):
-        super().__init__(WeaponID.GUN, GameID.EASY, GameID.SURVIVAL, PlayerID.CITADEL)
+        super().__init__(WeaponID.GUN, DifficultyID.EASY, GameModeID.CLASSIC, PlayerID.CITADEL)
         self._player_ship.x = config.display_width
-        self.play = False
+        self._play = False
+
+    """Sets the current playing state.
+    
+    :param start: True if playing, false otherwise
+    :type start: bool
+    """
+    def set_play(self, start):
+        self._play = start
 
     """Represents a tick in the game. Handles reloads and moves all projectiles and updates the AI module to
     move enemies. Also rotates enemies to face the player.
     """
 
     def tick(self):
-        if self.play:
+        if self._play:
             # Moves all projectiles
             for projectile in self.friendly_projectiles + self.enemy_projectiles:
                 projectile.move()
@@ -64,7 +73,7 @@ class MenuModel(Model):
             for ship in self.enemy_ships:
                 ship.is_damaged = False
             self._player_ship.is_damaged = False
-            self.check_collisions()
+            self._check_collisions()
 
     """Switches the player's weapon to the given type.
 
@@ -74,7 +83,6 @@ class MenuModel(Model):
 
     def switch_weapon(self, weapon):
         super().switch_weapon(weapon)
-        ship_size = config.ship_size
         if not self._showcase_weapon:
             self._showcase_weapon = True
             self._showcase_enemy = False
@@ -107,12 +115,10 @@ class MenuModel(Model):
 
             if entity_id in [EnemyID.ARBITRATOR, EnemyID.TERMINUS, EnemyID.JUDICATOR]:
                 ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 4),
-                                                      config.display_height / 3, ship_size=config.ship_size * 1.5,
-                                                      effects=self.effects)
+                                                      config.display_height / 3, effects=self.effects)
             elif entity_id in [EnemyID.MOTHERSHIP, EnemyID.DESPOILER]:
                 ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 2),
-                                                      config.display_height / 3, ship_size=config.ship_size * 2,
-                                                      effects=self.effects)
+                                                      config.display_height / 3, effects=self.effects)
             elif entity_id in EnemyID:
                 ship = enemy_generator.generate_enemy(entity_id, x_pos, config.display_height / 3)
             else:
@@ -135,7 +141,7 @@ class MenuModel(Model):
        explosion effect to the effects list.
        """
 
-    def check_collisions(self):
+    def _check_collisions(self):
         # Checks friendly projectiles vs. enemy ships
         self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
                                         if

@@ -1,6 +1,4 @@
 from src.entities.ships.enemies.enemy import Enemy
-from src.entities.ships.enemies.mantis import Mantis
-from src.entities.ships.enemies.terminus import Terminus
 from src.utils import config, enemy_generator
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
@@ -73,8 +71,6 @@ class Titan(Enemy):
         mantis6 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 3)
         # Middle
-        mantis7 = Mantis(base_size, center_x - (base_size // 2), center_y, self.max_hp, 0, 0, 0,
-                         self.fire_rate // 6, 0, False)
         mantis7 = enemy_generator.generate_enemy(EnemyID.MANTIS, center_x - (base_size // 2), center_y, hp=self.max_hp,
                                                  shield=self.max_shield, fire_rate=self.fire_rate // 6)
         # Middle Terminus

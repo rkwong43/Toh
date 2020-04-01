@@ -121,16 +121,12 @@ class Enemy(Ship):
         offset = random.randint(-self.fire_variance, self.fire_variance)
         angle = self.angle - 90 + offset
         weapon_type = self.projectile_type
-        projectile = Bullet(self.projectile_speed, x_pos, y_pos,
-                            angle + offset, self.projectile_damage,
-                            weapon_type)
+        projectile = Bullet(self.projectile_speed, x_pos, y_pos, angle + offset, self.projectile_damage, weapon_type)
         if weapon_type == ProjectileID.ENEMY_MISSILE:
-            projectile = Missile(self.projectile_speed, x_pos, y_pos,
-                                 angle, self.projectile_damage,
-                                 weapon_type, target)
+            projectile = Missile(self.projectile_speed, x_pos, y_pos, angle, self.projectile_damage, weapon_type,
+                                 target)
         elif weapon_type == ProjectileID.DIAMOND_DUST:
-            projectile = DiamondDust(self.projectile_speed, x_pos, y_pos,
-                                     angle, self.projectile_damage,
+            projectile = DiamondDust(self.projectile_speed, x_pos, y_pos, angle, self.projectile_damage,
                                      ProjectileID.ENEMY_BULLET, target)
 
         projectiles.append(projectile)

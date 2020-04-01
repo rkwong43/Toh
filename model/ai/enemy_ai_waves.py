@@ -2,8 +2,8 @@ import random
 
 from src.model.stats import ship_stats
 from src.utils import config, enemy_generator
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -11,37 +11,38 @@ This is an AI where number of enemies are spawned in waves. Defeating a wave wil
 
 
 class EnemyWaveAI:
-    # Combat ratings:
-    _combat_ratings = {EnemyID.MANDIBLE: 10, EnemyID.MANTIS: 40, EnemyID.CRUCIBLE: 100, EnemyID.MOSQUITO: 30,
-                       EnemyID.SUBJUGATOR: 60, EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250, EnemyID.SEER: 50,
-                       EnemyID.DESPOILER: 400, EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300, EnemyID.TITAN: 1000}
-    # Initial wave
-    _wave = 0
-    # These are the default scores for medium difficulty
-    # Enemy combat rating is based on their score
-    # This is the maximum combat rating currently allowed
-    _max_combat_rating = 20
-    # Amount each wave increases the combat ratio
-    _combat_ratio = 10
-
-    # Seconds between each wave
-    _wave_rest = 3
-
-    # How often the enemies are buffed
-    _enemy_buff_wave = 25
-
-    # Level up wave interval:
-    _level_up_exp = 100
-
     """Constructor for the AI. Takes in the model used to run the game.
 
     :param model: model used to run the game and grab information from
     :type model: Model
     :param difficulty: The difficulty setting
-    :type difficulty: EnemyID
+    :type difficulty: DifficultyID
     """
 
     def __init__(self, model, difficulty):
+        # Combat ratings:
+        self._combat_ratings = {EnemyID.MANDIBLE: 10, EnemyID.MANTIS: 40, EnemyID.CRUCIBLE: 100, EnemyID.MOSQUITO: 30,
+                                EnemyID.SUBJUGATOR: 60, EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250,
+                                EnemyID.SEER: 50,
+                                EnemyID.DESPOILER: 400, EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300,
+                                EnemyID.TITAN: 1000}
+        # Initial wave
+        self._wave = 0
+        # These are the default scores for medium difficulty
+        # Enemy combat rating is based on their score
+        # This is the maximum combat rating currently allowed
+        self._max_combat_rating = 20
+        # Amount each wave increases the combat ratio
+        self._combat_ratio = 10
+
+        # Seconds between each wave
+        self._wave_rest = 3
+
+        # How often the enemies are buffed
+        self._enemy_buff_wave = 25
+
+        # Level up wave interval:
+        self._level_up_exp = 100
         # Model to work with
         self._model = model
         self._ticks = 0
@@ -59,11 +60,11 @@ class EnemyWaveAI:
 
     def _change_difficulty(self, difficulty):
         fps = config.game_fps
-        if difficulty == GameID.EASY:
+        if difficulty == DifficultyID.EASY:
             self._fire_rate_range = (fps, fps * 3)
             self._enemy_buff_wave = 30
             self._level_up_exp = 50
-        elif difficulty == GameID.HARD:
+        elif difficulty == DifficultyID.HARD:
             self._max_combat_rating = 100
             self._combat_ratio = 20
             self._buff_enemies()

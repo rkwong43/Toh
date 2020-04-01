@@ -34,7 +34,7 @@ stats = {
                        "DESCRIPTION": "Versatile weapon of war outfitted with a modular weapon system."},
     PlayerID.GHOST: {"HP": 80, "SHIELD": 80, "SPEED": 16, "DAMAGE MULTIPLIER": 1.1, "RELOAD MODIFIER": 1.1,
                      "DESCRIPTION": "Quick interceptor designed for assassinations."},
-    PlayerID.AEGIS: {"HP": 150, "SHIELD": 150, "SPEED": 8, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1,
+    PlayerID.AEGIS: {"HP": 200, "SHIELD": 150, "SPEED": 8, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1,
                      "DESCRIPTION": "Heavy vanguard warship with increased defenses."},
     PlayerID.STORM: {"HP": 100, "SHIELD": 80, "SPEED": 12, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1.2,
                      "DESCRIPTION": "Announces a storm of destruction for enemies."},

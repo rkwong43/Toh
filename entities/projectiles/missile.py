@@ -43,11 +43,11 @@ class Missile(Projectile):
             self.y += self.y_change
             self.ticks -= 1
         else:
-            self.seek_target()
+            self._seek_target()
 
     """Alters the direction it is facing to align with a path onto the target.
     """
-    def seek_target(self):
+    def _seek_target(self):
         # No target
         if self.target == 0:
             # Continues moving in the direction it is initially going
@@ -57,7 +57,7 @@ class Missile(Projectile):
         elif self.target.is_dead:
             # Target is dead
             # Continues moving along its current angle
-            self.move_along_angle()
+            self._move_along_angle()
             self.target_destroyed = True
         else:
             # Target is alive
@@ -68,8 +68,8 @@ class Missile(Projectile):
                 target_center = (self.target.x + ((self.target.size - config.ship_size) // 2),
                                  self.target.y + ((self.target.size - config.ship_size) // 2))
             angle = int(-math.degrees(math.atan2(self.y - target_center[1], self.x - target_center[0])))
-            self.adjust_angle(angle)
-            self.move_along_angle()
+            self._adjust_angle(angle)
+            self._move_along_angle()
 
     """Gives the missile a new target.
     
@@ -84,7 +84,7 @@ class Missile(Projectile):
     """Moves the missile based on its orientation.
     """
 
-    def move_along_angle(self):
+    def _move_along_angle(self):
         angle_in_radians = math.radians(self.direction)
         x_dist = math.cos(angle_in_radians) * self.speed
         y_dist = -math.sin(angle_in_radians) * self.speed
@@ -97,7 +97,7 @@ class Missile(Projectile):
     :type target_angle: int
     """
 
-    def adjust_angle(self, target_angle):
+    def _adjust_angle(self, target_angle):
         # Which y direction the missile was initially fired
         # Only tracks targets that are in front of the missile.
         # Up (-y)

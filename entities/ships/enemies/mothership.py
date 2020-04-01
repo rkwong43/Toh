@@ -33,7 +33,9 @@ class Mothership(Enemy):
         self.fire_rate = fire_rate * 2
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 30
-        self.ai = ai
+        self._ai = ai
+        self.total_spawned = 0
+        self.max_spawns = 8
 
     """Mothership fires multiple missiles at the target.
 
@@ -53,9 +55,10 @@ class Mothership(Enemy):
         # Fires one fast missile
         self.projectile_speed = 15 * (30 / config.game_fps)
         super().fire(target, projectiles)
-        if self.ai is not None:
+        if self._ai is not None and self.total_spawned < self.max_spawns:
             for i in range(self.ships_spawned):
-                ship = self.ai.spawn_enemy(EnemyID.MANDIBLE)
+                ship = self._ai.spawn_enemy(EnemyID.MANDIBLE)
                 ship.x, ship.y = self.x, self.y
+            self.total_spawned += self.ships_spawned
         self.fire_variance = temp
         self.projectile_speed = temp_speed
