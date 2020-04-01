@@ -1,10 +1,9 @@
 # Tears Over Heaven
 WORK IN PROGRESS \
-Last Edited: 2/5/2020
+Last Edited: 4/1/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
-_Currently on hiatus until further notice._
 
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
@@ -13,7 +12,7 @@ Currently the demo is only compatible with Windows operating systems. Unpack the
 
 **GITHUB PAGES:** [https://rkwong43.github.io/Tears-Over-Heaven/](https://rkwong43.github.io/Tears-Over-Heaven/)
 
-**CONTROLS:** Menu navigation using WASD keys, select using Space. Go backwards a menu using Esc.
+**CONTROLS:** Menu navigation using WASD or arrow keys, select using Space. Go backwards a menu using Esc.
 
 Personal project using self-taught Python and the Pygame library. Is currently under development.
   * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
@@ -57,7 +56,7 @@ Describes the current gameplay features inside the game.
       * Score is not relevant, game victory returns the time taken to destroy the Titan.
       * Difficulty affects the health and fire rate of the Titan and its turrets.
   * Tutorial
-    * Leads the player through basic controls (WASD to move, SPACE to shoot).
+    * Leads the player through basic controls (WASD or arrows to move, SPACE to shoot).
     * Gives the player a sample enemy to destroy.
     * Introduces the concept of health, shield, and how each increase or regenerate.
     * Informs the player that ESC can be used to pause, and if paused, BACKSPACE will exit the game to the title screen.
@@ -80,15 +79,13 @@ Features currently under development or planned for the future.
 
 ## How to Add Ships
     * Create sprites for the animated, base, damaged, and shielded images.
-    * Create an EntityID for them, name the images EntityID_animation.png, 
-    EntityID_base.png EntityID_damaged.png, and EntityID_shield.png respectively.
+    * Create an ID for them, name the images ID.png, 
+    ID_base.png ID_damaged.png, and ID_shield.png respectively.
     * Place the images into the images folder under resources.
-    * Add the Entity ID to the ship list in init_images() in the View.
+    * Add the ID to their respective enum.
     * Create a class for the new ship, extending the Ship class, or Enemy class if the
     new ship is an enemy.
-    * Add the ship's stats to the get_ship_stats(EntityID) function inside the 
-    ship_stats.py file.
-    * Alter the MenuView, MenuModel, to add the ship to the hangar if needed.
-    * If player, alter the constructor inside the Model. If enemy, alter the spawn_enemy(EntityID)
-    in whatever game mode enemy AI class the ship is to be added to.
+    * Add the ship's stats to the ship_stats.py file.
+    * If enemy ship, alter the enemy_generator.py file and add the new ID to the
+    dictionary of IDs : classes.
     

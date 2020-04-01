@@ -10,6 +10,9 @@ Currently the demo is only compatible with Windows operating systems. Unpack the
 ![A screenshot of the game's Classic Survival](page images/screenshot3.png?raw=true "Title")
 _Screenshot from the game's Survival Mode: Classic._
 
+**CONTROLS:** WASD or arrow keys to navigate or move. Space to select or fire.
+Esc to pause or go back a menu.
+
 Personal project using self-taught Python and the Pygame library. Is currently under development.
   * Features decoupled views, models, controllers, and logic for behavior of enemies.
   * Has a collision detection algorithm for detecting when projectiles and ships intersect.
@@ -88,15 +91,13 @@ Features currently under development or planned for the future.
 
 ## How to Add Ships
     * Create sprites for the animated, base, damaged, and shielded images.
-    * Create an EntityID for them, name the images EntityID_animation.png, 
-    EntityID_base.png EntityID_damaged.png, and EntityID_shield.png respectively.
+    * Create an ID for them, name the images ID.png, 
+    ID_base.png ID_damaged.png, and ID_shield.png respectively.
     * Place the images into the images folder under resources.
-    * Add the Entity ID to the ship list in init_images() in the View.
+    * Add the ID to their respective enum.
     * Create a class for the new ship, extending the Ship class, or Enemy class if the
     new ship is an enemy.
-    * Add the ship's stats to the get_ship_stats(EntityID) function inside the 
-    ship_stats.py file.
-    * Alter the MenuView, MenuModel, to add the ship to the hangar if needed.
-    * If player, alter the constructor inside the Model. If enemy, alter the spawn_enemy(EntityID)
-    in whatever game mode enemy AI class the ship is to be added to.
+    * Add the ship's stats to the ship_stats.py file.
+    * If enemy ship, alter the enemy_generator.py file and add the new ID to the
+    dictionary of IDs : classes.
     
