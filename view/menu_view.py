@@ -4,6 +4,7 @@ import pygame
 from src.model.menu_model import MenuModel
 from src.utils import config
 from src.utils.ids.game_id import GameID
+from src.utils.ids.gamemode_id import GameModeID
 from src.view.view import View
 
 """View to render the game, uses pygame to render images. Represents the menus in game.
@@ -17,6 +18,10 @@ class MenuView(View):
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     image_path = os.path.join(resource_path, 'images')  # the image folder path
     background_path = os.path.join(image_path, 'background.png')
+
+    # Player loadout
+    _player = None
+    _weapon = None
 
     """Constructor to initialize the game display.
 
@@ -41,14 +46,14 @@ class MenuView(View):
         # Title font size
         self._title_font_size = config.display_height / 10
         font_path = os.path.join(self.resource_path, 'fonts')
-        font_path = os.path.join(font_path, 'insane_hours_2.ttf')
-        self._text_font = pygame.font.Font(font_path, int(self._font_size))
+        display_font = os.path.join(font_path, 'insane_hours_2.ttf')
+        self._text_font = pygame.font.Font(display_font, int(self._font_size))
         prompt_width, prompt_height = pygame.font.Font.size(self._text_font, "TEST")
         self._text_height = int(prompt_height * 1.5)
         # TODO: ADD SCROLLING
         self._current = 0
-        self._init_title_screen(font_path)
-        self._description_font = pygame.font.Font(font_path, int(self._font_size / 2))
+        self._init_title_screen(display_font)
+        self._description_font = pygame.font.Font(display_font, int(self._font_size / 1.5))
         # When to switch animations:
         # Mock model to simulate gallery items
         self._model = MenuModel()
@@ -63,21 +68,21 @@ class MenuView(View):
         self._font_size = config.display_height // 24
 
     """Initializes the title screen attributes.
-    
+
     :param font_path: The file pathing for the font
     :type font_path: str
     """
 
     def _init_title_screen(self, font_path):
         # Title attributes
-        self._title = self._text_font.render(config.game_title, 1, (255, 255, 255)).convert_alpha()
+        self._title = self._text_font.render(config.game_title, 1, self.WHITE).convert_alpha()
         # Title dimensions
         title_width, title_height = pygame.font.Font.size(self._text_font, config.game_title)
         self._title_x = config.display_width / 2 - title_width / 2
         self._title_y = config.display_width / 2 - title_height
         # Prompt to start the game
         self._start_font = pygame.font.Font(font_path, int(self._title_font_size / 4))
-        self._start_prompt = self._start_font.render("Press [Space] to Begin", 1, (255, 255, 255)).convert_alpha()
+        self._start_prompt = self._start_font.render("Press [Space] to Begin", 1, self.WHITE).convert_alpha()
         prompt_width, prompt_height = pygame.font.Font.size(self._start_font, "Press [Space] to Begin")
         self._prompt_x = (config.display_width / 2) - (prompt_width / 2)
         self._prompt_y = self._title_y + title_height + (2 * prompt_height)
@@ -107,7 +112,7 @@ class MenuView(View):
                 self._render_descriptive_menu(tree)
 
     """Renders a menu which may include descriptions or high scores.
-    
+
     :param tree: The menu object to render
     :type tree: MenuSelector or MenuTree
     """
@@ -120,7 +125,7 @@ class MenuView(View):
         images = []
         for i in range(0, len(text_to_render)):
             text = text_to_render[i]
-            image = self._text_font.render(text, 1, (255, 255, 255)).convert_alpha()
+            image = self._text_font.render(text, 1, self.WHITE).convert_alpha()
             if i != curr_selected:
                 image.fill((255, 255, 255, 150), None, pygame.BLEND_RGBA_MULT)
             images.append(image)
@@ -130,7 +135,7 @@ class MenuView(View):
             x = self._width / 2
         else:
             x = self._width // 4
-        pointer = self._text_font.render(">>", 1, (255, 255, 255)).convert_alpha()
+        pointer = self._text_font.render(">>", 1, self.WHITE).convert_alpha()
         # Renders all the text
         pointer.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
         self._compute_alpha()
@@ -143,6 +148,47 @@ class MenuView(View):
                 self._game_display.blit(pointer, pointer_rect.topleft)
             self._game_display.blit(image, rect.topleft)
             y += self._text_height
+        # Displays the descriptions
+        if tree.name not in [GameID.GALLERY, GameID.HANGAR]:
+            self._render_description(tree.get_curr_id(), tree)
+
+    """Renders the descriptions of the current item selected.
+
+    :param item: ID of the item selected
+    :type item: ID
+    :param tree: The MenuTree or MenuSelector holding the item
+    :type tree: MenuTree or MenuSelector
+    """
+
+    def _render_description(self, item, tree):
+        description = tree.description[item]
+        y = config.display_height // 8
+        x = config.display_width / 2
+        for text in description:
+            title_text = self._description_font.render(text, 0, self.WHITE).convert_alpha()
+            text_rect = title_text.get_rect(center=(x, y))
+            self._game_display.blit(title_text, text_rect.topleft)
+            y += text_rect.height
+        if item in GameModeID:
+            # TODO: Display score and global high score
+            # Go grab the stuff from the API
+            return
+        else:
+            self._render_loadout()
+
+    """Renders the current loadout.
+    """
+
+    def _render_loadout(self):
+        x = config.display_width * .6
+        y = config.display_height / 2
+        self._model.spawn_player(self._player, x, y)
+        # TODO: maybe make sprites for weapons too
+        weapon_text = self._description_font.render("PLACEHOLDER: " + self._weapon.name.replace("_", " "),
+                                                    0, self.WHITE).convert_alpha()
+        weapon_text_rect = weapon_text.get_rect(center=(x + config.ship_size // 2, y + config.ship_size))
+        self._game_display.blit(weapon_text, weapon_text_rect.topleft)
+        self._render_ship(self._model.get_player(), 0)
 
     """Renders the title screen.
     """
@@ -172,9 +218,12 @@ class MenuView(View):
     def _render_background(self):
         self._game_display.fill((0, 0, 0))
         self._game_display.blit(self._background, (self._background_x, self._background_y))
-        if self._background_x > -self._width or self._background_y > 2 * -self._height:
+        if self._background_x > -self._width or self._background_y > -self._height:
             self._background_x -= self._background_change
             self._background_y -= self._background_change
+        else:
+            self._background_x += self._background_change
+            self._background_y += self._background_change
 
     """Renders the given gallery object.
 
@@ -194,16 +243,16 @@ class MenuView(View):
         self.render(self._model.get_player(), self._model.get_projectiles(),
                     self._model.get_enemies(), self._model.get_effects())
         # Title and description
-        name_displayed = self._text_font.render(str(gallery.name), 1, (255, 255, 255)).convert_alpha()
+        name_displayed = self._text_font.render(str(gallery.name), 1, self.WHITE).convert_alpha()
         name_rect = name_displayed.get_rect(center=(int(self._width / 2), int(self._height / 10)))
         self._game_display.blit(name_displayed, name_rect.topleft)
-        description = self._description_font.render(gallery.description, 0, (255, 255, 255)).convert_alpha()
+        description = self._description_font.render(gallery.description, 0, self.WHITE).convert_alpha()
         description_rect = description.get_rect(center=(int(self._width / 2), int(self._height / 6)))
         self._game_display.blit(description, description_rect.topleft)
         # Other stats to show
         offset = 0
         for stat in gallery.stats:
-            stat_displayed = self._description_font.render(stat, 0, (255, 255, 255)).convert_alpha()
+            stat_displayed = self._description_font.render(stat, 0, self.WHITE).convert_alpha()
             stat_rect = stat_displayed.get_rect(center=(int(self._width * .7), int(self._height / 4) + offset))
             offset += self._ship_size // 4
             self._game_display.blit(stat_displayed, stat_rect.topleft)
@@ -227,3 +276,16 @@ class MenuView(View):
         # Renders effects
         for effect in effects:
             self._render_effect(effect)
+
+    """Stores the current loadout for the player.
+
+    :param player: ship that's being used
+    :type player: PlayerID
+    :param weapon: weapon being used
+    :type weapon: WeaponID
+    """
+
+    def set_loadout_to_display(self, player, weapon):
+        self._player = player
+        self._weapon = weapon
+        # TODO: Display this somewhere

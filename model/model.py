@@ -415,10 +415,8 @@ class Model:
         firing_position = self._player_ship.y - config.ship_size / 4
         # Generating the required number of projectiles:
         if stats["COUNT"] > 1:
-            offset = -stats["SPREAD"]
-            partition = int(((2 * stats["SPREAD"]) / stats["COUNT"]))
-            if stats["TYPE"] in [ProjectileID.FRIENDLY_MISSILE, ProjectileID.FRIENDLY_FLAK]:
-                partition += 5
+            partition = int(((2 * stats["SPREAD"]) / (stats["COUNT"] + 1)))
+            offset = -stats["SPREAD"] + partition
             for _ in range(stats["COUNT"]):
                 projectile = self._generate_projectile(stats["SPEED"], self._player_ship.x, firing_position,
                                                        offset + 90,

@@ -23,7 +23,7 @@ class Missile(Projectile):
         self.orientation = 1 if self.direction >= 0 else -1
         self.target = target
         # How many ticks does the missile have to prep before tracking
-        self.ticks = int(4 * (config.game_fps / 30))
+        self.ticks = int(6 * (config.game_fps / 30))
         # Initial direction when fired
         self.y_change = -math.sin(math.radians(direction)) * speed
         self.x_change = math.cos(math.radians(direction)) * speed

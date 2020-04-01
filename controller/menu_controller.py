@@ -76,8 +76,8 @@ class MenuController:
     music_path = os.path.join(resource_path, 'music')  # the music folder path
     _tree = construct_tree()
     _main_menu = _tree
-
-    _weapon_chosen = None
+    # TODO: Retrieve from file or database
+    _weapon_chosen = WeaponID.GUN
     _player = PlayerID.CITADEL
     """Constructor that takes in a view to run the menus.
 
@@ -95,22 +95,28 @@ class MenuController:
         # Loads the start menu music
         pygame.mixer.music.load(os.path.join(self.music_path, 'undertow.mp3'))
         pygame.mixer.music.play(-1, 0)
-        # To keep background continuity between the two views:
+        # How many times the menu can transition per second in frames:
+        self._option_transition = config.game_fps // 10
+        self._curr_ticks = self._option_transition
 
     """Figures out what to do depending on the key inputs.
 
-    :param key: key released
-    :type key: pygame key constant
+    :param keys: keys pressed
+    :type keys: [pygame.key]
     """
 
-    def _parse_key_input(self, key):
+    def _parse_key_input(self, keys):
         if self._tree.name in GameID:
             direction = None
-            if key == pygame.K_w or key == pygame.K_UP:
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
                 direction = Direction.UP
-            elif key == pygame.K_s or key == pygame.K_DOWN:
+            elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction = Direction.DOWN
-            self._tree.switch_selection(direction)
+            if self._curr_ticks == self._option_transition:
+                self._tree.switch_selection(direction)
+                self._curr_ticks = 0
+            elif self._curr_ticks < self._option_transition:
+                self._curr_ticks += 1
 
     """Runs the menus, allowing for the player to select game mode, difficulty, and weapon.
 
@@ -154,6 +160,7 @@ class MenuController:
         while not done:
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
+            self._menus.set_loadout_to_display(self._player, self._weapon_chosen)
             self._menus.render_menu(self._tree)
             self._parse_key_input(keys)
             # Gets game_events
@@ -162,7 +169,6 @@ class MenuController:
                 if game_event.type == pygame.QUIT:
                     return -1
                 elif game_event.type == pygame.KEYUP:
-                    self._parse_key_input(game_event.key)
                     # Selects the current option if space is pressed
                     if game_event.key == pygame.K_SPACE and self._tree.name in GameID:
                         # Selects the current option

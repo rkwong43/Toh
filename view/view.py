@@ -20,6 +20,7 @@ inside their respective fields ships_to_init, projectiles_to_init, and effects_t
 
 
 class View:
+    WHITE = (255, 255, 255)
     # Image paths
     _current_path = os.path.dirname(__file__)  # where this file is located
     _outer_path = os.path.abspath(os.path.join(_current_path, os.pardir))  # the View folder
@@ -76,7 +77,6 @@ class View:
         self._ship_size = config.ship_size
         # Title of the window
         pygame.display.set_caption(config.game_title)
-        # Background image is 1920 x 1080
         #######################################################
         background_path = self._backgrounds[game_mode]
         self._background = pygame.image.load(background_path).convert_alpha()
@@ -88,7 +88,7 @@ class View:
         # Display parameters
         self._font_size = self._height / 24
         self._text_font = pygame.font.Font(self._font_path, int(self._font_size))
-        self._hp_text = self._text_font.render("HP", 1, (255, 255, 255)).convert_alpha()
+        self._hp_text = self._text_font.render("HP", 1, self.WHITE).convert_alpha()
         hp_width, hp_height = pygame.font.Font.size(self._text_font, "HP")
         #######################################################
         self._red_bar = pygame.rect.Rect(hp_width, self._height - self._font_size + self._font_size / 3,
@@ -100,12 +100,12 @@ class View:
                                             self._width / 3, self._font_size / 4)
         #######################################################
         # Score
-        self._score_text = self._text_font.render("Score:", 1, (255, 255, 255)).convert_alpha()
+        self._score_text = self._text_font.render("Score:", 1, self.WHITE).convert_alpha()
         self._score_x = hp_width + (self._width / 3) + self._font_size
         self._score_width = pygame.font.Font.size(self._text_font, "Score:")[0]
         #######################################################
         # FPS ticker
-        self._fps_text = self._text_font.render("FPS:", 1, (255, 255, 255)).convert_alpha()
+        self._fps_text = self._text_font.render("FPS:", 1, self.WHITE).convert_alpha()
 
         #######################################################
         # Grabs the image dictionary
@@ -242,7 +242,7 @@ class View:
         self._game_display.blit(self._hp_text, (0, self._height - self._font_size))
         # Score
         self._game_display.blit(self._score_text, (self._score_x, self._height - self._font_size))
-        score = self._text_font.render(str(player.score), 1, (255, 255, 255)).convert_alpha()
+        score = self._text_font.render(str(player.score), 1, self.WHITE).convert_alpha()
         self._game_display.blit(score, (self._score_x + self._score_width,
                                         self._height - self._font_size))
 
@@ -309,5 +309,5 @@ class View:
 
     def render_fps(self, fps):
         self._game_display.blit(self._fps_text, (self._width - (5 * self._font_size), self._height - self._font_size))
-        fps_number = self._text_font.render(str(fps), 1, (255, 255, 255)).convert_alpha()
+        fps_number = self._text_font.render(str(fps), 1, self.WHITE).convert_alpha()
         self._game_display.blit(fps_number, (self._width - (2 * self._font_size), self._height - self._font_size))

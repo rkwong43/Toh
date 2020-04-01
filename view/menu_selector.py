@@ -1,3 +1,4 @@
+from src.model.stats import gamemode_stats
 from src.utils.ids.game_id import GameID
 from src.view.menu_tree import MenuTree
 
@@ -27,6 +28,17 @@ class MenuSelector(MenuTree):
         except AttributeError:
             self._next_menu = None
         self._number_of_options = len(options)
+        self._init_descriptions()
+
+    """Initializes the descriptions for the current screen.
+        """
+
+    def _init_descriptions(self):
+        for key in self.options:
+            try:
+                self.description[key] = gamemode_stats.descriptions[key]
+            except KeyError:
+                self.description[key] = None
 
     """Selects the option and returns the option selected.
     
@@ -46,3 +58,12 @@ class MenuSelector(MenuTree):
 
     def get_options(self):
         return [item.name.replace("_", " ") for item in self.options]
+
+    """Retrieves the current item's ID.
+
+       :returns: ID of the current item
+       :rtype: ID
+       """
+
+    def get_curr_id(self):
+        return self.options[self._current_selection]

@@ -30,6 +30,11 @@ class MenuTree:
         self._number_of_options = len(options)
 
         self.description = {}
+        self._init_descriptions()
+
+    """Initializes the descriptions for the current screen.
+    """
+    def _init_descriptions(self):
         for key in self.options.keys():
             try:
                 self.description[key] = gamemode_stats.descriptions[key]
@@ -43,7 +48,6 @@ class MenuTree:
     """
 
     def goto_root(self):
-        self._current_selection = 0
         return self.root
 
     """Adds a child node to this node.
@@ -99,3 +103,11 @@ class MenuTree:
     """
     def get_current_selection(self):
         return self._current_selection
+
+    """Retrieves the current item's ID.
+    
+    :returns: ID of the current item
+    :rtype: ID
+    """
+    def get_curr_id(self):
+        return list(self.options.items())[self._current_selection][0]

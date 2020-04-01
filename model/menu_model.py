@@ -130,11 +130,15 @@ class MenuModel(Model):
     """Renders the player ship.
     :param entity_id: ID of player ship
     :type entity_id: EntityID
+    :param x: x position
+    :type x: int
+    :param y: y position
+    :type y: int
     """
 
-    def spawn_player(self, entity_id):
-        self._player_ship.x = config.display_width / 4
-        self._player_ship.y = config.display_height / 2
+    def spawn_player(self, entity_id, x=config.display_width / 4, y=config.display_height / 2):
+        self._player_ship.x = x
+        self._player_ship.y = y
         self._player_ship.entity_id = entity_id
 
     """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
