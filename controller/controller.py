@@ -12,7 +12,8 @@ and different types of menus and screens
 class Controller:
     # Key bindings:
     _key_to_directions = {pygame.K_w: Direction.UP, pygame.K_a: Direction.LEFT, pygame.K_s: Direction.DOWN,
-                          pygame.K_d: Direction.RIGHT, pygame.K_SPACE: Direction.FIRE}
+                          pygame.K_d: Direction.RIGHT, pygame.K_SPACE: Direction.FIRE, pygame.K_UP: Direction.UP,
+                          pygame.K_DOWN: Direction.DOWN, pygame.K_RIGHT: Direction.RIGHT, pygame.K_LEFT: Direction.LEFT}
     # Music:
     # Music by Scott Buckley – www.scottbuckley.com.au
     current_path = os.path.dirname(__file__)  # where this file is located

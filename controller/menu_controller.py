@@ -106,9 +106,9 @@ class MenuController:
     def _parse_key_input(self, key):
         if self._tree.name in GameID:
             direction = None
-            if key == pygame.K_w:
+            if key == pygame.K_w or key == pygame.K_UP:
                 direction = Direction.UP
-            elif key == pygame.K_s:
+            elif key == pygame.K_s or key == pygame.K_DOWN:
                 direction = Direction.DOWN
             self._tree.switch_selection(direction)
 

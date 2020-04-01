@@ -307,7 +307,7 @@ class View:
     :type fps: int
     """
 
-    def _render_fps(self, fps):
+    def render_fps(self, fps):
         self._game_display.blit(self._fps_text, (self._width - (5 * self._font_size), self._height - self._font_size))
         fps_number = self._text_font.render(str(fps), 1, (255, 255, 255)).convert_alpha()
         self._game_display.blit(fps_number, (self._width - (2 * self._font_size), self._height - self._font_size))
