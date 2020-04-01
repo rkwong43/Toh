@@ -24,12 +24,12 @@ def start_game():
     while not finished:
         menu_view = MenuView()
         menu_controller = MenuController(menu_view)
-        game_mode, difficulty, weapon_selected, player = menu_controller.run_menus()
+        game_mode, difficulty, play_game = menu_controller.run_menus()
         # If window is closed
-        if weapon_selected is None:
+        if not play_game:
             break
         view = View(game_mode)
-        model = Model(weapon_selected, difficulty, game_mode, player)
+        model = Model(difficulty, game_mode)
         model.clear()
         controller = Controller(model, view)
         finished = not controller.run_game()

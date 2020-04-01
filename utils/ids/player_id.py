@@ -6,6 +6,8 @@ from enum import Enum, auto
 
 class PlayerID(Enum):
     # Player:
+    # Base:
+    CITADEL = auto()
     # More HP and Shield, slower movement
     AEGIS = auto()
     # Less HP, faster
@@ -16,5 +18,3 @@ class PlayerID(Enum):
     STORM = auto()
     # less HP and shield, more fire rate and damage
     ORIGIN = auto()
-    # Base:
-    CITADEL = auto()

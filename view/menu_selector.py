@@ -52,18 +52,18 @@ class MenuSelector(MenuTree):
 
     """Returns all the options listed.
 
-        :returns: options to display
-        :rtype: [str]
-        """
+    :returns: options to display
+    :rtype: [str]
+    """
 
     def get_options(self):
         return [item.name.replace("_", " ") for item in self.options]
 
     """Retrieves the current item's ID.
 
-       :returns: ID of the current item
-       :rtype: ID
-       """
+   :returns: ID of the current item
+   :rtype: ID
+   """
 
     def get_curr_id(self):
         return self.options[self._current_selection]

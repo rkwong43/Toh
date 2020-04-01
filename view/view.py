@@ -268,8 +268,9 @@ class View:
             image = image_holder.animated_image
         # Rotates enemy to face the given angle
         enemy_image = pygame.transform.rotate(image, angle)
-        new_rect = enemy_image.get_rect(center=(ship.x + ship.size / 2, ship.y + ship.size / 2))
-        self._game_display.blit(enemy_image, new_rect.topleft)
+
+        self._game_display.blit(enemy_image,
+                                self._find_posn(enemy_image, ship.x + ship.size / 2, ship.y + ship.size / 2))
 
     """Renders an individual projectile depending on its orientation.
 
@@ -284,9 +285,7 @@ class View:
             projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
             center_height = projectile.y + self._ship_size / 2
             center_width = projectile.x + self._ship_size / 2
-            new_rect = projectile_image.get_rect(
-                center=(center_width, center_height))
-            self._game_display.blit(projectile_image, new_rect.topleft)
+            self._game_display.blit(projectile_image, self._find_posn(projectile_image, center_width, center_height))
 
     """Renders the given effect. Returns the effect.
 
@@ -311,3 +310,20 @@ class View:
         self._game_display.blit(self._fps_text, (self._width - (5 * self._font_size), self._height - self._font_size))
         fps_number = self._text_font.render(str(fps), 1, self.WHITE).convert_alpha()
         self._game_display.blit(fps_number, (self._width - (2 * self._font_size), self._height - self._font_size))
+
+    """Finds position given a Surface and coordinates for the center. Returns the coordinates that
+    correspond to the correct top left position to place the surface to achieve the given center.
+    
+    :param image: Surface to find coordinates to
+    :type image: Surface
+    :param x: x position
+    :type x: int
+    :param y: y position
+    :param y: int
+    :returns: tuple of the coordinates to place it
+    :rtype: (int, int)
+    """
+
+    def _find_posn(self, image, x, y):
+        rect = image.get_rect(center=(x, y))
+        return rect.topleft

@@ -28,7 +28,7 @@ stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": 
                                   "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
                                   "DAMAGE": 20, "RELOAD": 16, "PROJECTILE COUNT": 4, "DPS": 40,
                                   "DESCRIPTION": "Launches an array of homing plasma missiles at enemies."},
-         WeaponID.DIAMOND_DUST: {"PROJECTILE SPEED": 10, "SPREAD": 45, "PROJECTILE TYPE": ProjectileID.DIAMOND_DUST,
+         WeaponID.DIAMOND_DUST: {"PROJECTILE SPEED": 20, "SPREAD": 45, "PROJECTILE TYPE": ProjectileID.DIAMOND_DUST,
                                  "DAMAGE": 5, "RELOAD": 16, "PROJECTILE COUNT": 5, "DPS": 50,
                                  "DESCRIPTION": "Creates a burst of compressed plasma shards that track enemies."},
          WeaponID.RAILGUN: {"PROJECTILE SPEED": 40, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.RAILGUN_BLAST,

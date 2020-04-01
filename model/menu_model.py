@@ -30,7 +30,7 @@ class MenuModel(Model):
     """
 
     def __init__(self):
-        super().__init__(WeaponID.GUN, DifficultyID.EASY, GameModeID.CLASSIC, PlayerID.CITADEL)
+        super().__init__(DifficultyID.EASY, GameModeID.CLASSIC)
         self._player_ship.x = config.display_width
         self._play = False
 

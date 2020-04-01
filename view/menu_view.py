@@ -5,6 +5,7 @@ from src.model.menu_model import MenuModel
 from src.utils import config
 from src.utils.ids.game_id import GameID
 from src.utils.ids.gamemode_id import GameModeID
+from src.utils.ids.weapon_id import WeaponID
 from src.view.view import View
 
 """View to render the game, uses pygame to render images. Represents the menus in game.
@@ -12,16 +13,13 @@ from src.view.view import View
 
 
 class MenuView(View):
+    # TODO: Add background fading transitions upon different game modes
     # Image paths
     current_path = os.path.dirname(__file__)  # where this file is located
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     image_path = os.path.join(resource_path, 'images')  # the image folder path
     background_path = os.path.join(image_path, 'background.png')
-
-    # Player loadout
-    _player = None
-    _weapon = None
 
     """Constructor to initialize the game display.
 
@@ -43,6 +41,7 @@ class MenuView(View):
         # Background image is 1920 x 1080
         # For scrolling background
         self._init_background()
+        self._font_size = config.display_height // 24
         # Title font size
         self._title_font_size = config.display_height / 10
         font_path = os.path.join(self.resource_path, 'fonts')
@@ -63,9 +62,9 @@ class MenuView(View):
 
     def _init_background(self):
         self._background = pygame.image.load(self.background_path).convert_alpha()
+
         self._background_x = 0
-        self._background_change = 1 * (30 / config.game_fps)
-        self._font_size = config.display_height // 24
+        self._background_change = -1 * (30 / config.game_fps)
 
     """Initializes the title screen attributes.
 
@@ -103,13 +102,12 @@ class MenuView(View):
         elif tree.name not in GameID:
             self._model.set_play(True)
             self._render_gallery(tree)
+        elif tree.name == GameID.LOADOUT:
+            self._render_loadout_selection(tree)
         else:
             self._model.set_play(False)
             self._model.clear()
-            if tree is None:
-                self._render_title_screen()
-            else:
-                self._render_descriptive_menu(tree)
+            self._render_descriptive_menu(tree)
 
     """Renders a menu which may include descriptions or high scores.
 
@@ -135,18 +133,18 @@ class MenuView(View):
             x = self._width / 2
         else:
             x = self._width // 4
-        pointer = self._text_font.render(">>", 1, self.WHITE).convert_alpha()
         # Renders all the text
+        # Point for menu options
+        pointer = self._text_font.render(">>", 1, self.WHITE).convert_alpha()
         pointer.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
         self._compute_alpha()
         for i in range(len(images)):
             image = images[i]
-            pos = (x, y)
-            rect = image.get_rect(center=pos)
+            placement_posn = self._find_posn(image, x, y)
             if i == curr_selected:
-                pointer_rect = pointer.get_rect(topright=rect.topleft)
+                pointer_rect = pointer.get_rect(topright=placement_posn)
                 self._game_display.blit(pointer, pointer_rect.topleft)
-            self._game_display.blit(image, rect.topleft)
+            self._game_display.blit(image, placement_posn)
             y += self._text_height
         # Displays the descriptions
         if tree.name not in [GameID.GALLERY, GameID.HANGAR]:
@@ -182,12 +180,12 @@ class MenuView(View):
     def _render_loadout(self):
         x = config.display_width * .6
         y = config.display_height / 2
-        self._model.spawn_player(self._player, x, y)
+        self._model.spawn_player(config.player_ship, x, y)
         # TODO: maybe make sprites for weapons too
-        weapon_text = self._description_font.render("PLACEHOLDER: " + self._weapon.name.replace("_", " "),
+        weapon_text = self._description_font.render("PLACEHOLDER: " + config.weapon.name.replace("_", " "),
                                                     0, self.WHITE).convert_alpha()
-        weapon_text_rect = weapon_text.get_rect(center=(x + config.ship_size // 2, y + config.ship_size))
-        self._game_display.blit(weapon_text, weapon_text_rect.topleft)
+        self._game_display.blit(weapon_text, self._find_posn(weapon_text, x + config.ship_size // 2,
+                                                             y + config.ship_size))
         self._render_ship(self._model.get_player(), 0)
 
     """Renders the title screen.
@@ -195,8 +193,8 @@ class MenuView(View):
 
     def _render_title_screen(self):
         self._render_background()
-        title_rect = self._title.get_rect(center=(int(self._width / 2), int(self._height / 2.5)))
-        self._game_display.blit(self._title, title_rect.topleft)
+        self._game_display.blit(self._title,
+                                self._find_posn(self._title, int(self._width / 2), int(self._height / 2.5)))
         self._compute_alpha()
         image = self._start_prompt.copy()
         image.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
@@ -218,12 +216,11 @@ class MenuView(View):
     def _render_background(self):
         self._game_display.fill((0, 0, 0))
         self._game_display.blit(self._background, (self._background_x, self._background_y))
-        if self._background_x > -self._width or self._background_y > -self._height:
-            self._background_x -= self._background_change
-            self._background_y -= self._background_change
-        else:
-            self._background_x += self._background_change
-            self._background_y += self._background_change
+        self._background_x += self._background_change
+        self._background_y += self._background_change
+        if self._background_x == -self._width or self._background_y == -self._height \
+                or self._background_x == 0 or self._background_y == 0:
+            self._background_change *= -1
 
     """Renders the given gallery object.
 
@@ -244,18 +241,18 @@ class MenuView(View):
                     self._model.get_enemies(), self._model.get_effects())
         # Title and description
         name_displayed = self._text_font.render(str(gallery.name), 1, self.WHITE).convert_alpha()
-        name_rect = name_displayed.get_rect(center=(int(self._width / 2), int(self._height / 10)))
-        self._game_display.blit(name_displayed, name_rect.topleft)
+        self._game_display.blit(name_displayed,
+                                self._find_posn(name_displayed, int(self._width / 2), int(self._height / 10)))
         description = self._description_font.render(gallery.description, 0, self.WHITE).convert_alpha()
-        description_rect = description.get_rect(center=(int(self._width / 2), int(self._height / 6)))
-        self._game_display.blit(description, description_rect.topleft)
+        self._game_display.blit(description, self._find_posn(description, int(self._width / 2), int(self._height / 6)))
         # Other stats to show
         offset = 0
         for stat in gallery.stats:
             stat_displayed = self._description_font.render(stat, 0, self.WHITE).convert_alpha()
-            stat_rect = stat_displayed.get_rect(center=(int(self._width * .7), int(self._height / 4) + offset))
             offset += self._ship_size // 4
-            self._game_display.blit(stat_displayed, stat_rect.topleft)
+            self._game_display.blit(stat_displayed, self._find_posn(stat_displayed,
+                                                                    int(self._width * .7),
+                                                                    int(self._height / 4) + offset))
 
     """Renders the game, including background, ships, and projectiles.
 
@@ -277,15 +274,61 @@ class MenuView(View):
         for effect in effects:
             self._render_effect(effect)
 
-    """Stores the current loadout for the player.
-
-    :param player: ship that's being used
-    :type player: PlayerID
-    :param weapon: weapon being used
-    :type weapon: WeaponID
+    """Renders the loadout selection screen.
+    
+    :param tree: The tree to get items from.
+    :type tree: LoadoutSelector
     """
 
-    def set_loadout_to_display(self, player, weapon):
-        self._player = player
-        self._weapon = weapon
-        # TODO: Display this somewhere
+    def _render_loadout_selection(self, tree):
+        self._render_background()
+        self._render_loadout_selector_helper(tree)
+        launch_text = self._description_font.render("Press [SPACE] to launch:", 1, self.WHITE)
+        # TODO
+        self._game_display.blit(launch_text, self._find_posn(launch_text, self._width // 2, self._height // 5))
+
+    """Displays the currently selected ship and weapon.
+    
+    :param tree: The selector to retrieve the current loadout from.
+    :type tree: LoadoutSelector
+    """
+
+    def _render_loadout_selector_helper(self, tree):
+        # Positional arguments
+        player_x = self._width // 4
+        weapon_x = self._width // 2
+        x_posns = [player_x, weapon_x]
+        y = self._height // 2
+        lists = tree.get_options()
+        player_id = lists[0]
+        weapon_id = lists[1]
+        # Setting the current ship and weapon
+        rect = self._image_dict[player_id].base_image.get_rect(center=(player_x, y))
+
+        self._model.spawn_player(player_id, rect.topleft[0], rect.topleft[1])
+        weapon_text = self._description_font.render(weapon_id.name.replace("_", " "),
+                                                    0, self.WHITE).convert_alpha()
+        curr_selection = tree.current_list
+        # Chevron for loadouts
+        for i in range(len(lists)):
+            chevron = self._text_font.render(">", 1, self.WHITE).convert_alpha()
+            # The actual ship/weapon
+            if lists[i] in WeaponID:
+                self._game_display.blit(weapon_text, self._find_posn(weapon_text, weapon_x, y))
+            else:
+                self._render_ship(self._model.get_player(), 0)
+            # The selection chevrons
+            if i == curr_selection:
+                # Chevrons alpha values
+                chevron.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
+                self._compute_alpha()
+            else:
+                chevron.fill((255, 255, 255, 50), None, pygame.BLEND_RGBA_MULT)
+
+            upper_chevron = pygame.transform.rotate(chevron, -90)
+            lower_chevron = pygame.transform.rotate(chevron, 90)
+            upper_rect = upper_chevron.get_rect(center=(x_posns[i], y + config.ship_size))
+            lower_rect = lower_chevron.get_rect(center=(x_posns[i], y - config.ship_size))
+            # Blitting the current selection:
+            self._game_display.blit(upper_chevron, upper_rect.topleft)
+            self._game_display.blit(lower_chevron, lower_rect.topleft)

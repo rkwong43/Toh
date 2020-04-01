@@ -40,15 +40,13 @@ class Model:
 
     """Initializes the model with the width and height of the window and the size of ships
 
-    :param weapon_chosen: Starting weapon for the player
-    :type weapon_chosen: WeaponID
     :param difficulty: Difficulty mode of the AI
     :type difficulty: DifficultyID
     :param game_mode: Game mode to play
     :type game_mode: GameModeID or GameID
     """
 
-    def __init__(self, weapon_chosen, difficulty, game_mode, player_id):
+    def __init__(self, difficulty, game_mode):
         # Friendly ships and player
         self.friendly_ships = []
         # Enemy ships
@@ -75,7 +73,7 @@ class Model:
         # Game over?
         self._game_over = False
         # Initializing the player and its bonuses from ship choice
-        self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(player_id)
+        self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(config.player_ship)
         self.friendly_ships.append(self._player_ship)
         # The current enemy AI module
         self._AI = self._init_enemy_ai(game_mode, difficulty)
@@ -85,7 +83,7 @@ class Model:
         # Current progress until weapon is reloaded
         self._reload = 0
         # This sets all the weapon stats
-        self.switch_weapon(weapon_chosen)
+        self.switch_weapon(config.weapon)
 
         # Sounds
         self.sounds = {}

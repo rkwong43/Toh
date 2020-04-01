@@ -10,6 +10,7 @@ from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.view.image_containers.menu_gallery import MenuGallery
+from src.view.loadout_selector import LoadoutSelector
 from src.view.menu_selector import MenuSelector
 from src.view.menu_tree import MenuTree
 
@@ -41,7 +42,7 @@ def construct_gallery(ids):
 
 def construct_tree():
     # TODO: Loadout menu
-    difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, None)
+    difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, LoadoutSelector())
     survival = MenuSelector([GameModeID.CLASSIC,
                              GameModeID.MANDIBLE_MADNESS,
                              GameModeID.HEAVEN],
@@ -76,9 +77,6 @@ class MenuController:
     music_path = os.path.join(resource_path, 'music')  # the music folder path
     _tree = construct_tree()
     _main_menu = _tree
-    # TODO: Retrieve from file or database
-    _weapon_chosen = WeaponID.GUN
-    _player = PlayerID.CITADEL
     """Constructor that takes in a view to run the menus.
 
     :param menus: the menu view
@@ -127,7 +125,7 @@ class MenuController:
     def run_menus(self):
         # In game clock for FPS and time
         clock = pygame.time.Clock()
-        quit_options = (None, None, None, None)
+        quit_options = (None, None, False)
         # _start_screen returns true if quit
         while True:
             if self._start_screen(clock):
@@ -139,7 +137,7 @@ class MenuController:
             """
             flag = self._run_menus_helper(clock)
             if flag == 1:
-                return self._game_mode, self._difficulty, self._weapon_chosen, self._player
+                return self._game_mode, self._difficulty, True
             elif flag == 0:
                 continue
             else:
@@ -160,7 +158,6 @@ class MenuController:
         while not done:
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
-            self._menus.set_loadout_to_display(self._player, self._weapon_chosen)
             self._menus.render_menu(self._tree)
             self._parse_key_input(keys)
             # Gets game_events
@@ -177,6 +174,8 @@ class MenuController:
                     elif game_event.key == pygame.K_ESCAPE or game_event.key == pygame.K_BACKSPACE:
                         if not self._go_back_menu():
                             return 0
+                    elif game_event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_d, pygame.K_a]:
+                        self._parse_horizontal_input(game_event.key)
                 # Animates sprites
                 if game_event.type == ANIMATE:
                     self._menus.animate()
@@ -203,14 +202,13 @@ class MenuController:
             return False
         elif self._tree.name == GameID.LOADOUT:
             # Loadouts are preceded by a Selector
-            self._weapon_chosen, self._player = self._tree.select
             return True
         else:
             # Tutorial selection
             if destination == GameID.TUTORIAL:
                 # Preset values for gear
-                self._weapon_chosen = WeaponID.GUN
-                self._player = PlayerID.CITADEL
+                config.weapon = WeaponID.GUN
+                config.player_ship = PlayerID.CITADEL
                 self._game_mode = GameID.TUTORIAL
                 self._difficulty = DifficultyID.EASY
                 return True
@@ -256,3 +254,16 @@ class MenuController:
             self._menus.render_menu(None)
             pygame.display.update()
             clock.tick(self._fps)
+
+    """Parses horizontal movement, which is not continuous upon holding down a key.
+    
+    :param key: The key released
+    :type key: pygame key constant
+    """
+    def _parse_horizontal_input(self, key):
+        direction = None
+        if key == pygame.K_d or key == pygame.K_RIGHT:
+            direction = Direction.RIGHT
+        elif key == pygame.K_a or key == pygame.K_LEFT:
+            direction = Direction.LEFT
+        self._tree.switch_selection(direction)

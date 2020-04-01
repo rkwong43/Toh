@@ -50,13 +50,6 @@ class MenuTree:
     def goto_root(self):
         return self.root
 
-    """Adds a child node to this node.
-    
-    :param options: Options to give to the child
-    :type options: list of str
-    :param name: which option this child corresponds to
-    """
-
     """Switches what is selected.
     
     :param direction: which way to go

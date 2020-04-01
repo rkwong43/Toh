@@ -84,7 +84,6 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
                 rating -= self._mandible_combat_rating
             self._max_combat_rating += self._combat_ratio
             # Doubles the enemies spawned every few waves and buffs them
-        print(self._wave, self._enemy_buff_wave)
         if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
             self._buff_enemies()
             self._model.popup_text("MORE MANDIBLES APPROACHING", -1, -1, 3)
