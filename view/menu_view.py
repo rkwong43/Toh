@@ -295,40 +295,41 @@ class MenuView(View):
 
     def _render_loadout_selector_helper(self, tree):
         # Positional arguments
-        player_x = self._width // 4
-        weapon_x = self._width // 2
-        x_posns = [player_x, weapon_x]
+        num_options = len(tree.get_options()) + 1
+        screen_x_offset = self._width // num_options
+        options = tree.get_options()
+        x_posns = [x * screen_x_offset for x in range(1, len(options) + 1)]
         y = self._height // 2
-        lists = tree.get_options()
-        player_id = lists[0]
-        weapon_id = lists[1]
-        # Setting the current ship and weapon
-        rect = self._image_dict[player_id].base_image.get_rect(center=(player_x, y))
-
-        self._model.spawn_player(player_id, rect.topleft[0], rect.topleft[1])
-        weapon_text = self._description_font.render(weapon_id.name.replace("_", " "),
-                                                    0, self.WHITE).convert_alpha()
         curr_selection = tree.current_list
-        # Chevron for loadouts
-        for i in range(len(lists)):
+        for i in range(num_options - 1):
             chevron = self._text_font.render(">", 1, self.WHITE).convert_alpha()
-            # The actual ship/weapon
-            if lists[i] in WeaponID:
-                self._game_display.blit(weapon_text, self._find_posn(weapon_text, weapon_x, y))
-            else:
-                self._render_ship(self._model.get_player(), 0)
+            text_transparency = 50
             # The selection chevrons
             if i == curr_selection:
                 # Chevrons alpha values
                 chevron.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
                 self._compute_alpha()
+                text_transparency = 255
             else:
                 chevron.fill((255, 255, 255, 50), None, pygame.BLEND_RGBA_MULT)
+            # The selection:
+            # Text
+            text = self._description_font.render(options[i].name.replace("_", " "), 0, self.WHITE).convert_alpha()
+            text.fill((*self.WHITE, text_transparency), None, pygame.BLEND_RGBA_MULT)
+            self._game_display.blit(text, self._find_posn(text, x_posns[i], y + config.ship_size / 2))
+            # Image
+            if options[i] in WeaponID:
+                """weapon_image = self._image_dict[options[i]]
+                self._game_display.blit(weapon_image, self._find_posn(weapon_image, x_posns[i], y))"""
+            else:
+                self._model.spawn_player(options[i], x_posns[i] - config.ship_size / 2, y - config.ship_size / 2)
+                self._render_ship(self._model.get_player(), 0)
 
-            upper_chevron = pygame.transform.rotate(chevron, -90)
-            lower_chevron = pygame.transform.rotate(chevron, 90)
-            upper_rect = upper_chevron.get_rect(center=(x_posns[i], y + config.ship_size))
-            lower_rect = lower_chevron.get_rect(center=(x_posns[i], y - config.ship_size))
-            # Blitting the current selection:
-            self._game_display.blit(upper_chevron, upper_rect.topleft)
-            self._game_display.blit(lower_chevron, lower_rect.topleft)
+            # Rendering the chevrons
+            angle = -90
+            offset = config.ship_size
+            for _ in range(2):
+                temp_chevron = pygame.transform.rotate(chevron, angle)
+                self._game_display.blit(temp_chevron, self._find_posn(temp_chevron, x_posns[i], y + offset))
+                angle *= -1
+                offset *= -1
