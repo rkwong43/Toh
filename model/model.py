@@ -121,20 +121,10 @@ class Model:
     """
 
     def _init_enemy_ai(self, game_mode, difficulty):
-        # Using if-else instead of dictionary so each instance isn't
-        # instantiated without being used
-        if game_mode == GameModeID.CLASSIC:
-            AI = EnemyWaveAI(self, difficulty)
-        elif game_mode == GameModeID.MANDIBLE_MADNESS:
-            AI = EnemyMandibleMadnessAI(self, difficulty)
-        elif game_mode == GameModeID.TITAN_SLAYER:
-            AI = EnemyTitanSlayerAI(self, difficulty)
-        elif game_mode == GameModeID.HEAVEN:
-            AI = EnemyHeavenAI(self, difficulty)
-        elif game_mode == GameID.TUTORIAL:
-            AI = EnemyTutorialAI(self)
-        else:
-            raise ValueError("Given game mode is not supported:", game_mode)
+        AI_modules = {GameModeID.CLASSIC: EnemyWaveAI, GameModeID.MANDIBLE_MADNESS: EnemyMandibleMadnessAI,
+                      GameModeID.TITAN_SLAYER: EnemyTitanSlayerAI, GameModeID.HEAVEN: EnemyHeavenAI,
+                      GameID.TUTORIAL: EnemyTutorialAI}
+        AI = AI_modules[game_mode](self, difficulty)
         return AI
 
     """Represents a tick in the game. Handles reloads and moves all projectiles and updates the AI module to

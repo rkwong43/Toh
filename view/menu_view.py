@@ -319,6 +319,7 @@ class MenuView(View):
             self._game_display.blit(text, self._find_posn(text, x_posns[i], y + config.ship_size / 2))
             # Image
             if options[i] in WeaponID:
+                # TODO: Make images for each weapon
                 """weapon_image = self._image_dict[options[i]]
                 self._game_display.blit(weapon_image, self._find_posn(weapon_image, x_posns[i], y))"""
             else:
