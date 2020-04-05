@@ -94,7 +94,7 @@ class MenuController:
         pygame.mixer.music.load(os.path.join(self.music_path, 'undertow.mp3'))
         pygame.mixer.music.play(-1, 0)
         # How many times the menu can transition per second in frames:
-        self._option_transition = config.game_fps // 10
+        self._option_transition = config.game_fps // 8
         self._curr_ticks = self._option_transition
 
     """Figures out what to do depending on the key inputs.
@@ -110,6 +110,7 @@ class MenuController:
                 direction = Direction.UP
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction = Direction.DOWN
+            # Setting a limit for the number of options scrolled at once
             if self._curr_ticks == self._option_transition:
                 self._tree.switch_selection(direction)
                 self._curr_ticks = 0
@@ -158,8 +159,8 @@ class MenuController:
         while not done:
             # Grabs the keys currently pressed down
             keys = pygame.key.get_pressed()
-            self._menus.render_menu(self._tree)
             self._parse_key_input(keys)
+            self._menus.render_menu(self._tree)
             # Gets game_events
             for game_event in pygame.event.get():
                 # Checks if quit
