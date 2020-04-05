@@ -5,9 +5,9 @@ from src.utils.ids.weapon_id import WeaponID
 """Defines global variables to be used across all of the game.
 """
 
-display_width = 1000
-display_height = 750
-ship_size = 80
+display_width = 1024
+display_height = 720
+ship_size = 90
 game_fps = 60
 game_title = 'Tears Over Heaven'
 

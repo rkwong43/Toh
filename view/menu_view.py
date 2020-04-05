@@ -78,13 +78,13 @@ class MenuView(View):
         # Title dimensions
         title_width, title_height = pygame.font.Font.size(self._text_font, config.game_title)
         self._title_x = config.display_width / 2 - title_width / 2
-        self._title_y = config.display_width / 2 - title_height
+        self._title_y = config.display_height / 2 - title_height
         # Prompt to start the game
         self._start_font = pygame.font.Font(font_path, int(self._title_font_size / 4))
         self._start_prompt = self._start_font.render("Press [Space] to Begin", 1, self.WHITE).convert_alpha()
         prompt_width, prompt_height = pygame.font.Font.size(self._start_font, "Press [Space] to Begin")
         self._prompt_x = (config.display_width / 2) - (prompt_width / 2)
-        self._prompt_y = self._title_y + title_height + (2 * prompt_height)
+        self._prompt_y = self._title_y + title_height + config.ship_size
         # Alpha levels for anything that fades or glows
         self._prompt_alpha = 150
         self._prompt_alpha_change = -2

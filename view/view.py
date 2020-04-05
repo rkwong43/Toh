@@ -198,7 +198,7 @@ class View:
         self._draw_background()
         # If the player isn't dead, it is rendered
         if not player.is_dead:
-            self._render_ship(player, 0)
+            self._render_ship(player, player.angle)
         # Renders enemies to face the player
         for enemy in enemies:
             self._render_ship(enemy, enemy.angle)

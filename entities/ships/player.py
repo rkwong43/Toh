@@ -23,7 +23,7 @@ class Player(Ship):
         self.entity_id = entity_id
         # Current score/experience
         self.score = 0
-        self.angle = 90
+        self.angle = 0
 
     """Moves the player ship depending on the direction
     
