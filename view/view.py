@@ -30,14 +30,14 @@ class View:
     _font_path = os.path.join(_resource_path, 'fonts')
     _font_path = os.path.join(_font_path, 'insane_hours_2.ttf')
     # Backgrounds
-    _backgrounds = {GameModeID.TITAN_SLAYER: os.path.join(_image_path, 'titan_background.png'),
+    _backgrounds = {"INITIALIZED": False,
+                    GameModeID.TITAN_SLAYER: os.path.join(_image_path, 'titan_background.png'),
                     GameModeID.MANDIBLE_MADNESS: os.path.join(_image_path, 'mandible_background.png'),
                     GameModeID.CLASSIC: os.path.join(_image_path, 'survival_background.png'),
                     GameModeID.HEAVEN: os.path.join(_image_path, 'heaven_background.png'),
                     GameID.MENU: os.path.join(_image_path, 'background.png'),
                     GameID.TUTORIAL: os.path.join(_image_path, 'background.png')
                     }
-
     # Ship scaling (what the default ship size should be multiplied by in their rendering)
     _ship_scaling = {
         EnemyID.MANDIBLE: 1, EnemyID.MANTIS: 1, EnemyID.CRUCIBLE: 1, EnemyID.MOSQUITO: 1,
@@ -77,14 +77,17 @@ class View:
         self._ship_size = config.ship_size
         # Title of the window
         pygame.display.set_caption(config.game_title)
+        self._curr_game_mode = game_mode
+        self._init_backgrounds()
         #######################################################
-        background_path = self._backgrounds[game_mode]
-        self._background = pygame.image.load(background_path).convert_alpha()
-        self._background = pygame.transform.scale(self._background, (self._width, self._height))
-        self._background_y = 0
-        # How much the background scrolls
-        self._background_change = 2 * (30 / config.game_fps)
+        self._init_hud()
         #######################################################
+        # Grabs the image dictionary
+        self._image_dict = self._init_images()
+
+    """Initializes the HUD elements.
+    """
+    def _init_hud(self):
         # Display parameters
         self._font_size = self._height / 24
         self._text_font = pygame.font.Font(self._font_path, int(self._font_size))
@@ -107,9 +110,26 @@ class View:
         # FPS ticker
         self._fps_text = self._text_font.render("FPS:", 1, self.WHITE).convert_alpha()
 
-        #######################################################
-        # Grabs the image dictionary
-        self._image_dict = self._init_images()
+    """Initializes the backgrounds in the game.
+    """
+    def _init_backgrounds(self):
+        if not self._backgrounds["INITIALIZED"]:
+            for key, value in self._backgrounds.items():
+                if key != "INITIALIZED":
+                    temp_background = pygame.image.load(value).convert()
+                    temp_background = pygame.transform.scale(temp_background,
+                                                             (config.display_width, config.display_height))
+                    self._backgrounds[key] = temp_background
+            self._backgrounds["INITIALIZED"] = True
+        self._background = self._backgrounds[self._curr_game_mode]
+        self._target_background_id = None
+        self._scrolling_background_y = 0
+        # How much the background scrolls
+        self._scrolling_background_change = 2 * (30 / config.game_fps)
+        # For background transitions:
+        self._background_alpha = 255
+        self._new_background = None
+
 
     """Initializes all the images used in the game.
 
@@ -195,7 +215,7 @@ class View:
 
     def render(self, player, projectiles, enemies, effects):
         # Scrolling background
-        self._draw_background()
+        self._draw_background(self._background)
         # If the player isn't dead, it is rendered
         if not player.is_dead:
             self._render_ship(player, player.angle)
@@ -212,14 +232,17 @@ class View:
         self._draw_hud(player)
 
     """Draws the scrolling background.
+    
+    :param background: Background to draw
+    :type background: pygame.Surface
     """
 
-    def _draw_background(self):
-        self._game_display.blit(self._background, (0, self._background_y))
-        self._game_display.blit(self._background, (0, self._background_y - self._height))
-        self._background_y += self._background_change
-        if self._background_y == self._height:
-            self._background_y = 0
+    def _draw_background(self, background):
+        self._game_display.blit(background, (0, self._scrolling_background_y))
+        self._game_display.blit(background, (0, self._scrolling_background_y - self._height))
+        self._scrolling_background_y += self._scrolling_background_change
+        if self._scrolling_background_y == self._height:
+            self._scrolling_background_y = 0
 
     """Draws the HUD on the bottom of the screen.
 
@@ -327,3 +350,25 @@ class View:
     def _find_posn(self, image, x, y):
         rect = image.get_rect(center=(x, y))
         return rect.topleft
+
+    """Makes a background transition by fading in.
+    
+    :param background_id: The new background to transition to
+    """
+
+    def _transition_background(self, background_id):
+        # TODO: Fix issue where it abruptly transfers
+        if background_id not in [self._curr_game_mode, GameID.TUTORIAL]:
+            self._target_background_id = background_id
+            if self._background_alpha > 0:
+                self._background_alpha -= 5
+                self._background.set_alpha(self._background_alpha)
+                self._new_background = self._backgrounds[background_id]
+                self._new_background.set_alpha(255 - self._background_alpha)
+                self._draw_background(self._new_background)
+            else:
+                self._background_alpha = 255
+                self._background.set_alpha(255)
+                self._curr_game_mode = background_id
+                self._background = self._new_background
+                self._new_background = None

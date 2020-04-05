@@ -13,7 +13,6 @@ from src.view.view import View
 
 
 class MenuView(View):
-    # TODO: Add background fading transitions upon different game modes
     # Image paths
     current_path = os.path.dirname(__file__)  # where this file is located
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the View folder
@@ -38,9 +37,6 @@ class MenuView(View):
     def __init__(self):
         # Sets up the game window surface
         super().__init__(GameID.MENU)
-        # Background image is 1920 x 1080
-        # For scrolling background
-        self._init_background()
         self._font_size = config.display_height // 24
         # Title font size
         self._title_font_size = config.display_height / 10
@@ -49,22 +45,12 @@ class MenuView(View):
         self._text_font = pygame.font.Font(display_font, int(self._font_size))
         prompt_width, prompt_height = pygame.font.Font.size(self._text_font, "TEST")
         self._text_height = int(prompt_height * 1.5)
-        # TODO: ADD SCROLLING
         self._current = 0
         self._init_title_screen(display_font)
         self._description_font = pygame.font.Font(display_font, int(self._font_size / 1.5))
         # When to switch animations:
         # Mock model to simulate gallery items
         self._model = MenuModel()
-
-    """Initializes the background.
-    """
-
-    def _init_background(self):
-        self._background = pygame.image.load(self.background_path).convert_alpha()
-
-        self._background_x = 0
-        self._background_change = -1 * (30 / config.game_fps)
 
     """Initializes the title screen attributes.
 
@@ -116,7 +102,11 @@ class MenuView(View):
     """
 
     def _render_descriptive_menu(self, tree):
-        self._render_background()
+        self._draw_background(self._background)
+        if tree.get_curr_id() in self._backgrounds.keys():
+            self._transition_background(tree.get_curr_id())
+        elif self._target_background_id is not None:
+            self._transition_background(self._target_background_id)
         text_to_render = tree.get_options()
         curr_selected = self._current = tree.get_current_selection()
         # Images to render
@@ -192,7 +182,8 @@ class MenuView(View):
     """
 
     def _render_title_screen(self):
-        self._render_background()
+        self._draw_background(self._background)
+        self._transition_background(GameID.MENU)
         self._game_display.blit(self._title,
                                 self._find_posn(self._title, int(self._width / 2), int(self._height / 2.5)))
         self._compute_alpha()
@@ -210,18 +201,6 @@ class MenuView(View):
         elif self._prompt_alpha > 200:
             self._prompt_alpha_change = -2
 
-    """Renders the background for the menus.
-    """
-
-    def _render_background(self):
-        self._game_display.fill((0, 0, 0))
-        self._game_display.blit(self._background, (self._background_x, self._background_y))
-        self._background_x += self._background_change
-        self._background_y += self._background_change
-        if self._background_x == -self._width or self._background_y == -self._height \
-                or self._background_x == 0 or self._background_y == 0:
-            self._background_change *= -1
-
     """Renders the given gallery object.
 
     :param gallery: gallery with the information to render.
@@ -231,7 +210,8 @@ class MenuView(View):
     def _render_gallery(self, gallery):
         self._model.tick()
         # Name of the current entity being viewed
-        self._render_background()
+        self._draw_background(self._background)
+        self._transition_background(GameID.MENU)
         # Render a ship or weapon?
         if gallery.entity_type == GameID.WEAPON:
             self._model.switch_weapon(gallery.entity_id)
@@ -281,10 +261,11 @@ class MenuView(View):
     """
 
     def _render_loadout_selection(self, tree):
-        self._render_background()
+        self._draw_background(self._background)
+        self._transition_background(self._target_background_id)
         self._render_loadout_selector_helper(tree)
         launch_text = self._description_font.render("Press [SPACE] to launch:", 1, self.WHITE)
-        # TODO
+        # TODO: Add launch animation
         self._game_display.blit(launch_text, self._find_posn(launch_text, self._width // 2, self._height // 5))
 
     """Displays the currently selected ship and weapon.
@@ -334,3 +315,4 @@ class MenuView(View):
                 self._game_display.blit(temp_chevron, self._find_posn(temp_chevron, x_posns[i], y + offset))
                 angle *= -1
                 offset *= -1
+

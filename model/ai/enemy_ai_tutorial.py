@@ -29,7 +29,7 @@ class EnemyTutorialAI(EnemyWaveAI):
     :type model: Model
     """
 
-    def __init__(self, model):
+    def __init__(self, model, *args):
         # Model to work with
         super().__init__(model, DifficultyID.EASY)
         self.fps = config.game_fps
