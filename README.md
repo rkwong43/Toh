@@ -1,6 +1,6 @@
 # Tears Over Heaven
 WORK IN PROGRESS \
-Last Edited: 4/1/2020
+Last Edited: 4/9/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
@@ -66,6 +66,8 @@ Describes the current gameplay features inside the game.
     * Uses a smaller model to simulate firing of shown weapons of the player and the selected enemy.
 ## Future Features
 Features currently under development or planned for the future.
+ * Implementing global high scores and user accounts (MongoDB, Heroku, Flask?, MLab).
+ * Multiplayer and mouse support for aiming or local multiplayer.
  * Expanding on enemy artificial intelligence.
  * Streamlined creation for enemies and players.
  * Adding or creating a custom ship for the player.
