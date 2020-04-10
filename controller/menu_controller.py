@@ -100,7 +100,7 @@ class MenuController:
         path = os.path.join(self.resource_path, 'sounds')
         path = os.path.join(path, 'UI_change.ogg')
         self._menu_change_sound = pygame.mixer.Sound(file=path)
-        self._menu_change_sound.set_volume(.04)
+        self._menu_change_sound.set_volume(.1)
 
     """Figures out what to do depending on the key inputs.
 
@@ -113,12 +113,12 @@ class MenuController:
             direction = None
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 direction = Direction.UP
-                self._menu_change_sound.play()
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction = Direction.DOWN
-                self._menu_change_sound.play()
             # Setting a limit for the number of options scrolled at once
             if self._curr_ticks == self._option_transition:
+                if direction is not None:
+                    self._menu_change_sound.play()
                 self._tree.switch_selection(direction)
                 self._curr_ticks = 0
             elif self._curr_ticks < self._option_transition:

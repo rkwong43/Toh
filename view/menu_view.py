@@ -212,9 +212,22 @@ class MenuView(View):
         # Name of the current entity being viewed
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
+        # Other stats to show
+        offset = 0
+        for stat in gallery.stats:
+            stat_displayed = self._description_font.render(stat, 0, self.WHITE).convert_alpha()
+            offset += self._ship_size // 4
+            self._game_display.blit(stat_displayed, self._find_posn(stat_displayed,
+                                                                    int(self._width * .7),
+                                                                    int(self._height / 4) + offset))
         # Render a ship or weapon?
         if gallery.entity_type == GameID.WEAPON:
+            offset += self._ship_size
             self._model.switch_weapon(gallery.entity_id)
+            weapon_image = self._image_dict[gallery.entity_id]
+            self._game_display.blit(weapon_image, self._find_posn(weapon_image,
+                                                                  int(self._width * .7),
+                                                                  int(self._height / 4) + offset))
         else:
             self._model.spawn_ship(gallery.entity_id)
         self.render(self._model.get_player(), self._model.get_projectiles(),
@@ -225,14 +238,6 @@ class MenuView(View):
                                 self._find_posn(name_displayed, int(self._width / 2), int(self._height / 10)))
         description = self._description_font.render(gallery.description, 0, self.WHITE).convert_alpha()
         self._game_display.blit(description, self._find_posn(description, int(self._width / 2), int(self._height / 6)))
-        # Other stats to show
-        offset = 0
-        for stat in gallery.stats:
-            stat_displayed = self._description_font.render(stat, 0, self.WHITE).convert_alpha()
-            offset += self._ship_size // 4
-            self._game_display.blit(stat_displayed, self._find_posn(stat_displayed,
-                                                                    int(self._width * .7),
-                                                                    int(self._height / 4) + offset))
 
     """Renders the game, including background, ships, and projectiles.
 
@@ -301,8 +306,8 @@ class MenuView(View):
             # Image
             if options[i] in WeaponID:
                 # TODO: Make images for each weapon
-                """weapon_image = self._image_dict[options[i]]
-                self._game_display.blit(weapon_image, self._find_posn(weapon_image, x_posns[i], y))"""
+                weapon_image = self._image_dict[options[i]]
+                self._game_display.blit(weapon_image, self._find_posn(weapon_image, x_posns[i], y))
             else:
                 self._model.spawn_player(options[i], x_posns[i] - config.ship_size / 2, y - config.ship_size / 2)
                 self._render_ship(self._model.get_player(), 0)
@@ -315,4 +320,3 @@ class MenuView(View):
                 self._game_display.blit(temp_chevron, self._find_posn(temp_chevron, x_posns[i], y + offset))
                 angle *= -1
                 offset *= -1
-

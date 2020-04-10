@@ -8,6 +8,7 @@ from src.utils.ids.game_id import GameID
 from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.projectile_id import ProjectileID
+from src.utils.ids.weapon_id import WeaponID
 from src.view.image_containers.charge_up_images import ChargeUpImages
 from src.view.image_containers.explosion_images import ExplosionImages
 from src.view.image_containers.image_holder import ImageHolder
@@ -159,6 +160,13 @@ class View:
             image = pygame.image.load(image_path).convert_alpha()
             image = pygame.transform.scale(image, (projectile_size, projectile_size))
             result[id_name] = image
+        # Renders each weapon sprite
+        for weapon_id in WeaponID:
+            weapon_name = weapon_id.name
+            image_path = os.path.join(self._image_path, weapon_name + '.png')
+            image = pygame.image.load(image_path).convert_alpha()
+            image = pygame.transform.scale(image, (int(config.ship_size * 1.2), int(config.ship_size * 1.2)))
+            result[weapon_id] = image
         # Renders each effect (explosions)
         for id_name in effects_to_init:
             effect_name = id_name.name
