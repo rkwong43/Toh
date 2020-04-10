@@ -7,12 +7,18 @@ from enum import Enum, auto
 class WeaponID(Enum):
     # Weapon types
     GUN = auto()
+    SHOTGUN = auto()
     MACHINE_GUN = auto()
     FLAK_GUN = auto()
-    FLAK_CANNON = auto()
-    SHOTGUN = auto()
     MISSILE_LAUNCHER = auto()
-    MULTI_MISSILE = auto()
+    FLAK_CANNON = auto()
     DIAMOND_DUST = auto()
-    RAILGUN = auto()
+    MULTI_MISSILE = auto()
     STRIKER = auto()
+    # Rapid fire missiles
+    SWARM = auto()
+    # Fires a huge spread of flak that slow down the further they move
+    CONSTELLATION = auto()
+    # Burst fire multiple volleys of homing bullets
+    AURORA = auto()
+    RAILGUN = auto()

@@ -96,6 +96,11 @@ class MenuController:
         # How many times the menu can transition per second in frames:
         self._option_transition = config.game_fps // 8
         self._curr_ticks = self._option_transition
+        # Menu click
+        path = os.path.join(self.resource_path, 'sounds')
+        path = os.path.join(path, 'UI_change.ogg')
+        self._menu_change_sound = pygame.mixer.Sound(file=path)
+        self._menu_change_sound.set_volume(.04)
 
     """Figures out what to do depending on the key inputs.
 
@@ -108,8 +113,10 @@ class MenuController:
             direction = None
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 direction = Direction.UP
+                self._menu_change_sound.play()
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction = Direction.DOWN
+                self._menu_change_sound.play()
             # Setting a limit for the number of options scrolled at once
             if self._curr_ticks == self._option_transition:
                 self._tree.switch_selection(direction)
@@ -193,6 +200,7 @@ class MenuController:
 
     def _select_option(self):
         ID, destination = self._tree.select()
+        self._menu_change_sound.play()
         if self._tree.name == GameID.SELECTOR:
             # Selecting options
             if ID in DifficultyID:
@@ -225,6 +233,7 @@ class MenuController:
     """
 
     def _go_back_menu(self):
+        self._menu_change_sound.play()
         new_tree = self._tree.goto_root()
         if new_tree is None:
             self._tree = self._main_menu

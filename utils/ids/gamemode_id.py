@@ -9,4 +9,11 @@ class GameModeID(Enum):
     CLASSIC = auto()
     MANDIBLE_MADNESS = auto()
     HEAVEN = auto()
+    # All out war - include enemies and allies
+    # Assign each enemy a target
+    # Add warships
+    #ONSLAUGHT = auto()
+    # Randomly generate weapons every few waves
+    #FATE = auto()
+
     TITAN_SLAYER = auto()

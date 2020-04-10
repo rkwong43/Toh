@@ -36,5 +36,14 @@ stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": 
                             "DESCRIPTION": "Generates a high-velocity blast of super-compressed plasma."},
          WeaponID.STRIKER: {"PROJECTILE SPEED": 25, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.HOMING_BULLET,
                             "DAMAGE": 8, "RELOAD": 3, "PROJECTILE COUNT": 1,
-                            "DESCRIPTION": "Rapidly fires homing plasma rounds at enemies."}
+                            "DESCRIPTION": "Rapidly fires homing plasma rounds at enemies."},
+         WeaponID.CONSTELLATION: {"PROJECTILE SPEED": 20, "SPREAD": 36, "PROJECTILE TYPE": ProjectileID.FRIENDLY_FLAK,
+                                  "DAMAGE": 15, "RELOAD": 30, "PROJECTILE COUNT": 1,
+                                  "DESCRIPTION": "Like the stars in the sky."},
+         WeaponID.AURORA: {"PROJECTILE SPEED": 25, "SPREAD": 49, "PROJECTILE TYPE": ProjectileID.HOMING_BULLET,
+                           "DAMAGE": 6, "RELOAD": 16, "PROJECTILE COUNT": 6,
+                           "DESCRIPTION": "An array of death."},
+         WeaponID.SWARM: {"PROJECTILE SPEED": 20, "SPREAD": 10, "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
+                          "DAMAGE": 10, "RELOAD": 16, "PROJECTILE COUNT": 1,
+                          "DESCRIPTION": "The more the merrier."}
          }

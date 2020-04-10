@@ -9,6 +9,9 @@ from src.model.stats import weapon_stats
 
 
 class MenuGallery:
+    # Tags to not display
+    _do_not_display = ["PROJECTILE TYPE", "DESCRIPTION", "PROJECTILE COUNT", "SHIP TYPE"]
+
     """Constructs the MenuGallery.
 
     :param entity_id: ID of entity to show
@@ -49,16 +52,12 @@ class MenuGallery:
         if self.entity_id in WeaponID:
             stats = weapon_stats.stats[self.entity_id]
             self.entity_type = GameID.WEAPON
-            for tag, value in stats.items():
-                if tag == "PROJECTILE TYPE" or tag == "DESCRIPTION":
-                    continue
-                self.stats.append(tag + ": " + str(value))
         else:
             self.entity_type = GameID.SHIP
             stats = ship_stats.stats[self.entity_id]
-            for tag, value in stats.items():
-                if tag == "SHIP TYPE" or tag == "DESCRIPTION":
-                    continue
-                self.stats.append(tag + ": " + str(value))
+        for tag, value in stats.items():
+            if tag in self._do_not_display:
+                continue
+            self.stats.append(tag + ": " + str(value))
 
         return stats["DESCRIPTION"]
