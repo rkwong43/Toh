@@ -41,7 +41,6 @@ def construct_gallery(ids):
 
 
 def construct_tree():
-    # TODO: Loadout menu
     difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, LoadoutSelector())
     survival = MenuSelector([GameModeID.CLASSIC,
                              GameModeID.MANDIBLE_MADNESS,
@@ -81,11 +80,13 @@ class MenuController:
 
     :param menus: the menu view
     :type menus: MenuView
-    :type fps: int
+    :param model: Model
+    :type model: MenuModel
     """
 
-    def __init__(self, menus):
+    def __init__(self, menus, model):
         self._menus = menus
+        self._model = model
         self._fps = config.game_fps
         self._difficulty = None
         self._game_mode = None
@@ -161,7 +162,9 @@ class MenuController:
 
     def _run_menus_helper(self, clock):
         ANIMATE = pygame.USEREVENT + 1
+        SIMULATE_BATTLE = pygame.USEREVENT + 2
         pygame.time.set_timer(ANIMATE, 300)
+        pygame.time.set_timer(SIMULATE_BATTLE, 1000)
         done = False
         while not done:
             # Grabs the keys currently pressed down
@@ -187,6 +190,8 @@ class MenuController:
                 # Animates sprites
                 if game_event.type == ANIMATE:
                     self._menus.animate()
+                if game_event.type == SIMULATE_BATTLE:
+                    self._model.spawn_ships()
             # Updates display
             pygame.display.update()
             clock.tick(self._fps)
@@ -213,6 +218,8 @@ class MenuController:
             # Loadouts are preceded by a Selector
             return True
         else:
+            if self._tree.name == GameID.GALLERY:
+                self._model.showcase(destination.entity_type, destination.entity_id)
             # Tutorial selection
             if destination == GameID.TUTORIAL:
                 # Preset values for gear
@@ -223,7 +230,6 @@ class MenuController:
                 return True
             elif destination is not None:
                 self._tree = destination
-            # Covers cases where destination is a MenuTree or MenuGallery
             return False
 
     """Goes back to the current tree's roots.
@@ -233,6 +239,7 @@ class MenuController:
     """
 
     def _go_back_menu(self):
+        self._model.reset_showcase()
         self._menu_change_sound.play()
         new_tree = self._tree.goto_root()
         if new_tree is None:

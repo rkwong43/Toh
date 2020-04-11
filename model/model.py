@@ -48,7 +48,7 @@ class Model:
     """
 
     def __init__(self, difficulty, game_mode):
-        # Friendly ships and player
+        # Friendly ships
         self.friendly_ships = []
         # Enemy ships
         self.enemy_ships = []
@@ -75,7 +75,6 @@ class Model:
         self._game_over = False
         # Initializing the player and its bonuses from ship choice
         self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(config.player_ship)
-        self.friendly_ships.append(self._player_ship)
         # The current enemy AI module
         self._AI = self._init_enemy_ai(game_mode, difficulty)
 
@@ -83,8 +82,6 @@ class Model:
         self._reload_time = 0
         # Current progress until weapon is reloaded
         self._reload = 0
-        # This sets all the weapon stats
-        self.switch_weapon(config.weapon)
 
         # Sounds
         self.sounds = {}
@@ -146,6 +143,7 @@ class Model:
             self._reload += 1
         # Rotates enemies, recharges their shields, and checks if they're dead
         self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self._is_dead(enemy)]
+        self.friendly_ships[:] = [friendly for friendly in self.friendly_ships if not self._is_dead(friendly)]
         self._player_ship.is_damaged = False
         # Removes off screen objects
         self._remove_off_screen_objects()
@@ -284,7 +282,8 @@ class Model:
                                      if not self._check_if_hit(projectile, self.enemy_ships, EffectID.BLUE_EXPLOSION)]
         # Checks enemy projectiles vs. friendly ships
         self.enemy_projectiles = [projectile for projectile in self.enemy_projectiles
-                                  if not self._check_if_hit(projectile, self.friendly_ships, EffectID.RED_EXPLOSION)]
+                                  if not self._check_if_hit(projectile, self.friendly_ships + [self._player_ship],
+                                                            EffectID.RED_EXPLOSION)]
         # If the player is damaged, then plays a screen effect
         if self._player_ship.is_damaged:
             self._play_screen_effect()
@@ -311,7 +310,7 @@ class Model:
         elif weapon_type == ProjectileID.FRIENDLY_MISSILE or weapon_type == ProjectileID.HOMING_BULLET:
             # Projectile is missile and its target has been destroyed, gives it a new target
             if projectile.target_destroyed:
-                projectile.acquire_target(self._find_closest_enemy(projectile))
+                projectile.acquire_target(self.find_closest_target(projectile, self.enemy_ships))
         for ship in ships:
             # Hit box
             ship_bounding_box = ship.size / 4
@@ -471,46 +470,48 @@ class Model:
         if entity_id == ProjectileID.FRIENDLY_BULLET or entity_id == ProjectileID.FRIENDLY_FLAK:
             return Bullet(speed, x, y, angle, damage, entity_id)
         elif entity_id == ProjectileID.FRIENDLY_MISSILE:
-            closest_enemy = self._find_closest_enemy(self._player_ship)
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships)
             return Missile(speed, x, y, angle, damage, entity_id, closest_enemy)
         elif entity_id == ProjectileID.DIAMOND_DUST:
-            closest_enemy = self._find_closest_enemy(self._player_ship)
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships)
             return DiamondDust(speed, x, y, angle, damage, ProjectileID.FRIENDLY_BULLET, closest_enemy)
         elif entity_id == ProjectileID.HOMING_BULLET:
-            closest_enemy = self._find_closest_enemy(self._player_ship)
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships)
             return Missile(speed, x, y, angle, damage, ProjectileID.FRIENDLY_BULLET, closest_enemy)
         elif entity_id == ProjectileID.RAILGUN_BLAST:
             return Bullet(speed, x, y, angle, damage, ProjectileID.RAILGUN_BLAST)
         else:
             raise ValueError("Invalid projectile type:", entity_id)
 
-    """Finds the closest enemy to the given entity. Used primarily for missile tracking.
+    """Finds the closest ship to the given entity. Used primarily for missile tracking.
 
     :param source: Source ship or projectile to use as origin
     :type source: Ship or Projectile
+    :param ships: Ships to search in
+    :type ships: [Ship]
     :returns: closest enemy to the source, or 0
     :rtype: Ship or int
     """
 
-    def _find_closest_enemy(self, source):
+    def find_closest_target(self, source, ships):
         x = source.x
         y = source.y
         minimum = config.display_width * 3
         # Sets the first enemy as the closest ship
-        if len(self.enemy_ships) > 0:
-            closest_enemy = self.enemy_ships[0]
+        if len(ships) > 0:
+            closest_ship = ships[0]
         else:
             return 0
         # Iterates through the list of enemy ships linearly and finds the closest one
         # using distance
-        for enemy in self.enemy_ships:
-            enemy_x = enemy.x
-            enemy_y = enemy.y
-            distance = int(abs(math.sqrt((x - enemy_x) ** 2 + (y - enemy_y) ** 2)))
+        for ship in ships:
+            ship_x = ship.x
+            ship_y = ship.y
+            distance = int(abs(math.sqrt((x - ship_x) ** 2 + (y - ship_y) ** 2)))
             if distance <= minimum:
                 minimum = distance
-                closest_enemy = enemy
-        return closest_enemy
+                closest_ship = ship
+        return closest_ship
 
     """Checks if the player is off screen.
 
@@ -585,13 +586,13 @@ class Model:
     def get_projectiles(self):
         return self.enemy_projectiles + self.friendly_projectiles
 
-    """Returns all enemy ships.
+    """Returns all ships excluding the player.
     :returns: list of enemy ships
     :rtype: list of Ship
     """
 
-    def get_enemies(self):
-        return self.enemy_ships
+    def get_ships(self):
+        return self.enemy_ships + self.friendly_ships
 
     """Returns all effects.
     :returns: list of effects
@@ -619,7 +620,6 @@ class Model:
         del self.friendly_projectiles[:]
         del self.effects[:]
         del self.friendly_ships[:]
-        self.friendly_ships.append(self._player_ship)
 
     """Pauses the game by displaying a text field and prompt to exit to title screen.
     """

@@ -3,6 +3,8 @@ import sys
 import os
 
 # Makes sure the game knows where the files are located:
+from src.model.menu_model import MenuModel
+from src.utils import config
 
 current_path = os.path.dirname(__file__)  # where this file is located
 outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
@@ -22,14 +24,16 @@ def start_game():
     finished = False
     # Loops until finished
     while not finished:
-        menu_view = MenuView()
-        menu_controller = MenuController(menu_view)
+        menu_model = MenuModel()
+        menu_view = MenuView(menu_model)
+        menu_controller = MenuController(menu_view, menu_model)
         game_mode, difficulty, play_game = menu_controller.run_menus()
         # If window is closed
         if not play_game:
             break
         view = View(game_mode)
         model = Model(difficulty, game_mode)
+        model.switch_weapon(config.weapon)
         model.clear()
         controller = Controller(model, view)
         finished = not controller.run_game()
