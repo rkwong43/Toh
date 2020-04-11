@@ -14,7 +14,7 @@ stats = {
     EnemyID.CRUCIBLE: {"HP": 60, "SHIELD": 60, "SPEED": 3, "DAMAGE": 10, "PROJECTILE SPEED": 8, "SCORE": 100,
                        "DESCRIPTION": "Fighter with a dual rotary plasma gun designed for combat."},
     EnemyID.SEER: {"HP": 30, "SHIELD": 50, "SPEED": 3, "DAMAGE": 30, "PROJECTILE SPEED": 40, "SCORE": 50,
-                   "DESCRIPTION": "Fighter specialized in long-range strikes with a high-powered sniper."},
+                   "DESCRIPTION": "Fighter specialized in long-range strikes."},
     EnemyID.SUBJUGATOR: {"HP": 40, "SHIELD": 40, "SPEED": 3, "DAMAGE": 25, "PROJECTILE SPEED": 10, "SCORE": 75,
                          "DESCRIPTION": "Anti-ship fighter that fires homing missiles at its enemies."},
     EnemyID.ARBITRATOR: {"HP": 250, "SHIELD": 200, "SPEED": 3, "DAMAGE": 10, "PROJECTILE SPEED": 10, "SCORE": 300,

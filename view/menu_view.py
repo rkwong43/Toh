@@ -165,10 +165,11 @@ class MenuView(View):
         x = config.display_width * .6
         y = config.display_height / 2
         self._model.spawn_player(config.player_ship, x, y)
-        weapon_text = self._description_font.render("PLACEHOLDER: " + config.weapon.name.replace("_", " "),
-                                                    0, self.WHITE).convert_alpha()
-        self._game_display.blit(weapon_text, self._find_posn(weapon_text, x + config.ship_size // 2,
-                                                             y + config.ship_size))
+        # Welcome text
+        welcome_text = self._description_font.render("Welcome " + config.player_name, 0, self.WHITE).convert_alpha()
+        welcome_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
+        self._game_display.blit(welcome_text, self._find_posn(welcome_text, x + config.ship_size // 2,
+                                                              y - config.ship_size // 2))
         self._render_ship(self._model.get_player(), 0)
 
     """Renders the title screen.
@@ -295,7 +296,6 @@ class MenuView(View):
             self._game_display.blit(text, self._find_posn(text, x_posns[i], y + config.ship_size / 2))
             # Image
             if options[i] in WeaponID:
-                # TODO: Make images for each weapon
                 weapon_image = self._image_dict[options[i]]
                 self._game_display.blit(weapon_image, self._find_posn(weapon_image, x_posns[i], y))
             else:

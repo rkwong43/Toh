@@ -197,13 +197,12 @@ class MenuModel(Model):
     """
 
     def spawn_ships(self):
-        spawn_successful = random.randint(1, 5) == 5
-        if spawn_successful:
+        # ~18% chance of spawning ships randomly
+        if random.randint(1, 6) == 6:
             random_ship_quantity = random.randint(1, 6)
             x_posns = []
             for _ in range(random_ship_quantity):
                 random_speed = random.randint(5, 15)
-                random_fire_rate = random.randint(config.game_fps // 2, config.game_fps)
                 rand_x = 0
                 good_x = False
                 while not good_x:
@@ -215,11 +214,13 @@ class MenuModel(Model):
                     except ValueError:
                         continue
                     good_x = True
-                ship = enemy_generator.generate_enemy(PlayerID.CITADEL,
+                ship_id = PlayerID.CITADEL
+                if random.randint(1, 4) == 4:
+                    ship_id = PlayerID.AEGIS
+                ship = enemy_generator.generate_enemy(ship_id,
                                                       rand_x,
                                                       config.display_height - config.ship_size,
-                                                      speed=random_speed,
-                                                      fire_rate=random_fire_rate)
+                                                      speed=random_speed)
                 x_posns.append(rand_x)
                 ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size), fire_at=True)
                 # They do not shoot

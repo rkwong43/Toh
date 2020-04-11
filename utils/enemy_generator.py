@@ -1,3 +1,4 @@
+from src.entities.ships.allies.aegis import Aegis
 from src.entities.ships.allies.citadel import Citadel
 from src.entities.ships.enemies.arbitrator import Arbitrator
 from src.entities.ships.enemies.crucible import Crucible
@@ -27,7 +28,8 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.MOTHERSHIP: Mothership,
             EnemyID.DESPOILER: Despoiler,
             EnemyID.TITAN: Titan,
-            PlayerID.CITADEL: Citadel
+            PlayerID.CITADEL: Citadel,
+            PlayerID.AEGIS: Aegis
             }
 
 """Generates the specified enemy and returns it.
