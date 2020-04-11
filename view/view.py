@@ -221,15 +221,15 @@ class View:
     :type items: list of Ship or Projectile
     """
 
-    def render(self, player, projectiles, enemies, effects):
+    def render(self, player, projectiles, ships, effects):
         # Scrolling background
         self._draw_background(self._background)
         # If the player isn't dead, it is rendered
         if not player.is_dead:
             self._render_ship(player, player.angle)
         # Renders enemies to face the player
-        for enemy in enemies:
-            self._render_ship(enemy, enemy.angle)
+        for ship in ships:
+            self._render_ship(ship, ship.angle)
         # Renders projectiles
         for projectile in projectiles:
             self._render_projectile(projectile)

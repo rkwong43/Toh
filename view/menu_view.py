@@ -22,19 +22,11 @@ class MenuView(View):
 
     """Constructor to initialize the game display.
 
-    :param display_width: width of the window
-    :type display_width: int
-    :param display_height: height of the window
-    :type display_height: int
-    :param game_title: caption to put as the window title
-    :type game_title: str
-    :param ship_size: Size of ships to draw
-    :type ship_size: int
-    :param fps: Frames per second
-    :type fps: int
+    :param model: Menu model to simulate
+    :type model: MenuModel
     """
 
-    def __init__(self):
+    def __init__(self, model):
         # Sets up the game window surface
         super().__init__(GameID.MENU)
         self._font_size = config.display_height // 24
@@ -50,7 +42,7 @@ class MenuView(View):
         self._description_font = pygame.font.Font(display_font, int(self._font_size / 1.5))
         # When to switch animations:
         # Mock model to simulate gallery items
-        self._model = MenuModel()
+        self._model = model
 
     """Initializes the title screen attributes.
 
@@ -83,6 +75,7 @@ class MenuView(View):
 
     def render_menu(self, tree):
         # TODO: ADD ANIMATIONS FOR SCROLLING BETWEEN OPTIONS
+        self._model.tick()
         if tree is None:
             self._render_title_screen()
         elif tree.name not in GameID:
@@ -91,8 +84,6 @@ class MenuView(View):
         elif tree.name == GameID.LOADOUT:
             self._render_loadout_selection(tree)
         else:
-            self._model.set_play(False)
-            self._model.clear()
             self._render_descriptive_menu(tree)
 
     """Renders a menu which may include descriptions or high scores.
@@ -107,6 +98,9 @@ class MenuView(View):
             self._transition_background(tree.get_curr_id())
         elif self._target_background_id is not None:
             self._transition_background(self._target_background_id)
+
+        self.render(None, self._model.get_projectiles(),
+                    self._model.get_ships(), self._model.get_effects())
         text_to_render = tree.get_options()
         curr_selected = self._current = tree.get_current_selection()
         # Images to render
@@ -171,7 +165,6 @@ class MenuView(View):
         x = config.display_width * .6
         y = config.display_height / 2
         self._model.spawn_player(config.player_ship, x, y)
-        # TODO: maybe make sprites for weapons too
         weapon_text = self._description_font.render("PLACEHOLDER: " + config.weapon.name.replace("_", " "),
                                                     0, self.WHITE).convert_alpha()
         self._game_display.blit(weapon_text, self._find_posn(weapon_text, x + config.ship_size // 2,
@@ -208,7 +201,6 @@ class MenuView(View):
     """
 
     def _render_gallery(self, gallery):
-        self._model.tick()
         # Name of the current entity being viewed
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
@@ -223,15 +215,12 @@ class MenuView(View):
         # Render a ship or weapon?
         if gallery.entity_type == GameID.WEAPON:
             offset += self._ship_size
-            self._model.switch_weapon(gallery.entity_id)
             weapon_image = self._image_dict[gallery.entity_id]
             self._game_display.blit(weapon_image, self._find_posn(weapon_image,
                                                                   int(self._width * .7),
                                                                   int(self._height / 4) + offset))
-        else:
-            self._model.spawn_ship(gallery.entity_id)
         self.render(self._model.get_player(), self._model.get_projectiles(),
-                    self._model.get_enemies(), self._model.get_effects())
+                    self._model.get_ships(), self._model.get_effects())
         # Title and description
         name_displayed = self._text_font.render(str(gallery.name), 1, self.WHITE).convert_alpha()
         self._game_display.blit(name_displayed,
@@ -241,17 +230,18 @@ class MenuView(View):
 
     """Renders the game, including background, ships, and projectiles.
 
-       :param items: ships and projectiles to render
-       :type items: list of Ship or Projectile
-       """
+   :param items: ships and projectiles to render
+   :type items: list of Ship or Projectile
+   """
 
-    def render(self, player, projectiles, enemies, effects):
+    def render(self, player, projectiles, ships, effects):
         self._model.remove_effects()
         # If the player isn't dead, it is rendered
-        self._render_ship(player, 0)
+        if player is not None:
+            self._render_ship(player, 0)
         # Renders enemies to face the player
-        for enemy in enemies:
-            self._render_ship(enemy, enemy.angle)
+        for ship in ships:
+            self._render_ship(ship, ship.angle)
         # Renders projectiles
         for projectile in projectiles:
             self._render_projectile(projectile)

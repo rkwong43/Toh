@@ -1,5 +1,6 @@
-
+from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
+from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.model.stats import ship_stats
 from src.model.stats import weapon_stats
@@ -53,11 +54,13 @@ class MenuGallery:
             stats = weapon_stats.stats[self.entity_id]
             self.entity_type = GameID.WEAPON
         else:
-            self.entity_type = GameID.SHIP
             stats = ship_stats.stats[self.entity_id]
         for tag, value in stats.items():
             if tag in self._do_not_display:
                 continue
             self.stats.append(tag + ": " + str(value))
-
+        if self.entity_id in EnemyID:
+            self.entity_type = GameID.ENEMY
+        elif self.entity_id in PlayerID:
+            self.entity_type = GameID.SHIP
         return stats["DESCRIPTION"]

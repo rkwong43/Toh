@@ -24,7 +24,7 @@ stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": 
                                      "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
                                      "DAMAGE": 30, "RELOAD": 16, "PROJECTILE COUNT": 1,
                                      "DESCRIPTION": "Launches a plasma missile that homes in on foes."},
-         WeaponID.MULTI_MISSILE: {"PROJECTILE SPEED": 20, "SPREAD": 20,
+         WeaponID.MULTI_MISSILE: {"PROJECTILE SPEED": 20, "SPREAD": 25,
                                   "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
                                   "DAMAGE": 15, "RELOAD": 16, "PROJECTILE COUNT": 4,
                                   "DESCRIPTION": "Launches an array of homing plasma missiles at enemies."},

@@ -1,4 +1,3 @@
-import math
 import random
 
 from src.entities.projectiles.bullet import Bullet
@@ -69,36 +68,6 @@ class Enemy(Ship):
         y = random.randint(0, config.display_height / 2)
         return x, y
 
-    """Moves the enemy to its predetermined location.
-    """
-
-    def move(self):
-        if self.speed > 0:
-            x_done = False
-            if self.x < self.end_x - self.speed:
-                self.x += self.speed
-            elif self.x > self.end_x + self.speed:
-                self.x -= self.speed
-            else:
-                x_done = True
-
-            if self.y < self.end_y - self.speed:
-                self.y += self.speed
-            elif self.y > self.end_y + self.speed:
-                self.y -= self.speed
-            elif x_done:
-                self.end_x, self.end_y = self._generate_pos()
-
-    """Represents the angle the enemy is facing.
-    
-    :param target: target the enemy is facing
-    :type target: Ship
-    """
-
-    def rotate(self, target):
-        # Rotates the ship to face the target ship
-        self.angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) - 90
-
     """Fires projectiles from the enemy to the given target, at the given speed, damage, and size.
 
     :param target: target area
@@ -108,6 +77,8 @@ class Enemy(Ship):
     """
 
     def fire(self, target, projectiles):
+        if target is None:
+            target = self.waypoint
         # Finds angle from source to target
         # If the enemy ship has any spread
         x_pos = self.x

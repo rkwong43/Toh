@@ -1,4 +1,5 @@
 import math
+import random
 
 from src.utils import config
 
@@ -13,6 +14,7 @@ MOVE_AND_FIRE_WAYPOINT = 4
 
 
 class Ship:
+    random.seed()
     """Constructor to make the ship.
 
     :param x: starting x coordinate of ship
@@ -33,6 +35,8 @@ class Ship:
         # Position
         self.x = int(x)
         self.y = int(y)
+        self.end_x = 0
+        self.end_y = 0
         # Size of the ship (not scaling, should be a value in pixels)
         self.size = size
         #############################################
@@ -67,6 +71,12 @@ class Ship:
                               FIRE_WAYPOINT: self._rotate_to_wp,
                               MOVE_AND_FIRE_WAYPOINT: self._rotate_to_wp
                               }
+        # Movement states
+        self._wp_movement = {NO_WAYPOINT: self._move,
+                             MOVE_WAYPOINT: self._move_to_wp,
+                             FIRE_WAYPOINT: self._move,
+                             MOVE_AND_FIRE_WAYPOINT: self._move_to_wp
+                             }
 
     """Represents the angle the ship is facing.
 
@@ -83,11 +93,13 @@ class Ship:
     :param target: target the ship is facing
     :type target: Ship or Waypoint
     """
+
     def rotate(self, target):
         self._wp_rotations[self._wp_state](target)
 
     """Rotates the ship towards its waypoint.
     """
+
     def _rotate_to_wp(self, *args):
         self.angle = -math.degrees(math.atan2(self.y - self.waypoint.y, self.x - self.waypoint.x)) - 90
 
@@ -145,3 +157,53 @@ class Ship:
             self._wp_state = MOVE_AND_FIRE_WAYPOINT
         else:
             self._wp_state = NO_WAYPOINT
+
+    """Moves the ship.
+    """
+
+    def move(self):
+        self._wp_movement[self._wp_state]()
+
+    """Moves the ship randomly to a generated position on the screen.
+    """
+    def _move(self):
+        if self.speed > 0:
+            x_done = False
+            if self.x < self.end_x - self.speed:
+                self.x += self.speed
+            elif self.x > self.end_x + self.speed:
+                self.x -= self.speed
+            else:
+                x_done = True
+
+            if self.y < self.end_y - self.speed:
+                self.y += self.speed
+            elif self.y > self.end_y + self.speed:
+                self.y -= self.speed
+            elif x_done:
+                self.end_x, self.end_y = self._generate_pos()
+
+    """Moves the ship towards its waypoint.
+    """
+    def _move_to_wp(self):
+        if self.speed > 0:
+            if self.x < self.waypoint.x - self.speed:
+                self.x += self.speed
+            elif self.x > self.waypoint.x + self.speed:
+                self.x -= self.speed
+
+            if self.y < self.waypoint.y - self.speed:
+                self.y += self.speed
+            elif self.y > self.waypoint.y + self.speed:
+                self.y -= self.speed
+
+    """Generates a new position to move into. 
+
+    :returns: tuple of x and y pos
+    :rtype: (int, int)
+    """
+
+    def _generate_pos(self):
+        x = random.randint(config.ship_size, config.display_width - (2 * config.ship_size))
+        y = random.randint(0, config.display_height - config.ship_size)
+        return x, y
