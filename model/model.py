@@ -36,7 +36,8 @@ class Model:
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
-    # Sound weapons make when they fire
+    # Burst fire weapons:
+    _burst_fire_weapons = [WeaponID.SWARM, WeaponID.AURORA, WeaponID.CONSTELLATION]
 
     """Initializes the model with the width and height of the window and the size of ships
 
@@ -69,7 +70,7 @@ class Model:
         RMod: Reload modifier in which the weapon reload time is affected by
         """
         self._player_stats = {"SPEED": 10, "DAMAGE": 10, "COUNT": 1, "SPREAD": 0, "TYPE": ProjectileID.FRIENDLY_BULLET,
-                              "WEAPON": WeaponID.GUN, "DMOD": 1, "RMOD": 1}
+                              "WEAPON": WeaponID.GUN, "DMOD": 1, "RMOD": 1, "BURSTS": 1}
         # Game over?
         self._game_over = False
         # Initializing the player and its bonuses from ship choice
@@ -92,6 +93,9 @@ class Model:
             sound = pygame.mixer.Sound(file=path)
             sound.set_volume(volume)
             self.sounds[file_name.upper()] = sound
+
+        # Action queue
+        self._queue = []
 
     """Initializes the player's ship.
 
@@ -135,6 +139,8 @@ class Model:
         # Moves all projectiles
         for projectile in self.friendly_projectiles + self.enemy_projectiles:
             projectile.move()
+
+        self._queue = [action for action in self._queue if self._process_action(action)]
         # Reloads the player's weapon depending on its fire speed
         if self._reload < self._reload_time:
             self._reload += 1
@@ -149,6 +155,20 @@ class Model:
             self._check_collisions()
             # Recharges shield for player
             self._player_ship.recharge_shield()
+
+    """Processes commands in the queue.
+    
+    :param action:
+    :type action: {str : Direction, str : int}
+    """
+
+    def _process_action(self, action):
+        commands = {Direction.FIRE: self._projectile_generator}
+        action["FRAME"] -= 1
+        if action["FRAME"] == 0:
+            commands[action["COMMAND"]]()
+            return False
+        return True
 
     """Plays the corresponding sound effect for the projectile fired.
 
@@ -212,6 +232,9 @@ class Model:
         if Direction.FIRE in keys:
             if not self._player_ship.is_dead:
                 if self._reload == self._reload_time:
+                    if self._player_stats["WEAPON"] in self._burst_fire_weapons:
+                        for i in range(self._player_stats["BURSTS"]):
+                            self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
                     self._projectile_generator()
                     self._reload = 0
         # Up and down
@@ -285,7 +308,7 @@ class Model:
             self.effects.append(Explosion(projectile.x - ship_size / 4,
                                           projectile.y - ship_size / 4,
                                           splash_color))
-        elif weapon_type == ProjectileID.FRIENDLY_MISSILE:
+        elif weapon_type == ProjectileID.FRIENDLY_MISSILE or weapon_type == ProjectileID.HOMING_BULLET:
             # Projectile is missile and its target has been destroyed, gives it a new target
             if projectile.target_destroyed:
                 projectile.acquire_target(self._find_closest_enemy(projectile))
@@ -293,8 +316,7 @@ class Model:
             # Hit box
             ship_bounding_box = ship.size / 4
             # Radius for air burst
-            air_burst_box = int(ship_size * .7)
-            air_burst_distance = projectile.air_burst and self._check_distance(projectile, ship, air_burst_box)
+            air_burst_distance = projectile.air_burst and self._check_distance(projectile, ship, int(ship_size * .7))
             # Checks if the projectile makes direct contact with the ship or is in air burst range
             if self._check_distance(projectile, ship, ship_bounding_box) or air_burst_distance:
                 # Damages the ship
@@ -367,10 +389,12 @@ class Model:
     """
 
     def _check_distance(self, projectile, ship, dist):
-        x1 = projectile.x + (projectile.size / 2)
-        y1 = projectile.y + (projectile.size / 2)
-        x2 = ship.x + (ship.size / 2)
-        y2 = ship.y + (ship.size / 2)
+        proj_size = projectile.size / 2
+        ship_size = ship.size / 2
+        x1 = projectile.x + proj_size
+        y1 = projectile.y + proj_size
+        x2 = ship.x + ship_size
+        y2 = ship.y + ship_size
         distance = int(abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)))
         return distance <= dist
 
@@ -397,6 +421,9 @@ class Model:
             self._reload = self._reload_time
 
         self._player_stats["WEAPON"] = weapon
+
+        if weapon in self._burst_fire_weapons:
+            self._player_stats["BURSTS"] = stats["BURSTS"]
 
     """Generates projectiles based on the current type and given angle.
     """
@@ -497,17 +524,12 @@ class Model:
     """
 
     def _boundary_check(self, direction, offset):
-        entity = self._player_ship
-        if direction == Direction.UP:
-            return entity.y - entity.speed > 0
-        elif direction == Direction.DOWN:
-            return entity.y + entity.speed < config.display_height - offset
-        elif direction == Direction.RIGHT:
-            return entity.x + entity.speed < config.display_width - offset
-        elif direction == Direction.LEFT:
-            return entity.x - entity.speed > 0
-        else:
-            raise ValueError("Given direction is not valid:", direction)
+        directions = {Direction.UP: lambda entity: entity.y - entity.speed > 0,
+                      Direction.DOWN: lambda entity: entity.y + entity.speed < config.display_height - offset,
+                      Direction.RIGHT: lambda entity: entity.x + entity.speed < config.display_width - offset,
+                      Direction.LEFT: lambda entity: entity.x - entity.speed > 0
+                      }
+        return directions[direction](self._player_ship)
 
     """Levels the player up! Modifies the reload and damage modifiers, along with health and shield.
     """
@@ -619,10 +641,12 @@ class Model:
     :returns: true if the game is over, false otherwise
     :rtype bool:
     """
+
     def is_game_over(self):
         return self._game_over
 
     """Ends the game.
     """
+
     def end_game(self):
         self._game_over = True

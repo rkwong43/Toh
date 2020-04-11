@@ -3,7 +3,6 @@ from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.utils import config
 from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.
@@ -23,7 +22,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
     def __init__(self, model, difficulty):
         # Model to work with
         super().__init__(model, difficulty)
-        self.fire_rate = config.game_fps * 1.25
+        self.fire_rate = int(config.game_fps * 1.25)
         self._change_difficulty(difficulty)
         self.started_game = False
 
@@ -33,10 +32,11 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
     def _change_difficulty(self, difficulty):
         if difficulty == DifficultyID.EASY:
             self._stats[EnemyID.TITAN] = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
-            self.fire_rate = config.game_fps * 1.5
+            self.fire_rate = int(config.game_fps * 1.5)
         elif difficulty == DifficultyID.HARD:
             self._stats[EnemyID.TITAN] = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
-            self.fire_rate = config.game_fps * .75
+            self.fire_rate = int(config.game_fps * .75)
+        self._fire_rate_range = (self.fire_rate, self.fire_rate)
 
     """Represents a tick to keep track of enemy spawning, firing, and movement.
     """

@@ -56,10 +56,16 @@ class Titan(Enemy):
         center_y = self.y + (self.size // 2)
         # Mantis side turrets
         # Upper middle
-        mantis1 = enemy_generator.generate_enemy(EnemyID.SUBJUGATOR, left_x - (base_size // 2), center_y - base_size,
+        mantis1 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
-        mantis2 = enemy_generator.generate_enemy(EnemyID.SUBJUGATOR, right_x - (base_size // 2), center_y - base_size,
+        mantis1.entity_id = EnemyID.SUBJUGATOR
+        mantis1.projectile_type = ProjectileID.ENEMY_MISSILE
+        mantis1.fire_variance = 20
+        mantis2 = enemy_generator.generate_enemy(EnemyID.MANTIS, right_x - (base_size // 2), center_y - base_size,
                                                  hp=self.max_hp, shield=self.max_shield, fire_rate=self.fire_rate // 5)
+        mantis2.entity_id = EnemyID.SUBJUGATOR
+        mantis2.projectile_type = ProjectileID.ENEMY_MISSILE
+        mantis2.fire_variance = 20
         # Lower middle
         mantis3 = enemy_generator.generate_enemy(EnemyID.MANTIS, left_x - base_size, center_y, hp=self.max_hp,
                                                  shield=self.max_shield, fire_rate=self.fire_rate // 4)
@@ -117,7 +123,7 @@ class Titan(Enemy):
         self.projectile_speed = int(15 * (30 / config.game_fps))
         super().fire(target, projectiles)
         super().fire(target, projectiles)
-        if self._ships_spawned_total < 3:
+        if self._ships_spawned_total < 6:
             for i in range(self.ships_spawned):
                 ship = self._ai.spawn_enemy(EnemyID.CRUCIBLE)
                 ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
