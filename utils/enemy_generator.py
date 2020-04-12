@@ -1,5 +1,6 @@
 from src.entities.ships.allies.aegis import Aegis
 from src.entities.ships.allies.citadel import Citadel
+from src.entities.ships.allies.longsword import Longsword
 from src.entities.ships.enemies.arbitrator import Arbitrator
 from src.entities.ships.enemies.crucible import Crucible
 from src.entities.ships.enemies.despoiler import Despoiler
@@ -13,6 +14,7 @@ from src.entities.ships.enemies.subjugator import Subjugator
 from src.entities.ships.enemies.terminus import Terminus
 from src.entities.ships.enemies.titan import Titan
 from src.utils import config
+from src.utils.ids.ally_id import AllyID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.player_id import PlayerID
 
@@ -29,7 +31,8 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.DESPOILER: Despoiler,
             EnemyID.TITAN: Titan,
             PlayerID.CITADEL: Citadel,
-            PlayerID.AEGIS: Aegis
+            PlayerID.AEGIS: Aegis,
+            AllyID.LONGSWORD: Longsword
             }
 
 """Generates the specified enemy and returns it.

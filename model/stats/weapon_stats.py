@@ -42,7 +42,7 @@ stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": 
                                   "DESCRIPTION": "Like the stars in the sky."},
          WeaponID.AURORA: {"PROJECTILE SPEED": 25, "SPREAD": 49, "PROJECTILE TYPE": ProjectileID.HOMING_BULLET,
                            "DAMAGE": 6, "RELOAD": 16, "PROJECTILE COUNT": 6, "BURSTS": 6,
-                           "DESCRIPTION": "An array of death."},
+                           "DESCRIPTION": "The last sight enemies will see."},
          WeaponID.SWARM: {"PROJECTILE SPEED": 20, "SPREAD": 15, "PROJECTILE TYPE": ProjectileID.FRIENDLY_MISSILE,
                           "DAMAGE": 25, "RELOAD": 40, "PROJECTILE COUNT": 1, "BURSTS": 12,
                           "DESCRIPTION": "The more the merrier."}

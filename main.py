@@ -3,13 +3,13 @@ import sys
 import os
 
 # Makes sure the game knows where the files are located:
-from src.model.menu_model import MenuModel
-from src.utils import config
 
 current_path = os.path.dirname(__file__)  # where this file is located
 outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
 sys.path.insert(1, outer_path)
 
+from src.model.menu_model import MenuModel
+from src.utils import config
 from src.controller.menu_controller import MenuController
 from src.controller.controller import Controller
 from src.model.model import Model
@@ -34,9 +34,9 @@ def start_game():
         view = View(game_mode)
         model = Model(difficulty, game_mode)
         model.switch_weapon(config.weapon)
-        model.clear()
         controller = Controller(model, view)
         finished = not controller.run_game()
+        model.clear()
 
 
 """Starts the game and initializes the music player.

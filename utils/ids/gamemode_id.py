@@ -14,6 +14,6 @@ class GameModeID(Enum):
     # Add warships
     #ONSLAUGHT = auto()
     # Randomly generate weapons every few waves
-    #FATE = auto()
+    FATE = auto()
 
     TITAN_SLAYER = auto()

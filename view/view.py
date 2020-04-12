@@ -2,6 +2,7 @@ import os
 import pygame
 
 from src.utils import config
+from src.utils.ids.ally_id import AllyID
 from src.utils.ids.effect_id import EffectID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
@@ -45,11 +46,14 @@ class View:
         EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1,
         EnemyID.ARBITRATOR: 1.5, EnemyID.TERMINUS: 1.5, EnemyID.JUDICATOR: 1.5,
         EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2,
-        EnemyID.TITAN: 8
+        EnemyID.TITAN: 8, AllyID.LONGSWORD: 8
     }
     # All player ships are by default x1 size
     for player_ship in PlayerID:
         _ship_scaling[player_ship] = 1
+
+    # Background y position
+    _scrolling_background_y = 0
 
     """Constructor to initialize the game display.
 
@@ -88,6 +92,7 @@ class View:
 
     """Initializes the HUD elements.
     """
+
     def _init_hud(self):
         # Display parameters
         self._font_size = self._height / 24
@@ -113,6 +118,7 @@ class View:
 
     """Initializes the backgrounds in the game.
     """
+
     def _init_backgrounds(self):
         if not self._backgrounds["INITIALIZED"]:
             for key, value in self._backgrounds.items():
@@ -124,13 +130,11 @@ class View:
             self._backgrounds["INITIALIZED"] = True
         self._background = self._backgrounds[self._curr_game_mode]
         self._target_background_id = None
-        self._scrolling_background_y = 0
         # How much the background scrolls
         self._scrolling_background_change = 2 * (30 / config.game_fps)
         # For background transitions:
         self._background_alpha = 255
         self._new_background = None
-
 
     """Initializes all the images used in the game.
 
@@ -224,15 +228,16 @@ class View:
     def render(self, player, projectiles, ships, effects):
         # Scrolling background
         self._draw_background(self._background)
-        # If the player isn't dead, it is rendered
-        if not player.is_dead:
-            self._render_ship(player, player.angle)
         # Renders enemies to face the player
         for ship in ships:
             self._render_ship(ship, ship.angle)
         # Renders projectiles
         for projectile in projectiles:
             self._render_projectile(projectile)
+
+        # If the player isn't dead, it is rendered
+        if not player.is_dead:
+            self._render_ship(player, player.angle)
         # Renders effects
         for effect in effects:
             self._render_effect(effect)
@@ -369,7 +374,7 @@ class View:
         if background_id not in [self._curr_game_mode, GameID.TUTORIAL]:
             self._target_background_id = background_id
             if self._background_alpha > 0:
-                self._background_alpha -= 5
+                self._background_alpha -= 15
                 self._background.set_alpha(self._background_alpha)
                 self._new_background = self._backgrounds[background_id]
                 self._new_background.set_alpha(255 - self._background_alpha)

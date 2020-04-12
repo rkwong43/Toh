@@ -77,6 +77,7 @@ class Ship:
                              FIRE_WAYPOINT: self._move,
                              MOVE_AND_FIRE_WAYPOINT: self._move_to_wp
                              }
+        self.remove_if_offscreen = True
 
     """Represents the angle the ship is facing.
 
@@ -95,7 +96,8 @@ class Ship:
     """
 
     def rotate(self, target):
-        self._wp_rotations[self._wp_state](target)
+        if target is not None:
+            self._wp_rotations[self._wp_state](target)
 
     """Rotates the ship towards its waypoint.
     """

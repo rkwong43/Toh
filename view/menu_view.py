@@ -79,7 +79,6 @@ class MenuView(View):
         if tree is None:
             self._render_title_screen()
         elif tree.name not in GameID:
-            self._model.set_play(True)
             self._render_gallery(tree)
         elif tree.name == GameID.LOADOUT:
             self._render_loadout_selection(tree)
@@ -99,7 +98,7 @@ class MenuView(View):
         elif self._target_background_id is not None:
             self._transition_background(self._target_background_id)
 
-        self.render(None, self._model.get_projectiles(),
+        self.render(self._model.get_player(), self._model.get_projectiles(),
                     self._model.get_ships(), self._model.get_effects())
         text_to_render = tree.get_options()
         curr_selected = self._current = tree.get_current_selection()
@@ -162,14 +161,14 @@ class MenuView(View):
     """
 
     def _render_loadout(self):
-        x = config.display_width * .6
+        x = config.display_width / 2 - config.ship_size / 2
         y = config.display_height / 2
         self._model.spawn_player(config.player_ship, x, y)
         # Welcome text
         welcome_text = self._description_font.render("Welcome " + config.player_name, 0, self.WHITE).convert_alpha()
         welcome_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
-        self._game_display.blit(welcome_text, self._find_posn(welcome_text, x + config.ship_size // 2,
-                                                              y - config.ship_size // 2))
+        self._game_display.blit(welcome_text, self._find_posn(welcome_text, int(config.display_width * .75),
+                                                              y + config.ship_size / 2))
         self._render_ship(self._model.get_player(), 0)
 
     """Renders the title screen.
@@ -178,8 +177,13 @@ class MenuView(View):
     def _render_title_screen(self):
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
+        self._model.spawn_player(config.player_ship,
+                                 config.display_width / 2 - config.ship_size / 2, config.display_height / 2)
+        self.render(self._model.get_player(), self._model.get_projectiles(),
+                    self._model.get_ships(), self._model.get_effects())
         self._game_display.blit(self._title,
                                 self._find_posn(self._title, int(self._width / 2), int(self._height / 2.5)))
+        self._model.reset_showcase()
         self._compute_alpha()
         image = self._start_prompt.copy()
         image.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
@@ -205,6 +209,9 @@ class MenuView(View):
         # Name of the current entity being viewed
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
+
+        self.render(self._model.get_player(), self._model.get_projectiles(),
+                    self._model.get_ships(), self._model.get_effects())
         # Other stats to show
         offset = 0
         for stat in gallery.stats:
@@ -220,8 +227,6 @@ class MenuView(View):
             self._game_display.blit(weapon_image, self._find_posn(weapon_image,
                                                                   int(self._width * .7),
                                                                   int(self._height / 4) + offset))
-        self.render(self._model.get_player(), self._model.get_projectiles(),
-                    self._model.get_ships(), self._model.get_effects())
         # Title and description
         name_displayed = self._text_font.render(str(gallery.name), 1, self.WHITE).convert_alpha()
         self._game_display.blit(name_displayed,
@@ -237,18 +242,20 @@ class MenuView(View):
 
     def render(self, player, projectiles, ships, effects):
         self._model.remove_effects()
-        # If the player isn't dead, it is rendered
-        if player is not None:
-            self._render_ship(player, 0)
         # Renders enemies to face the player
         for ship in ships:
             self._render_ship(ship, ship.angle)
         # Renders projectiles
         for projectile in projectiles:
             self._render_projectile(projectile)
+
+        # If the player isn't dead, it is rendered
+        if player is not None:
+            self._render_ship(player, 0)
         # Renders effects
         for effect in effects:
             self._render_effect(effect)
+
 
     """Renders the loadout selection screen.
     
@@ -259,6 +266,8 @@ class MenuView(View):
     def _render_loadout_selection(self, tree):
         self._draw_background(self._background)
         self._transition_background(self._target_background_id)
+        self.render(self._model.get_player(), self._model.get_projectiles(),
+                    self._model.get_ships(), self._model.get_effects())
         self._render_loadout_selector_helper(tree)
         launch_text = self._description_font.render("Press [SPACE] to launch:", 1, self.WHITE)
         # TODO: Add launch animation
@@ -273,10 +282,10 @@ class MenuView(View):
     def _render_loadout_selector_helper(self, tree):
         # Positional arguments
         num_options = len(tree.get_options()) + 1
-        screen_x_offset = self._width // num_options
+        screen_x_offset = self._width / 2
         options = tree.get_options()
-        x_posns = [x * screen_x_offset for x in range(1, len(options) + 1)]
-        y = self._height // 2
+        x_posns = [screen_x_offset + int(2.5 * x * config.ship_size) for x in range(0, len(options))]
+        y = self._height // 2 + config.ship_size / 2
         curr_selection = tree.current_list
         for i in range(num_options - 1):
             chevron = self._text_font.render(">", 1, self.WHITE).convert_alpha()

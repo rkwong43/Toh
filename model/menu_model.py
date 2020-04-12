@@ -1,14 +1,20 @@
 import random
 
+from src.entities.projectiles.bullet import Bullet
+from src.entities.projectiles.diamond_dust import DiamondDust
+from src.entities.projectiles.missile import Missile
 from src.entities.ships.waypoint import Waypoint
 from src.model.model import Model
 from src.utils import config, enemy_generator
+from src.utils.direction import Direction
+from src.utils.ids.ally_id import AllyID
 from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.effect_id import EffectID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
 from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
+from src.utils.ids.projectile_id import ProjectileID
 
 """Represents the model that handles displaying weapons or enemies in a gallery type menu.
 """
@@ -50,17 +56,12 @@ class MenuModel(Model):
 
     def reset_showcase(self):
         self._showcase_weapon = False
-        for ship in self._props:
-            ship.y += 2 * config.display_height
-
-    """Sets the current playing state.
-    
-    :param start: True if playing, false otherwise
-    :type start: bool
-    """
-
-    def set_play(self, start):
-        self._play = start
+        # Yeets everything off screen
+        self._props[:] = []
+        self._player_ship.x = config.display_width / 2 - config.ship_size / 2
+        self._player_ship.y = config.display_height / 2
+        for projectile in self.friendly_projectiles + self.enemy_projectiles:
+            projectile.y -= 2 * config.display_height
 
     """Represents a tick in the game. Handles reloads and moves all projectiles and updates the AI module to
     move enemies. Also rotates enemies to face the player.
@@ -70,6 +71,7 @@ class MenuModel(Model):
         # Moves all projectiles
         for projectile in self.friendly_projectiles + self.enemy_projectiles:
             projectile.move()
+        self._queue = [action for action in self._queue if self._process_action(action)]
         # Has enemies immediately fire when ready
         for ship in self.enemy_ships + self.friendly_ships + self._props:
             ship.move()
@@ -89,6 +91,9 @@ class MenuModel(Model):
             elif self._reload == self._reload_time:
                 self._projectile_generator()
                 self._reload = 0
+                if self._player_stats["WEAPON"] in self._burst_fire_weapons:
+                    for i in range(self._player_stats["BURSTS"]):
+                        self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
         # Checks collisions between projectiles and ships
         self._remove_off_screen_objects()
         for ship in self.enemy_ships + self.friendly_ships + self._props:
@@ -197,9 +202,9 @@ class MenuModel(Model):
     """
 
     def spawn_ships(self):
-        # ~18% chance of spawning ships randomly
+        # ~18% chance of spawning small ships randomly
         if random.randint(1, 6) == 6:
-            random_ship_quantity = random.randint(1, 6)
+            random_ship_quantity = random.randint(1, 4)
             x_posns = []
             for _ in range(random_ship_quantity):
                 random_speed = random.randint(5, 15)
@@ -219,16 +224,55 @@ class MenuModel(Model):
                     ship_id = PlayerID.AEGIS
                 ship = enemy_generator.generate_enemy(ship_id,
                                                       rand_x,
-                                                      config.display_height - config.ship_size,
-                                                      speed=random_speed)
+                                                      config.display_height,
+                                                      speed=random_speed,
+                                                      hp=10,
+                                                      shield=20,
+                                                      fire_rate=config.game_fps // 2)
                 x_posns.append(rand_x)
-                ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size), fire_at=True)
+                ship.set_waypoint(wp=Waypoint(rand_x, -config.display_height))
                 # They do not shoot
                 ship.ready_to_fire = False
                 self.friendly_ships.append(ship)
+        # 4% chance of spawning a Longsword
+        if random.randint(1, 25) == 25:
+            count = 0
+            for ship in self.friendly_ships:
+                if ship.entity_id == AllyID.LONGSWORD:
+                    count += 1
+                    if count == 2:
+                        return
+            rand_x = random.randint(-config.display_width // 2, config.display_width // 2)
+            ship = enemy_generator.generate_enemy(AllyID.LONGSWORD,
+                                                  rand_x,
+                                                  config.display_height,
+                                                  speed=2,
+                                                  hp=100,
+                                                  shield=100)
+            ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size * 10), fire_at=True)
+            ship.ready_to_fire = False
+            self.friendly_ships.append(ship)
 
     """Returns all ships and props.
     """
 
     def get_ships(self):
         return self.enemy_ships + self.friendly_ships + self._props
+
+    def _generate_projectile(self, speed, x, y, angle, damage, entity_id):
+        self.play_sound(entity_id)
+        if entity_id == ProjectileID.FRIENDLY_BULLET or entity_id == ProjectileID.FRIENDLY_FLAK:
+            return Bullet(speed, x, y, angle, 0, entity_id)
+        elif entity_id == ProjectileID.FRIENDLY_MISSILE:
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships + self._props)
+            return Missile(speed, x, y, angle, 0, entity_id, closest_enemy)
+        elif entity_id == ProjectileID.DIAMOND_DUST:
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships + self._props)
+            return DiamondDust(speed, x, y, angle, 0, ProjectileID.FRIENDLY_BULLET, closest_enemy)
+        elif entity_id == ProjectileID.HOMING_BULLET:
+            closest_enemy = self.find_closest_target(self._player_ship, self.enemy_ships + self._props)
+            return Missile(speed, x, y, angle, 0, ProjectileID.FRIENDLY_BULLET, closest_enemy)
+        elif entity_id == ProjectileID.RAILGUN_BLAST:
+            return Bullet(speed, x, y, angle, 0, ProjectileID.RAILGUN_BLAST)
+        else:
+            raise ValueError("Invalid projectile type:", entity_id)

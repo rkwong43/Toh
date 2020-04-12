@@ -86,6 +86,8 @@ class Titan(Enemy):
                                                   effects=self._effects)
         terminus.projectile_damage = 20
         self._turrets = [mantis1, mantis2, mantis3, mantis4, mantis5, mantis6, mantis7, terminus]
+        for turret in self._turrets:
+            turret.remove_if_offscreen = False
         return self._turrets
 
     """Doesn't rotate at all.

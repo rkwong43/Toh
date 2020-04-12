@@ -22,6 +22,7 @@ descriptions = {
     GameModeID.CLASSIC: ["Survive against endless waves of enemies."],
     GameModeID.HEAVEN: ["Take on the enemy's most elite warships."],
     GameModeID.MANDIBLE_MADNESS: ["Uh oh, you've provoked a hive of bees."],
+    GameModeID.FATE: ["It's up to fate whether you survive."],
     # Challenge
     GameModeID.TITAN_SLAYER: ["Duel a massive Titan warship alone. Prepare for death."]
 }

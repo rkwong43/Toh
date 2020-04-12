@@ -19,6 +19,7 @@ from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.model.stats import ship_stats, weapon_stats
 from src.utils import config
 from src.utils.direction import Direction
+from src.utils.ids.ally_id import AllyID
 from src.utils.ids.effect_id import EffectID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.game_id import GameID
@@ -38,6 +39,7 @@ class Model:
     sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
     # Burst fire weapons:
     _burst_fire_weapons = [WeaponID.SWARM, WeaponID.AURORA, WeaponID.CONSTELLATION]
+    friendly_ships = []
 
     """Initializes the model with the width and height of the window and the size of ships
 
@@ -49,7 +51,6 @@ class Model:
 
     def __init__(self, difficulty, game_mode):
         # Friendly ships
-        self.friendly_ships = []
         # Enemy ships
         self.enemy_ships = []
         # Enemy projectiles
@@ -93,6 +94,9 @@ class Model:
 
         # Action queue
         self._queue = []
+        for ship in self.friendly_ships:
+            ship.ready_to_fire = True
+            ship.ticks = 0
 
     """Initializes the player's ship.
 
@@ -144,6 +148,14 @@ class Model:
         # Rotates enemies, recharges their shields, and checks if they're dead
         self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self._is_dead(enemy)]
         self.friendly_ships[:] = [friendly for friendly in self.friendly_ships if not self._is_dead(friendly)]
+        # AI handles enemy firing
+        for ship in self.friendly_ships:
+            ship.ticks += 1
+            if ship.ticks == ship.fire_rate:
+                if ship.ready_to_fire:
+                    ship.ticks = 0
+                    ship.fire(self.find_closest_target(ship, self.enemy_ships), self.friendly_projectiles)
+                    self.play_sound(ship.projectile_type)
         self._player_ship.is_damaged = False
         # Removes off screen objects
         self._remove_off_screen_objects()
@@ -212,8 +224,15 @@ class Model:
             if ship.entity_id == EnemyID.TITAN:
                 self.popup_text("TITAN SLAIN", -1, -1, 3)
                 self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
+            elif ship.entity_id == AllyID.LONGSWORD:
+                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
+
         else:
-            ship.rotate(self._player_ship)
+            ship.move()
+            # TODO: Fix
+            closest_target = self.find_closest_target(ship, self.enemy_ships if ship in self.friendly_ships else
+            self.friendly_ships + [self._player_ship])
+            ship.rotate(closest_target)
             ship.recharge_shield()
             ship.is_damaged = False
         return ship.is_dead
@@ -256,6 +275,8 @@ class Model:
                                         if not self._is_off_screen(projectile)]
         self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
                                      if not self._is_off_screen(projectile)]
+        self.friendly_ships[:] = [ship for ship in self.friendly_ships if not self._is_off_screen(ship)]
+        self.enemy_ships[:] = [ship for ship in self.enemy_ships if not self._is_off_screen(ship)]
 
     """Checks if the given entity is off screen.
 
@@ -264,6 +285,8 @@ class Model:
     """
 
     def _is_off_screen(self, entity):
+        if not entity.remove_if_offscreen:
+            return False
         size = entity.size // 2
         center = (entity.x + size, entity.y + size)
         # if off screen:
@@ -276,14 +299,14 @@ class Model:
     """
 
     def _check_collisions(self):
-        # TODO: Maybe slice the lists
         # Checks friendly projectiles vs. enemy ships
-        self.friendly_projectiles = [projectile for projectile in self.friendly_projectiles
-                                     if not self._check_if_hit(projectile, self.enemy_ships, EffectID.BLUE_EXPLOSION)]
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if
+                                        not self._check_if_hit(projectile, self.enemy_ships, EffectID.BLUE_EXPLOSION)]
         # Checks enemy projectiles vs. friendly ships
-        self.enemy_projectiles = [projectile for projectile in self.enemy_projectiles
-                                  if not self._check_if_hit(projectile, self.friendly_ships + [self._player_ship],
-                                                            EffectID.RED_EXPLOSION)]
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self._check_if_hit(projectile, self.friendly_ships + [self._player_ship],
+                                                               EffectID.RED_EXPLOSION)]
         # If the player is damaged, then plays a screen effect
         if self._player_ship.is_damaged:
             self._play_screen_effect()
@@ -307,7 +330,7 @@ class Model:
             self.effects.append(Explosion(projectile.x - ship_size / 4,
                                           projectile.y - ship_size / 4,
                                           splash_color))
-        elif weapon_type == ProjectileID.FRIENDLY_MISSILE or weapon_type == ProjectileID.HOMING_BULLET:
+        elif weapon_type == ProjectileID.FRIENDLY_MISSILE:
             # Projectile is missile and its target has been destroyed, gives it a new target
             if projectile.target_destroyed:
                 projectile.acquire_target(self.find_closest_target(projectile, self.enemy_ships))
@@ -355,6 +378,7 @@ class Model:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
         if self._player_ship.is_dead:
+            self.effects.append(Explosion(self._player_ship.x, self._player_ship.y, EffectID.BLUE_EXPLOSION))
             self._game_over = True
             self.popup_text("Game Over", -1, -1, 4)
 
@@ -489,8 +513,8 @@ class Model:
     :type source: Ship or Projectile
     :param ships: Ships to search in
     :type ships: [Ship]
-    :returns: closest enemy to the source, or 0
-    :rtype: Ship or int
+    :returns: closest enemy to the source, or none
+    :rtype: Ship or None
     """
 
     def find_closest_target(self, source, ships):
@@ -501,7 +525,7 @@ class Model:
         if len(ships) > 0:
             closest_ship = ships[0]
         else:
-            return 0
+            return None
         # Iterates through the list of enemy ships linearly and finds the closest one
         # using distance
         for ship in ships:
@@ -650,3 +674,12 @@ class Model:
 
     def end_game(self):
         self._game_over = True
+
+    """Changes the player stats, but keeps the damage and reload modifiers the same.
+    
+    :param new_stats: New stats to change to
+    :type new_stats: dict
+    """
+    def update_player_weapon(self, new_stats):
+        new_stats["DMOD"], new_stats["RMOD"] = self._player_stats["DMOD"], self._player_stats["RMOD"]
+        self._player_stats = new_stats

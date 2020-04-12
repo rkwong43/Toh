@@ -258,6 +258,10 @@ class MenuController:
     """
 
     def _start_screen(self, clock):
+        ANIMATE = pygame.USEREVENT + 1
+        SIMULATE_BATTLE = pygame.USEREVENT + 2
+        pygame.time.set_timer(ANIMATE, 300)
+        pygame.time.set_timer(SIMULATE_BATTLE, 1000)
         finished = False
         # Loops until the user quits or presses space to begin
         while not finished:
@@ -268,6 +272,10 @@ class MenuController:
                 elif game_event.type == pygame.KEYUP:
                     if game_event.key == pygame.K_SPACE:
                         return False
+                if game_event.type == ANIMATE:
+                    self._menus.animate()
+                if game_event.type == SIMULATE_BATTLE:
+                    self._model.spawn_ships()
             self._menus.render_menu(None)
             pygame.display.update()
             clock.tick(self._fps)
