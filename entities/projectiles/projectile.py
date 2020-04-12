@@ -25,6 +25,8 @@ class Projectile:
         self.has_splash = False
         self.air_burst = False
         self.size = config.ship_size
+        self.target_destroyed = False
+        self.remove_if_offscreen = True
 
     """Moves the projectile, to be done in child classes
     """

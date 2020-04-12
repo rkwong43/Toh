@@ -49,7 +49,7 @@ class Missile(Projectile):
     """
     def _seek_target(self):
         # No target
-        if self.target == 0:
+        if self.target is None:
             # Continues moving in the direction it is initially going
             self.x += self.x_change
             self.y += self.y_change
@@ -77,7 +77,7 @@ class Missile(Projectile):
     :type target: Ship
     """
     def acquire_target(self, target):
-        if target != 0:
+        if target is not None:
             self.target = target
             self.target_destroyed = False
 

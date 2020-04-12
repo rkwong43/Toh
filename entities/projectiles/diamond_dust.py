@@ -31,7 +31,7 @@ class DiamondDust(Projectile):
         """
 
     def acquire_target(self, target):
-        if target != 0:
+        if target is not None:
             self.target = target
             self.target_destroyed = False
 
@@ -45,7 +45,7 @@ class DiamondDust(Projectile):
         random_x = random.randint(5 * -self.speed, 5 * self.speed)
         self.x += random_x
         self.y += random_speed * self.orientation
-        if self.target != 0:
+        if self.target is not None:
             if self.x < self.target.x:
                 self.x += random_speed
             elif self.x > self.target.x:
