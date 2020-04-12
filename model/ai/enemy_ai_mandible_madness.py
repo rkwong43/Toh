@@ -24,10 +24,10 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
     """
 
     def __init__(self, model, difficulty):
+        self._mandible_stats = ship_stats.stats[EnemyID.MANDIBLE]
         super().__init__(model, difficulty)
         # Ship stats
         # Mandible
-        self._mandible_stats = ship_stats.stats[EnemyID.MANDIBLE]
         self._mandible_combat_rating = 10
         # These are the default scores for medium difficulty
         # Enemy combat rating is based on their score
@@ -36,7 +36,6 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
 
         # Max number of Mandibles that can be onscreen
         self._max_mandibles = 12
-        self._change_difficulty(difficulty)
 
     """Changes the difficulty to the given setting.
     """
@@ -63,8 +62,6 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
     def _buff_enemies(self):
         self._mandible_stats["SHIELD"] += 10
         self._mandible_stats["HP"] += 10
-        if self._mandible_stats["SPEED"] < 10:
-            self._mandible_stats["SPEED"] += 1
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """

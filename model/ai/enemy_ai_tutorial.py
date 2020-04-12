@@ -77,8 +77,6 @@ class EnemyTutorialAI(EnemyWaveAI):
         player.recharge_shield()
         for enemy in self._model.enemy_ships:
             enemy.ticks += 1
-            # Provides continuous movement for certain enemies
-            enemy.move()
             # Fires their weapon if their individual tick rate matches their fire rate
             if enemy.ticks == enemy.fire_rate:
                 enemy.ticks = 0

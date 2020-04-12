@@ -23,7 +23,6 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         # Model to work with
         super().__init__(model, difficulty)
         self.fire_rate = int(config.game_fps * 1.25)
-        self._change_difficulty(difficulty)
         self.started_game = False
 
     """Changes the difficulty to the given setting.
@@ -52,7 +51,6 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         # Also makes them move
         for enemy in self._model.enemy_ships:
             enemy.ticks += 1
-            enemy.move()
             # Fires their weapon if their individual tick rate matches their fire rate
             if enemy.ticks == enemy.fire_rate:
                 enemy.ticks = 0

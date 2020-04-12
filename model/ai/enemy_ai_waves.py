@@ -84,7 +84,6 @@ class EnemyWaveAI:
             self._level_up_exp *= 2
         for enemy in self._model.enemy_ships:
             enemy.ticks += 1
-            enemy.move()
             # Fires their weapon if their individual tick rate matches their fire rate
             if enemy.ticks == enemy.fire_rate:
                 enemy.ticks = 0
