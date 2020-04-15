@@ -5,7 +5,7 @@ from src.utils.ids.weapon_id import WeaponID
 """
 # Note: Do weapon spread as a multiple of COUNT + 1 for consistent integer rounding for spread
 stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.FRIENDLY_BULLET,
-                        "DAMAGE": 15, "RELOAD": 6, "PROJECTILE COUNT": 1, "BURSTS": 0,
+                        "DAMAGE": 15, "RELOAD": 5, "PROJECTILE COUNT": 1, "BURSTS": 0,
                         "DESCRIPTION": "Fires lethal blasts of plasma in a straight line."},
          WeaponID.FLAK_CANNON: {"PROJECTILE SPEED": 10, "SPREAD": 24, "PROJECTILE TYPE": ProjectileID.FRIENDLY_FLAK,
                                 "DAMAGE": 10, "RELOAD": 10, "PROJECTILE COUNT": 3, "BURSTS": 0,

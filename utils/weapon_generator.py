@@ -41,7 +41,7 @@ def generate_weapon():
         result["SPREAD"] = random.randint(1, 6) * (projectile_count + 1)
 
     result["PROJECTILE TYPE"] = projectile_types[random.randint(0, len(projectile_types) - 1)]
-    dps = random.randint(80, 300)
+    dps = random.randint(150, 300)
     bursts_modifier = result["BURSTS"] if result["BURSTS"] > 0 else 1
     result["DAMAGE"] = dps / ((config.game_fps / random_fire_rate) * (bursts_modifier * result["PROJECTILE COUNT"]))
     if result["DAMAGE"] == 0:
