@@ -91,9 +91,8 @@ class MenuModel(Model):
             elif self._reload == self._reload_time:
                 self._projectile_generator()
                 self._reload = 0
-                if self._player_stats["WEAPON"] in self._burst_fire_weapons:
-                    for i in range(self._player_stats["BURSTS"]):
-                        self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
+                for i in range(self._player_stats["BURSTS"]):
+                    self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
         # Checks collisions between projectiles and ships
         self._remove_off_screen_objects()
         for ship in self.enemy_ships + self.friendly_ships + self._props:
@@ -249,9 +248,10 @@ class MenuModel(Model):
                                                   speed=2,
                                                   hp=100,
                                                   shield=100)
-            ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size * 10), fire_at=True)
+            ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size * 10))
             ship.ready_to_fire = False
             self.friendly_ships.append(ship)
+            self.friendly_ships.extend(ship.spawn_turrets())
 
     """Returns all ships and props.
     """

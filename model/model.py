@@ -11,8 +11,10 @@ from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.diamond_dust import DiamondDust
 from src.entities.projectiles.missile import Missile
 from src.entities.ships.player import Player
+from src.model.ai.enemy_ai_fate import EnemyFateAI
 from src.model.ai.enemy_ai_heaven import EnemyHeavenAI
 from src.model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
+from src.model.ai.enemy_ai_onslaught import EnemyOnslaughtAI
 from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
 from src.model.ai.enemy_ai_tutorial import EnemyTutorialAI
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
@@ -37,8 +39,6 @@ class Model:
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
-    # Burst fire weapons:
-    _burst_fire_weapons = [WeaponID.SWARM, WeaponID.AURORA, WeaponID.CONSTELLATION]
     friendly_ships = []
 
     """Initializes the model with the width and height of the window and the size of ships
@@ -128,7 +128,8 @@ class Model:
     def _init_enemy_ai(self, game_mode, difficulty):
         AI_modules = {GameModeID.CLASSIC: EnemyWaveAI, GameModeID.MANDIBLE_MADNESS: EnemyMandibleMadnessAI,
                       GameModeID.TITAN_SLAYER: EnemyTitanSlayerAI, GameModeID.HEAVEN: EnemyHeavenAI,
-                      GameID.TUTORIAL: EnemyTutorialAI}
+                      GameID.TUTORIAL: EnemyTutorialAI, GameModeID.FATE: EnemyFateAI,
+                      GameModeID.ONSLAUGHT: EnemyOnslaughtAI}
         AI = AI_modules[game_mode](self, difficulty)
         return AI
 
@@ -148,18 +149,19 @@ class Model:
         # Rotates enemies, recharges their shields, and checks if they're dead
         self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self._is_dead(enemy)]
         self.friendly_ships[:] = [friendly for friendly in self.friendly_ships if not self._is_dead(friendly)]
-        # AI handles enemy firing
-        for ship in self.friendly_ships:
-            ship.ticks += 1
-            if ship.ticks == ship.fire_rate:
-                if ship.ready_to_fire:
-                    ship.ticks = 0
-                    ship.fire(self.find_closest_target(ship, self.enemy_ships), self.friendly_projectiles)
-                    self.play_sound(ship.projectile_type)
+
         self._player_ship.is_damaged = False
         # Removes off screen objects
         self._remove_off_screen_objects()
         if self._player_ship.hp > 0:
+            # AI handles enemy firing
+            for ship in self.friendly_ships:
+                ship.ticks += 1
+                if ship.ticks == ship.fire_rate:
+                    ship.ticks = 0
+                    if ship.ready_to_fire:
+                        ship.fire(self.find_closest_target(ship, self.enemy_ships), self.friendly_projectiles)
+                        self.play_sound(ship.projectile_type)
             self._AI.tick()
             # Checks collisions between projectiles and ships
             self._check_collisions()
@@ -249,9 +251,8 @@ class Model:
         if Direction.FIRE in keys:
             if not self._player_ship.is_dead:
                 if self._reload == self._reload_time:
-                    if self._player_stats["WEAPON"] in self._burst_fire_weapons:
-                        for i in range(self._player_stats["BURSTS"]):
-                            self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
+                    for i in range(self._player_stats["BURSTS"]):
+                        self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
                     self._projectile_generator()
                     self._reload = 0
         # Up and down
@@ -275,8 +276,19 @@ class Model:
                                         if not self._is_off_screen(projectile)]
         self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
                                      if not self._is_off_screen(projectile)]
-        self.friendly_ships[:] = [ship for ship in self.friendly_ships if not self._is_off_screen(ship)]
-        self.enemy_ships[:] = [ship for ship in self.enemy_ships if not self._is_off_screen(ship)]
+        self.friendly_ships[:] = [ship for ship in self.friendly_ships if not self._ship_is_off_screen(ship)]
+        self.enemy_ships[:] = [ship for ship in self.enemy_ships if not self._ship_is_off_screen(ship)]
+
+    """Wrapper for determining if a ship is offscreen, alerting it to do something if applicable.
+    
+    :param ship: The ship to check if offscreen
+    :type ship: Ship
+    """
+    def _ship_is_off_screen(self, ship):
+        result = self._is_off_screen(ship)
+        if result:
+            ship.offscreen()
+        return result
 
     """Checks if the given entity is off screen.
 
@@ -354,9 +366,9 @@ class Model:
                 # Removes projectile if it is not a railgun shot
                 if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
                     return True
-                elif ship.entity_id == EnemyID.TITAN:
-                    # Railgun hits Titan
-                    ship.damage(projectile.damage * 3)
+                elif ship.entity_id == EnemyID.TITAN or ship.entity_id == AllyID.LONGSWORD:
+                    # Railgun hits larger ship
+                    ship.damage(projectile.damage * 4)
                     return True
         return False
 
@@ -380,7 +392,7 @@ class Model:
         if self._player_ship.is_dead:
             self.effects.append(Explosion(self._player_ship.x, self._player_ship.y, EffectID.BLUE_EXPLOSION))
             self._game_over = True
-            self.popup_text("Game Over", -1, -1, 4)
+            self.popup_text("Game Over", 4)
 
     """Checks if the projectile's splash damage collides with any surrounding ships
 
@@ -429,7 +441,7 @@ class Model:
 
     def switch_weapon(self, weapon):
         # Grabs the weapon stats and sets buffer for frame rate
-        stats = weapon_stats.stats[weapon]
+        stats = weapon_stats.stats[weapon] if weapon in WeaponID else weapon
         self._player_stats["SPEED"] = int(stats["PROJECTILE SPEED"] * (30 / config.game_fps))
         self._player_stats["SPREAD"] = stats["SPREAD"]
         self._player_stats["TYPE"] = stats["PROJECTILE TYPE"]
@@ -445,15 +457,14 @@ class Model:
 
         self._player_stats["WEAPON"] = weapon
 
-        if weapon in self._burst_fire_weapons:
-            self._player_stats["BURSTS"] = stats["BURSTS"]
+        self._player_stats["BURSTS"] = stats["BURSTS"]
 
     """Generates projectiles based on the current type and given angle.
     """
 
     def _projectile_generator(self):
         stats = self._player_stats
-        player_angle = self._player_ship.angle + 90
+        player_angle = self._player_ship.angle
         # Offset and angle partitions based on number of projectiles
         firing_position = self._player_ship.y - config.ship_size / 4
         # Generating the required number of projectiles:
@@ -521,18 +532,14 @@ class Model:
         x = source.x
         y = source.y
         minimum = config.display_width * 3
-        # Sets the first enemy as the closest ship
-        if len(ships) > 0:
-            closest_ship = ships[0]
-        else:
-            return None
+        closest_ship = None
         # Iterates through the list of enemy ships linearly and finds the closest one
         # using distance
         for ship in ships:
             ship_x = ship.x
             ship_y = ship.y
             distance = int(abs(math.sqrt((x - ship_x) ** 2 + (y - ship_y) ** 2)))
-            if distance <= minimum:
+            if distance <= minimum and not ship.stealth:
                 minimum = distance
                 closest_ship = ship
         return closest_ship
@@ -573,7 +580,7 @@ class Model:
         self._player_stats["RMOD"] -= .05
         if self._player_stats["RMOD"] <= 0:
             self._player_stats["RMOD"] -= .1
-        self.popup_text("Level Up", -1, config.display_height // 3, 3)
+        self.popup_text("SYSTEM UPGRADED", 3, y=config.display_height // 3)
         # Refreshes the weapon stats for the player
         self.switch_weapon(self._player_stats["WEAPON"])
 
@@ -589,11 +596,7 @@ class Model:
     :type seconds: int
     """
 
-    def popup_text(self, text, x, y, seconds):
-        if x == -1:
-            x = config.display_width // 2
-        if y == -1:
-            y = config.display_height // 2
+    def popup_text(self, text, seconds, x=config.display_width // 2, y=config.display_height // 2):
         # Moves the popup down if it is in the same space as another popup
         for effect in self.effects:
             if effect.entity_id == EffectID.POPUP:
@@ -650,9 +653,9 @@ class Model:
 
     def pause(self):
         self.clear_popups()
-        self.popup_text("PAUSED", -1, config.display_height // 3, 1 / config.game_fps)
-        self.popup_text("[BACKSPACE] TO RETURN TO TITLE", -1,
-                        (config.display_height // 3) + (config.ship_size // 2), 1 / config.game_fps)
+        self.popup_text("PAUSED", 1 / config.game_fps, y=config.display_height // 3)
+        self.popup_text("[BACKSPACE] TO RETURN TO TITLE",
+                        1 / config.game_fps, y=(config.display_height // 3) + (config.ship_size // 2))
 
     """Clears all popup texts in the effects.
     """
@@ -674,12 +677,3 @@ class Model:
 
     def end_game(self):
         self._game_over = True
-
-    """Changes the player stats, but keeps the damage and reload modifiers the same.
-    
-    :param new_stats: New stats to change to
-    :type new_stats: dict
-    """
-    def update_player_weapon(self, new_stats):
-        new_stats["DMOD"], new_stats["RMOD"] = self._player_stats["DMOD"], self._player_stats["RMOD"]
-        self._player_stats = new_stats
