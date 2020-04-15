@@ -79,7 +79,7 @@ class EnemyHeavenAI(EnemyWaveAI):
 
     def _spawn_enemies(self):
         if self._wave == 0:
-            self._model.popup_text("WARNING: ENEMY FLEET DETECTED", -1, -1, 3)
+            self._model.popup_text("WARNING: ENEMY FLEET DETECTED", 3)
         rating = self._max_combat_rating
         # List of entity IDs of available enemies to grab from
         available_enemies = []
@@ -94,11 +94,15 @@ class EnemyHeavenAI(EnemyWaveAI):
             combat_value = self._combat_ratings.get(available_enemies[chosen])
             if combat_value <= rating:
                 rating -= combat_value
-                self.spawn_enemy(enemy)
                 if enemy == EnemyID.TITAN:
-                    self._model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
+                    # 20% of spawning a Titan
+                    if random.randint(1, 5) != 5:
+                        available_enemies.remove(enemy)
+                        continue
+                    self._model.popup_text("WARNING: DEATH IMMINENT", 3)
                     self._stats[EnemyID.TITAN]["HP"] += 500
                     available_enemies.remove(enemy)
+                self.spawn_enemy(enemy)
             else:
                 available_enemies.remove(enemy)
         while rating > 0:
@@ -108,5 +112,5 @@ class EnemyHeavenAI(EnemyWaveAI):
         # Doubles the enemies spawned every given number of waves and buffs them
         if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
             self._buff_enemies()
-            self._model.popup_text("REINFORCEMENTS DETECTED", -1, int(config.display_height * .6), 3)
+            self._model.popup_text("WARNING: ENEMY QUANTITY INCREASED", 3, y=int(config.display_height * .6))
             self._combat_ratio *= 2

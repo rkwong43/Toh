@@ -42,7 +42,7 @@ class EnemyTutorialAI(EnemyWaveAI):
 
     def tick(self):
         if not self.started:
-            self._model.popup_text("COMBAT SIMULATOR INITIATED", -1, -1, 3)
+            self._model.popup_text("COMBAT SIMULATOR INITIATED", 3)
             self.started = True
         self.popup_ticks += 1
         if self.popup_ticks == self.popup_duration and self.continue_tutorial:
@@ -90,21 +90,21 @@ class EnemyTutorialAI(EnemyWaveAI):
 
     def advance_tutorial(self):
         if self.tutorial_stage == 0:
-            self._model.popup_text("MOVE USING [WASD] KEYS", -1, -1, 60)
+            self._model.popup_text("MOVE USING [WASD] KEYS", 120)
         elif self.tutorial_stage == 1:
-            self._model.popup_text("FIRE YOUR WEAPON USING [SPACE]", -1, -1, 60)
+            self._model.popup_text("FIRE YOUR WEAPON USING [SPACE]", 120)
         elif self.tutorial_stage == 2:
-            self._model.popup_text("ELIMINATE THE ENEMY", -1, -1, 60)
+            self._model.popup_text("ELIMINATE THE ENEMY", 120)
             ship = super().spawn_enemy(EnemyID.MANDIBLE)
             ship.hp = 30
         elif self.tutorial_stage == 3:
-            self._model.popup_text("LEVELING WILL INCREASE DAMAGE, ", -1, -1, 6)
-            self._model.popup_text("FIRING SPEED, HEALTH, AND SHIELD", -1, config.display_height * .6, 6)
+            self._model.popup_text("LEVELING WILL INCREASE DAMAGE, ", 6)
+            self._model.popup_text("FIRING SPEED, HEALTH, AND SHIELD", 6, y=config.display_height * .6)
             self.popup_duration = self.fps * 6
             self.popup_ticks = 0
         elif self.tutorial_stage == 4:
-            self._model.popup_text("SHIELD WILL REGENERATE OVER TIME", -1, -1, 10)
-            self._model.popup_text("HEALTH REGENERATES UPON LEVELING", -1, config.display_height * .6, 10)
+            self._model.popup_text("SHIELD WILL REGENERATE OVER TIME", 10)
+            self._model.popup_text("HEALTH REGENERATES UPON LEVELING", 10, y=config.display_height * .6)
             flak = Bullet(10, self.player_pos[0], self.player_pos[1], -90, 150, ProjectileID.ENEMY_FLAK)
             flak2 = Bullet(10, self.player_pos[0], self.player_pos[1], -90, 50, ProjectileID.ENEMY_FLAK)
             self._model.enemy_projectiles.append(flak)
@@ -116,8 +116,8 @@ class EnemyTutorialAI(EnemyWaveAI):
             self.popup_duration = self.fps * 3
             self.popup_ticks = 0
         elif self.tutorial_stage == 6:
-            self._model.popup_text("COMBAT SIMULATOR TERMINATED", -1, -1, 3)
-            self._model.popup_text("[ESC] TO PAUSE AND EXIT", -1, config.display_height * .6, 8)
+            self._model.popup_text("COMBAT SIMULATOR TERMINATED", 3)
+            self._model.popup_text("[ESC] TO PAUSE AND EXIT", 60, y=config.display_height * .6)
         else:
             raise ValueError("Invalid tutorial stage")
 

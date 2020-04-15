@@ -126,7 +126,7 @@ class EnemyWaveAI:
 
     def _spawn_enemies(self):
         if self._wave == 0:
-            self._model.popup_text("WARNING: ENEMIES DETECTED", -1, -1, 3)
+            self._model.popup_text("WARNING: ENEMIES DETECTED", 3)
         rating = self._max_combat_rating
         # List of entity IDs of available enemies to grab from
         available_enemies = []
@@ -140,8 +140,12 @@ class EnemyWaveAI:
             enemy = available_enemies[chosen]
             combat_value = self._combat_ratings.get(available_enemies[chosen])
             if combat_value <= rating:
+                # 20% of spawning a Titan
                 if enemy == EnemyID.TITAN:
-                    self._model.popup_text("WARNING: DEATH IMMINENT", -1, -1, 3)
+                    if random.randint(1, 5) != 5:
+                        available_enemies.remove(enemy)
+                        continue
+                    self._model.popup_text("WARNING: DEATH IMMINENT", 3)
                     self._stats[EnemyID.TITAN]["HP"] += 500
                 rating -= combat_value
                 available_enemies.remove(enemy)
@@ -151,15 +155,15 @@ class EnemyWaveAI:
         self._max_combat_rating += self._combat_ratio
         # Changes the AI of the smaller ships after 20 waves
         if 200 - self._combat_ratio < self._max_combat_rating < 200 + self._combat_ratio:
-            self._model.popup_text("WARNING: ENTERING DEEP SPACE", -1, -1, 3)
+            self._model.popup_text("WARNING: ENTERING DEEP SPACE", 3)
             # Buffs certain enemies
             self._stats[EnemyID.SUBJUGATOR]["SPEED"] += 1
         elif 400 - self._combat_ratio < self._max_combat_rating < 400 + self._combat_ratio:
-            self._model.popup_text("WARNING: DEADLY THREATS DETECTED", -1, -1, 3)
+            self._model.popup_text("WARNING: DEADLY THREATS DETECTED", 3)
         # Doubles the enemies spawned every given number of waves and buffs them
         if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
             self._buff_enemies()
-            self._model.popup_text("REINFORCEMENTS DETECTED", -1, int(config.display_height * .6), 3)
+            self._model.popup_text("WARNING: INCREASE IN ENEMY STRENGTH", 3, y=int(config.display_height * .6))
             self._combat_ratio *= 2
 
     """Spawns a single enemy ship depending on the given entity ID.

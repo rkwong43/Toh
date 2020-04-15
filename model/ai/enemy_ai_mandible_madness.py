@@ -68,7 +68,7 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
 
     def _spawn_enemies(self):
         if self._wave == 0:
-            self._model.popup_text("OH NO NOT THE MANDIBLES", -1, -1, 3)
+            self._model.popup_text("OH NO NOT THE MANDIBLES", 3)
         if self._max_combat_rating // 10 >= self._max_mandibles:
             for i in range(self._max_mandibles):
                 self.spawn_enemy(ProjectileID.ENEMY_BULLET)
@@ -83,7 +83,7 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
             # Doubles the enemies spawned every few waves and buffs them
         if self._wave % self._enemy_buff_wave == 0 and self._wave != 0:
             self._buff_enemies()
-            self._model.popup_text("MORE MANDIBLES APPROACHING", -1, -1, 3)
+            self._model.popup_text("MORE MANDIBLES APPROACHING", 3)
             self._combat_ratio *= 2
             self._max_mandibles += 2
             self.spawn_enemy(ProjectileID.RAILGUN_BLAST)
