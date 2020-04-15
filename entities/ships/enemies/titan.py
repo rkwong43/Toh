@@ -96,7 +96,7 @@ class Titan(Enemy):
     def rotate(self, target):
         pass
 
-    """Moves itself and has its children move too.
+    """Moves itself and its turrets to the predetermined spot on the screen.
     """
 
     def move(self):
