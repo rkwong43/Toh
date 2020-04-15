@@ -38,7 +38,7 @@ class Longsword(Ally):
         self.size = int(8 * config.ship_size)
         self.entity_id = AllyID.LONGSWORD
         self.projectile_type = ProjectileID.FRIENDLY_MISSILE
-        self.fire_variance = 30
+        self.fire_variance = 60
         self._turrets = []
         self._effects = effects
         self._ships_spawned_total = 0
@@ -51,7 +51,7 @@ class Longsword(Ally):
         for _ in range(2):
             for i in range(3):
                 y_pos = self.y + (self.size / 2) - (i * config.ship_size)
-                archer = enemy_generator.generate_enemy(AllyID.ARCHER, x_pos, y_pos, hp=self.hp, shield=self.shield,
+                archer = enemy_generator.generate_enemy(AllyID.ARCHER, x_pos, y_pos, hp=self.hp + self.shield,
                                                         fire_rate=config.game_fps // 2)
                 archer.remove_if_offscreen = False
                 self._turrets.append(archer)

@@ -7,8 +7,6 @@ from src.utils.ids.projectile_id import ProjectileID
 
 
 class Titan(Enemy):
-    # Number of ships it spawns
-    ships_spawned = 1
     """Constructor to make the Titan ship
 
     :param x: starting x coordinate of ship
@@ -42,7 +40,6 @@ class Titan(Enemy):
         self._ai = ai
         self._turrets = []
         self._effects = effects
-        self._ships_spawned_total = 0
 
     """Spawns turrets for itself.
     """
@@ -125,11 +122,6 @@ class Titan(Enemy):
         self.projectile_speed = int(15 * (30 / config.game_fps))
         super().fire(target, projectiles)
         super().fire(target, projectiles)
-        if self._ships_spawned_total < 6:
-            for i in range(self.ships_spawned):
-                ship = self._ai.spawn_enemy(EnemyID.CRUCIBLE)
-                ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
-            self._ships_spawned_total += 1
         self.fire_variance = temp
         self.projectile_speed = temp_speed
 

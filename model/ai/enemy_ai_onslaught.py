@@ -2,7 +2,7 @@ import random
 
 from src.entities.ships.waypoint import Waypoint
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.utils import config, weapon_generator, enemy_generator
+from src.utils import config, enemy_generator
 from src.utils.ids.ally_id import AllyID
 from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.enemy_id import EnemyID
