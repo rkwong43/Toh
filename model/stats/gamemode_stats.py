@@ -23,6 +23,8 @@ descriptions = {
     GameModeID.HEAVEN: ["Take on the enemy's most elite warships."],
     GameModeID.MANDIBLE_MADNESS: ["Uh oh, you've provoked a hive of bees."],
     GameModeID.FATE: ["It's up to fate whether you survive."],
+    GameModeID.ONSLAUGHT: ["Assault the enemy with allied support."],
     # Challenge
-    GameModeID.TITAN_SLAYER: ["Duel a massive Titan warship alone. Prepare for death."]
+    GameModeID.TITAN_SLAYER: ["Duel a massive Titan warship. Prepare for death."],
+    #GameModeID.SPECTRES: ["Something isn't right..."]
 }

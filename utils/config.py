@@ -14,4 +14,5 @@ game_title = 'Tears Over Heaven'
 # Player ship and weapon chosen:
 player_ship = PlayerID.CITADEL
 weapon = WeaponID.GUN
+# TODO: Randomly generate
 player_name = "Pilot-x764"

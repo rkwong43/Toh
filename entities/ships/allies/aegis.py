@@ -7,10 +7,11 @@ from src.utils.ids.projectile_id import ProjectileID
 
 
 class Aegis(Ally):
-    """Constructs the citadel.
+    """Constructs the Aegis.
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, *args, **kwargs):
         super().__init__(hp, shield, x, y, speed, fire_rate)
-        self.projectile_type = ProjectileID.FRIENDLY_BULLET
+        self.projectile_type = ProjectileID.FRIENDLY_MISSILE
+        self.projectile_damage = 20
         self.entity_id = PlayerID.AEGIS

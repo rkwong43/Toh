@@ -1,6 +1,8 @@
 import math
 import random
 
+import pygame
+
 from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.diamond_dust import DiamondDust
 from src.entities.projectiles.missile import Missile
@@ -22,7 +24,7 @@ class Ally(Ship):
         self.entity_id = PlayerID.CITADEL
         # TODO: Set up ship stats for generic players
         self.projectile_damage = 10
-        self.projectile_speed = 20 * (30 / config.game_fps)
+        self.projectile_speed = 15 * (30 / config.game_fps)
         self.score = 0
         self.projectile_type = ProjectileID.FRIENDLY_BULLET
         # fire rate in seconds
@@ -43,6 +45,7 @@ class Ally(Ship):
     :param projectiles: List of projectiles to append onto
     :type projectiles: [Projectile]
     """
+
     def fire(self, target, projectiles):
         if target is None:
             target = self.waypoint
@@ -60,7 +63,7 @@ class Ally(Ship):
         angle = self.angle + 90 + offset
         weapon_type = self.projectile_type
         projectile = Bullet(self.projectile_speed, x_pos, y_pos, angle + offset, self.projectile_damage, weapon_type)
-        if weapon_type == ProjectileID.ENEMY_MISSILE:
+        if weapon_type == ProjectileID.FRIENDLY_MISSILE:
             projectile = Missile(self.projectile_speed, x_pos, y_pos, angle, self.projectile_damage, weapon_type,
                                  target)
         elif weapon_type == ProjectileID.DIAMOND_DUST:
@@ -77,10 +80,39 @@ class Ally(Ship):
 
     def _rotate(self, target):
         # Rotates the ship to face the target ship
-        self.angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) + 90
+        # Rotates the ship to face the target ship
+        # Adjustment for larger ships
+        if target.size > config.ship_size:
+            y = target.y + target.size / 2
+            x = target.x + target.size / 2
+        else:
+            y = target.y
+            x = target.x
+        y_dist = self.y - y
+        x_dist = self.x - x
+        # TODO: Account for angle reset
+        target_angle = -int(math.degrees(math.atan2(y_dist, x_dist))) + 90
+        if abs(self.angle - target_angle) > self.rotation_speed:
+            v1 = pygame.math.Vector2()
+            v1.from_polar((1, self.angle))
+            v2 = pygame.math.Vector2()
+            v2.from_polar((1, target_angle))
+            angle_change = -self.rotation_speed if v1.angle_to(v2) < 0 else self.rotation_speed
+            self.angle += angle_change
 
     """Rotates the ship towards its waypoint.
         """
 
     def _rotate_to_wp(self, *args):
         self.angle = -math.degrees(math.atan2(self.y - self.waypoint.y, self.x - self.waypoint.x)) + 90
+
+    """Generates a new position to move into. 
+
+        :returns: tuple of x and y pos
+        :rtype: (int, int)
+        """
+
+    def _generate_pos(self):
+        x = random.randint(config.ship_size, config.display_width - (2 * config.ship_size))
+        y = random.randint(config.display_height // 2, config.display_height - config.ship_size)
+        return x, y

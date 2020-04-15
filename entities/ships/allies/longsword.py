@@ -1,7 +1,6 @@
 from src.entities.ships.allies.ally import Ally
-from src.utils import config
+from src.utils import config, enemy_generator
 from src.utils.ids.ally_id import AllyID
-from src.utils.ids.player_id import PlayerID
 from src.utils.ids.projectile_id import ProjectileID
 
 """Represents a Longsword friendly cruiser."""
@@ -34,13 +33,12 @@ class Longsword(Ally):
     :type ai: EnemyAI
     """
 
-    def __init__(self, hp, shield, x, y, speed, fire_rate, ai, effects, **args):
-        super().__init__(hp, shield, x, y, speed, fire_rate * 10)
+    def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
+        super().__init__(hp, shield, x, y, speed, fire_rate * 6)
         self.size = int(8 * config.ship_size)
         self.entity_id = AllyID.LONGSWORD
         self.projectile_type = ProjectileID.FRIENDLY_MISSILE
-        self.fire_variance = 45
-        self._ai = ai
+        self.fire_variance = 30
         self._turrets = []
         self._effects = effects
         self._ships_spawned_total = 0
@@ -49,6 +47,15 @@ class Longsword(Ally):
     """
 
     def spawn_turrets(self):
+        x_pos = (self.x + (self.size / 2)) - config.ship_size
+        for _ in range(2):
+            for i in range(3):
+                y_pos = self.y + (self.size / 2) - (i * config.ship_size)
+                archer = enemy_generator.generate_enemy(AllyID.ARCHER, x_pos, y_pos, hp=self.hp, shield=self.shield,
+                                                        fire_rate=config.game_fps // 2)
+                archer.remove_if_offscreen = False
+                self._turrets.append(archer)
+            x_pos += config.ship_size
         return self._turrets
 
     """Doesn't rotate at all.
@@ -56,6 +63,28 @@ class Longsword(Ally):
 
     def rotate(self, target):
         pass
+
+    """Moves itself and its turrets. Only works with waypoints.
+    """
+    def move(self):
+        if self.speed > 0:
+            x_change = 0
+            if self.x < self.waypoint.x - self.speed:
+                self.x += self.speed
+                x_change += self.speed
+            elif self.x > self.waypoint.x + self.speed:
+                self.x -= self.speed
+                x_change -= self.speed
+            y_change = 0
+            if self.y < self.waypoint.y - self.speed:
+                self.y += self.speed
+                y_change += self.speed
+            elif self.y > self.waypoint.y + self.speed:
+                self.y -= self.speed
+                y_change -= self.speed
+            for turret in self._turrets:
+                turret.x += x_change
+                turret.y += y_change
 
     """Despoiler fires multiple missiles at the target.
 
@@ -76,12 +105,6 @@ class Longsword(Ally):
         self.projectile_speed = int(15 * (30 / config.game_fps))
         super().fire(target, projectiles)
         super().fire(target, projectiles)
-        if self._ai is not None:
-            if self._ships_spawned_total < 6:
-                for i in range(self.ships_spawned):
-                    ship = self._ai.spawn_enemy(PlayerID.CITADEL)
-                    ship.x, ship.y = self.x + (self.size // 2), self.y + (self.size // 2)
-                self._ships_spawned_total += 1
         self.fire_variance = temp
         self.projectile_speed = temp_speed
 
@@ -92,3 +115,10 @@ class Longsword(Ally):
         super().damage(damage)
         for turret in self._turrets:
             turret.damage(damage)
+
+    """Kills all of its turrets if offscreen.
+    """
+    def offscreen(self):
+        for turret in self._turrets:
+            turret.is_dead = True
+            turret.hp = 0

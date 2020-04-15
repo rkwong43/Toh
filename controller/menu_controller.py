@@ -44,7 +44,9 @@ def construct_tree():
     difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, LoadoutSelector())
     survival = MenuSelector([GameModeID.CLASSIC,
                              GameModeID.MANDIBLE_MADNESS,
-                             GameModeID.HEAVEN],
+                             GameModeID.HEAVEN,
+                             GameModeID.FATE,
+                             GameModeID.ONSLAUGHT],
                             GameID.SELECTOR, difficulty_selector)
     challenge = MenuSelector([GameModeID.TITAN_SLAYER],
                              GameID.SELECTOR, difficulty_selector)

@@ -12,7 +12,7 @@ class GameModeID(Enum):
     # All out war - include enemies and allies
     # Assign each enemy a target
     # Add warships
-    #ONSLAUGHT = auto()
+    ONSLAUGHT = auto()
     # Randomly generate weapons every few waves
     FATE = auto()
 

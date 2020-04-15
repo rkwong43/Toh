@@ -9,4 +9,4 @@ class AllyID(Enum):
     LONGSWORD = auto()
     # SHORTSWORD = auto()
     # Turrets
-    #ARCHER = auto()
+    ARCHER = auto()

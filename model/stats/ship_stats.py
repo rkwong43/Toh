@@ -1,3 +1,4 @@
+from src.utils.ids.ally_id import AllyID
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.player_id import PlayerID
 
@@ -34,12 +35,17 @@ stats = {
                        "DESCRIPTION": "Versatile weapon of war outfitted with a modular weapon system."},
     PlayerID.GHOST: {"HP": 80, "SHIELD": 80, "SPEED": 16, "DAMAGE MULTIPLIER": 1.1, "RELOAD MODIFIER": 1.1,
                      "DESCRIPTION": "Quick interceptor designed for assassinations."},
-    PlayerID.AEGIS: {"HP": 200, "SHIELD": 150, "SPEED": 8, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1,
+    PlayerID.AEGIS: {"HP": 200, "SHIELD": 150, "SPEED": 8, "DAMAGE MULTIPLIER": 1.1, "RELOAD MODIFIER": 1,
                      "DESCRIPTION": "Heavy vanguard warship with increased defenses."},
     PlayerID.STORM: {"HP": 100, "SHIELD": 80, "SPEED": 12, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1.2,
                      "DESCRIPTION": "Announces a storm of destruction for enemies."},
     PlayerID.ARCHANGEL: {"HP": 90, "SHIELD": 90, "SPEED": 10, "DAMAGE MULTIPLIER": 1.3, "RELOAD MODIFIER": 1,
                          "DESCRIPTION": "Harbinger of what's yet to come."},
     PlayerID.ORIGIN: {"HP": 50, "SHIELD": 50, "SPEED": 15, "DAMAGE MULTIPLIER": 1.5, "RELOAD MODIFIER": 1.2,
-                      "DESCRIPTION": "Fragile but extremely powerful experimental warship."}
+                      "DESCRIPTION": "Fragile but extremely powerful experimental warship."},
+    ##################################################################
+    AllyID.LONGSWORD: {"HP": 3000, "SHIELD": 2000, "SPEED": 2, "DAMAGE": 25, "PROJECTILE SPEED": 20, "SCORE": 0,
+                       "DESCRIPTION": "The vanguard of the crusade."},
+    AllyID.ARCHER: {"HP": 50, "SHIELD": 50, "SPEED": 1, "DAMAGE": 8, "PROJECTILE SPEED": 20, "SCORE": 0,
+                    "DESCRIPTION": "Anti-ship batteries with dual cannons."}
 }

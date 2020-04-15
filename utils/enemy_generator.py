@@ -1,4 +1,5 @@
 from src.entities.ships.allies.aegis import Aegis
+from src.entities.ships.allies.archer import Archer
 from src.entities.ships.allies.citadel import Citadel
 from src.entities.ships.allies.longsword import Longsword
 from src.entities.ships.enemies.arbitrator import Arbitrator
@@ -32,7 +33,8 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.TITAN: Titan,
             PlayerID.CITADEL: Citadel,
             PlayerID.AEGIS: Aegis,
-            AllyID.LONGSWORD: Longsword
+            AllyID.LONGSWORD: Longsword,
+            AllyID.ARCHER: Archer
             }
 
 """Generates the specified enemy and returns it.
