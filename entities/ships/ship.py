@@ -1,6 +1,8 @@
 import math
 import random
 
+import pygame
+
 from src.utils import config
 
 # Constants for state of movement and rotations
@@ -39,6 +41,7 @@ class Ship:
         self.end_y = 0
         # Size of the ship (not scaling, should be a value in pixels)
         self.size = size
+        self.angle = -90
         #############################################
         # Health
         self.hp = hp
@@ -77,7 +80,11 @@ class Ship:
                              FIRE_WAYPOINT: self._move,
                              MOVE_AND_FIRE_WAYPOINT: self._move_to_wp
                              }
+        # If it should be removed when offscreen
         self.remove_if_offscreen = True
+        # If in a form of stealth
+        self.stealth = False
+        self.rotation_speed = 5 * (60 / config.game_fps)
 
     """Represents the angle the ship is facing.
 
@@ -87,7 +94,23 @@ class Ship:
 
     def _rotate(self, target):
         # Rotates the ship to face the target ship
-        self.angle = -math.degrees(math.atan2(self.y - target.y, self.x - target.x)) - 90
+        # Adjustment for larger ships
+        if target.size > 2 * config.ship_size:
+            y = target.y + target.size / 2
+            x = target.x + target.size / 2
+        else:
+            y = target.y
+            x = target.x
+        y_dist = self.y - y
+        x_dist = self.x - x
+        target_angle = -int(math.degrees(math.atan2(y_dist, x_dist))) - 90
+        if abs(self.angle - target_angle) > self.rotation_speed:
+            v1 = pygame.math.Vector2()
+            v1.from_polar((1, self.angle))
+            v2 = pygame.math.Vector2()
+            v2.from_polar((1, target_angle))
+            angle_change = -self.rotation_speed if v1.angle_to(v2) < 0 else self.rotation_speed
+            self.angle += angle_change
 
     """Rotates the ship depending on its current state.
     
@@ -168,6 +191,7 @@ class Ship:
 
     """Moves the ship randomly to a generated position on the screen.
     """
+
     def _move(self):
         if self.speed > 0:
             x_done = False
@@ -187,6 +211,7 @@ class Ship:
 
     """Moves the ship towards its waypoint.
     """
+
     def _move_to_wp(self):
         if self.speed > 0:
             if self.x < self.waypoint.x - self.speed:
@@ -209,3 +234,17 @@ class Ship:
         x = random.randint(config.ship_size, config.display_width - (2 * config.ship_size))
         y = random.randint(0, config.display_height - config.ship_size)
         return x, y
+
+    """Spins the ship in circles.
+    """
+
+    def _spin(self, target):
+        self.angle += self.rotation_speed
+        if self.angle > 360:
+            self.angle -= 360
+
+    """Does nothing unless it specifically has a command for being offscreen.
+    """
+
+    def offscreen(self):
+        pass

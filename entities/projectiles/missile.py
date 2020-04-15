@@ -48,7 +48,7 @@ class Missile(Projectile):
     """Alters the direction it is facing to align with a path onto the target.
     """
     def _seek_target(self):
-        # No target
+        # No target or target is unable to be seen
         if self.target is None:
             # Continues moving in the direction it is initially going
             self.x += self.x_change
@@ -63,7 +63,7 @@ class Missile(Projectile):
             # Target is alive
             self.target_destroyed = False
             target_center = (self.target.x, self.target.y)
-            # 100 is the base ship size
+            # Altering for base ship size
             if self.target.size > config.ship_size:
                 target_center = (self.target.x + ((self.target.size - config.ship_size) // 2),
                                  self.target.y + ((self.target.size - config.ship_size) // 2))

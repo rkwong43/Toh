@@ -37,12 +37,14 @@ class View:
                     GameModeID.MANDIBLE_MADNESS: os.path.join(_image_path, 'mandible_background.png'),
                     GameModeID.CLASSIC: os.path.join(_image_path, 'survival_background.png'),
                     GameModeID.HEAVEN: os.path.join(_image_path, 'heaven_background.png'),
+                    GameModeID.FATE: os.path.join(_image_path, 'fate_background.png'),
+                    GameModeID.ONSLAUGHT: os.path.join(_image_path, 'onslaught_background.png'),
                     GameID.MENU: os.path.join(_image_path, 'background.png'),
                     GameID.TUTORIAL: os.path.join(_image_path, 'background.png')
                     }
     # Ship scaling (what the default ship size should be multiplied by in their rendering)
     _ship_scaling = {
-        EnemyID.MANDIBLE: 1, EnemyID.MANTIS: 1, EnemyID.CRUCIBLE: 1, EnemyID.MOSQUITO: 1,
+        EnemyID.MANDIBLE: 1, EnemyID.MANTIS: 1, EnemyID.CRUCIBLE: 1, EnemyID.MOSQUITO: 1, AllyID.ARCHER: 1,
         EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1,
         EnemyID.ARBITRATOR: 1.5, EnemyID.TERMINUS: 1.5, EnemyID.JUDICATOR: 1.5,
         EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2,
@@ -237,7 +239,7 @@ class View:
 
         # If the player isn't dead, it is rendered
         if not player.is_dead:
-            self._render_ship(player, player.angle)
+            self._render_ship(player, 0)
         # Renders effects
         for effect in effects:
             self._render_effect(effect)
@@ -370,7 +372,6 @@ class View:
     """
 
     def _transition_background(self, background_id):
-        # TODO: Fix issue where it abruptly transfers
         if background_id not in [self._curr_game_mode, GameID.TUTORIAL]:
             self._target_background_id = background_id
             if self._background_alpha > 0:
