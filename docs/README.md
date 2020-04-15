@@ -58,6 +58,15 @@ Describes the current gameplay features:
       * Leveling is the same as in Classic.
       * Every weapon is available for use.
       * Enemy spawning is the same as in Classic.
+    * _Fate_:
+      * Classic survival but with a twist.
+      * Weapon randomized every few waves.
+      * Same scoring system and spawning as in Classic.
+    * _Onslaught_:
+      * Classic survival but enemies are much more difficult.
+      * Allied ships spawn throughout the game.
+      * Enemies will target the closest allied ship or the player.
+      * Same scoring system and spawning as in Classic.
   * **Challenge**
     ![Player fighting a Titan.](page images/screenshot4.png)
     * _Titan Slayer:_

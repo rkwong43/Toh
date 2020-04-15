@@ -1,6 +1,6 @@
 # Tears Over Heaven
 WORK IN PROGRESS \
-Last Edited: 4/9/2020
+Last Edited: 4/14/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
@@ -49,6 +49,15 @@ Describes the current gameplay features inside the game.
       * Leveling is the same as in Classic.
       * Every weapon is available for use.
       * Enemy spawning is the same as in Classic.
+    * Fate:
+      * Classic survival but with a twist.
+      * Weapon randomized every few waves.
+      * Same scoring system and spawning as in Classic.
+    * Onslaught:
+      * Classic survival but enemies are much more difficult.
+      * Allied ships spawn throughout the game.
+      * Enemies will target the closest allied ship or the player.
+      * Same scoring system and spawning as in Classic.
   * Challenge
     * Titan Slayer:
       * Duel against a large Titan enemy ship with the base weapons.
@@ -71,7 +80,6 @@ Features currently under development or planned for the future.
  * Expanding on enemy artificial intelligence.
  * Streamlined creation for enemies and players.
  * Adding or creating a custom ship for the player.
- * Adding sound and scrolling animations for the menu.
  * Adding a story mode with chapters.
  * Adding a constant progression system (for release of game)
  * Locking weapons until unlocked (for final release of game)
