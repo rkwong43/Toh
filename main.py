@@ -9,7 +9,7 @@ outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src f
 sys.path.insert(1, outer_path)
 
 from src.model.menu_model import MenuModel
-from src.utils import config
+from src.utils import config, score_storage
 from src.controller.menu_controller import MenuController
 from src.controller.controller import Controller
 from src.model.model import Model
@@ -30,13 +30,17 @@ def start_game():
         game_mode, difficulty, play_game = menu_controller.run_menus()
         # If window is closed
         if not play_game:
+            score_storage.save_data()
             break
         view = View(game_mode)
         model = Model(difficulty, game_mode)
         model.switch_weapon(config.weapon)
         controller = Controller(model, view)
         finished = not controller.run_game()
-        model.clear()
+        if not finished:
+            finished = menu_controller.display_score(model.get_score())
+        else:
+            score_storage.save_data()
 
 
 """Starts the game and initializes the music player.

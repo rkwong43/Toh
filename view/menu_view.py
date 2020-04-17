@@ -1,10 +1,11 @@
 import os
 import pygame
 
-from src.model.menu_model import MenuModel
-from src.utils import config
+from src.utils import config, score_storage
+from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.game_id import GameID
 from src.utils.ids.gamemode_id import GameModeID
+from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.view.view import View
 
@@ -82,6 +83,8 @@ class MenuView(View):
             self._render_gallery(tree)
         elif tree.name == GameID.LOADOUT:
             self._render_loadout_selection(tree)
+        elif tree.name == GameID.RESULTS:
+            self._render_final_score(tree)
         else:
             self._render_descriptive_menu(tree)
 
@@ -150,12 +153,41 @@ class MenuView(View):
             text_rect = title_text.get_rect(center=(x, y))
             self._game_display.blit(title_text, text_rect.topleft)
             y += text_rect.height
-        if item in GameModeID:
-            # TODO: Display score and global high score
-            # Go grab the stuff from the API
-            return
+        if item in DifficultyID:
+            # Item is the difficulty in this case
+            self._render_scores(tree.info[str(item.value)])
         else:
             self._render_loadout()
+
+    """Renders the high scores for the current mode.
+    
+    :param scores: the dictionary of score stats
+    :type scores: dictionary
+    """
+    def _render_scores(self, scores):
+        y_pos = config.display_height / 2
+        x_pos = int(config.display_width * .75) - config.ship_size
+        for k, v in scores.items():
+            v = int(v)
+            # Ship, weapon, score
+            # k -> type
+            # v -> enum value or int
+            if k == "SCORE":
+                text = self._description_font.render("HIGH SCORE: " + str(v), 0, self.WHITE).convert_alpha()
+                self._game_display.blit(text, self._find_posn(text, int(config.display_width * .75),
+                                                              y_pos - config.ship_size))
+            else:
+                if k == "SHIP":
+                    name = self._description_font.render(PlayerID(v).name, 0, self.WHITE).convert_alpha()
+                    image = self._image_dict[PlayerID(v)].base_image
+                else:
+                    # Weapon
+                    name = self._description_font.render(WeaponID(v).name, 0, self.WHITE).convert_alpha()
+                    image = self._image_dict[WeaponID(v)]
+                self._game_display.blit(image, self._find_posn(image, x_pos, y_pos))
+                self._game_display.blit(name, self._find_posn(name, x_pos, y_pos + config.ship_size // 2))
+                x_pos += 2 * config.ship_size
+
 
     """Renders the current loadout.
     """
@@ -270,7 +302,6 @@ class MenuView(View):
                     self._model.get_ships(), self._model.get_effects())
         self._render_loadout_selector_helper(tree)
         launch_text = self._description_font.render("Press [SPACE] to launch:", 1, self.WHITE)
-        # TODO: Add launch animation
         self._game_display.blit(launch_text, self._find_posn(launch_text, self._width // 2, self._height // 5))
 
     """Displays the currently selected ship and weapon.
@@ -319,3 +350,42 @@ class MenuView(View):
                 self._game_display.blit(temp_chevron, self._find_posn(temp_chevron, x_posns[i], y + offset))
                 angle *= -1
                 offset *= -1
+
+    """Renders the final results screen with score and stats.
+    
+    :param stats: The container of statistics
+    :type stats: MenuResults
+    """
+    def _render_final_score(self, results):
+        stats = results.stats
+        self._draw_background(self._background)
+        self._transition_background(GameID.MENU)
+        welcome_text = self._description_font.render("Welcome back " + config.player_name, 0, self.WHITE).convert_alpha()
+        welcome_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
+        self._game_display.blit(welcome_text, self._find_posn(welcome_text, int(config.display_width * .75),
+                                                              config.display_height / 2 + config.ship_size / 2))
+
+        self.render(self._model.get_player(), self._model.get_projectiles(),
+                    self._model.get_ships(), self._model.get_effects())
+        middle_of_screen = int(self._width / 2)
+        # Debriefing
+        title_image = self._text_font.render("DEBRIEFING", 1, self.WHITE).convert_alpha()
+        self._game_display.blit(title_image,
+                                self._find_posn(title_image, middle_of_screen, int(self._height / 10)))
+        self._compute_alpha()
+        if stats["HIGH SCORE"]:
+            high_score_text = self._text_font.render(".:HIGH SCORE:.", 1, self.WHITE).convert_alpha()
+            high_score_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
+            self._game_display.blit(high_score_text,
+                                    self._find_posn(high_score_text, middle_of_screen,
+                                                    int(self._height / 10) + config.ship_size // 2))
+        x_pos = int(self._width / 5)
+        num_items = len(stats.items())
+        y_pos = int(self._height / 2) - ((num_items // 2) * config.ship_size // 2)
+        for k, v in stats.items():
+            if k == "HIGH SCORE":
+                continue
+            text_to_render = self._description_font.render("> " + k + ": " + str(v), 1, self.WHITE).convert_alpha()
+            self._game_display.blit(text_to_render,
+                                    self._find_posn(text_to_render, x_pos, y_pos))
+            y_pos += config.ship_size // 2

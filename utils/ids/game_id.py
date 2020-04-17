@@ -24,3 +24,4 @@ class GameID(Enum):
     MENU = auto()
     SELECTOR = auto()
     LOADOUT = auto()
+    RESULTS = auto()

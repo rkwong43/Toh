@@ -46,7 +46,7 @@ class MenuModel(Model):
         if entity_type == GameID.SHIP:
             self.spawn_player(entity_id)
         elif entity_type == GameID.ENEMY:
-            self._spawn_ship(entity_id)
+            self._spawn_show_case_ship(entity_id)
         else:
             self._showcase_weapon = True
             self.switch_weapon(entity_id)
@@ -124,7 +124,7 @@ class MenuModel(Model):
     :type entity_id: EntityID
     """
 
-    def _spawn_ship(self, entity_id):
+    def _spawn_show_case_ship(self, entity_id):
         self._player_ship.x = config.display_width / 4
         self._player_ship.y = config.display_height * .75
         x_pos = config.display_width / 4
@@ -276,3 +276,4 @@ class MenuModel(Model):
             return Bullet(speed, x, y, angle, 0, ProjectileID.RAILGUN_BLAST)
         else:
             raise ValueError("Invalid projectile type:", entity_id)
+

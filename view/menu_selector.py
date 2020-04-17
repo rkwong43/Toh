@@ -1,4 +1,5 @@
 from src.model.stats import gamemode_stats
+from src.utils import score_storage
 from src.utils.ids.game_id import GameID
 from src.view.menu_tree import MenuTree
 
@@ -29,6 +30,7 @@ class MenuSelector(MenuTree):
             self._next_menu = None
         self._number_of_options = len(options)
         self._init_descriptions()
+        self.info = None
 
     """Initializes the descriptions for the current screen.
         """
@@ -48,7 +50,9 @@ class MenuSelector(MenuTree):
 
     def select(self):
         self._next_menu.root = self
-        return self.options[self._current_selection], self._next_menu
+        curr = self.options[self._current_selection]
+        self._next_menu.set_addl_info(curr)
+        return curr, self._next_menu
 
     """Returns all the options listed.
 
@@ -67,3 +71,12 @@ class MenuSelector(MenuTree):
 
     def get_curr_id(self):
         return self.options[self._current_selection]
+
+    """Sets the current selector's additional information. Used for displaying scores.
+    
+    :param game_mode: Game mode
+    :type game_mode: GameModeID
+    """
+
+    def set_addl_info(self, game_mode):
+        self.info = score_storage.data["SCORES"][str(game_mode.value)]

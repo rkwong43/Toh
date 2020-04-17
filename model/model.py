@@ -19,7 +19,7 @@ from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
 from src.model.ai.enemy_ai_tutorial import EnemyTutorialAI
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
 from src.model.stats import ship_stats, weapon_stats
-from src.utils import config
+from src.utils import config, score_storage
 from src.utils.direction import Direction
 from src.utils.ids.ally_id import AllyID
 from src.utils.ids.effect_id import EffectID
@@ -78,6 +78,8 @@ class Model:
         self._reload_bonus, self._damage_bonus, self._player_ship = self._init_player(config.player_ship)
         # The current enemy AI module
         self._AI = self._init_enemy_ai(game_mode, difficulty)
+        self._game_mode = game_mode
+        self._difficulty = difficulty
 
         # Reload time for the player's weapon, measured in frames
         self._reload_time = 0
@@ -94,9 +96,14 @@ class Model:
 
         # Action queue
         self._queue = []
+        # For ships from the menu
         for ship in self.friendly_ships:
             ship.ready_to_fire = True
             ship.ticks = 0
+
+        # Final game stats
+        self._final_stats = {"SCORE": 0, "LEVEL": 1, "ENEMIES SLAIN": 0, "TITANS SLAIN": 0,
+                             "SHOTS FIRED": 0, "DAMAGE TAKEN": 0, "HITS TAKEN": 0, "HIGH SCORE": False}
 
     """Initializes the player's ship.
 
@@ -216,16 +223,19 @@ class Model:
 
     def _is_dead(self, ship):
         if ship.is_dead:
-            # Adds to score
-            self._player_ship.score += ship.score
+            # Adds to score if necessary
+            if ship.entity_id in EnemyID:
+                self._player_ship.score += ship.score
+                self._final_stats["ENEMIES SLAIN"] += 1
             self.sounds["EXPLOSION"].play()
             offset = ((config.ship_size * 1.5) - ship.size) // 2
             self.effects.append(Explosion(ship.x - offset, ship.y - offset,
                                           EffectID.EXPLOSION))
             # Clears all if a Titan is killed
             if ship.entity_id == EnemyID.TITAN:
-                self.popup_text("TITAN SLAIN", -1, -1, 3)
+                self.popup_text("TITAN SLAIN", 3)
                 self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
+                self._final_stats["TITANS SLAIN"] += 1
             elif ship.entity_id == AllyID.LONGSWORD:
                 self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
 
@@ -501,6 +511,7 @@ class Model:
     """
 
     def _generate_projectile(self, speed, x, y, angle, damage, entity_id):
+        self._final_stats["SHOTS FIRED"] += 1
         self.play_sound(entity_id)
         if entity_id == ProjectileID.FRIENDLY_BULLET or entity_id == ProjectileID.FRIENDLY_FLAK:
             return Bullet(speed, x, y, angle, damage, entity_id)
@@ -567,6 +578,7 @@ class Model:
     """
 
     def level_up(self):
+        self._final_stats["LEVEL"] += 1
         player = self._player_ship
         # Increases max HP and restores it
         player.max_hp += (player.max_hp // 20)
@@ -677,3 +689,22 @@ class Model:
 
     def end_game(self):
         self._game_over = True
+
+    """Returns the dictionary of final stats.
+    
+    :returns: Dictionary of final stats
+    :type: Dictionary
+    """
+    def get_score(self):
+        score = self._player_ship.score
+        self._final_stats["SCORE"] = score
+        self._final_stats["DAMAGE TAKEN"] = self._player_ship.damage_taken
+        self._final_stats["HITS TAKEN"] = self._player_ship.hits_taken
+        curr_score = score_storage.data["SCORES"][str(self._game_mode.value)][str(self._difficulty.value)]
+        if score > curr_score["SCORE"]:
+            self._final_stats["HIGH SCORE"] = True
+            curr_score["SCORE"] = score
+            curr_score["SHIP"] = self._player_ship.entity_id.value
+            curr_score["WEAPON"] = self._player_stats["WEAPON"].value
+            score_storage.save_data()
+        return self._final_stats

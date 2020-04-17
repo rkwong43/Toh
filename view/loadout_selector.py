@@ -1,4 +1,4 @@
-from src.utils import config
+from src.utils import config, score_storage
 from src.utils.direction import Direction
 from src.utils.ids.game_id import GameID
 from src.utils.ids.player_id import PlayerID
@@ -30,6 +30,8 @@ class LoadoutSelector(MenuSelector):
     """
 
     def select(self):
+        score_storage.data["PILOT"]["WEAPON"] = self.options[1][self._current_selection[1]].value
+        score_storage.data["PILOT"]["SHIP"] = self.options[1][self._current_selection[0]].value
         config.player_ship = self.options[0][self._current_selection[0]]
         config.weapon = self.options[1][self._current_selection[1]]
         return None, None
@@ -65,3 +67,8 @@ class LoadoutSelector(MenuSelector):
         for i in range(len(self._current_selection)):
             result.append(self.options[i][self._current_selection[i]])
         return result
+
+    """Does nothing for now, might expand to restrict loadouts in future challenges etc.
+    """
+    def set_addl_info(self, game_mode):
+        pass

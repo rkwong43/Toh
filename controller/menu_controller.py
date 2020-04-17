@@ -10,6 +10,7 @@ from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.view.image_containers.menu_gallery import MenuGallery
+from src.view.image_containers.menu_results import MenuResults
 from src.view.loadout_selector import LoadoutSelector
 from src.view.menu_selector import MenuSelector
 from src.view.menu_tree import MenuTree
@@ -104,6 +105,12 @@ class MenuController:
         path = os.path.join(path, 'UI_change.ogg')
         self._menu_change_sound = pygame.mixer.Sound(file=path)
         self._menu_change_sound.set_volume(.1)
+        self._clock = pygame.time.Clock()
+
+        self.ANIMATE = pygame.USEREVENT + 1
+        self.SPAWN_SHIPS = pygame.USEREVENT + 2
+        pygame.time.set_timer(self.ANIMATE, 300)
+        pygame.time.set_timer(self.SPAWN_SHIPS, 1000)
 
     """Figures out what to do depending on the key inputs.
 
@@ -134,19 +141,17 @@ class MenuController:
     """
 
     def run_menus(self):
-        # In game clock for FPS and time
-        clock = pygame.time.Clock()
         quit_options = (None, None, False)
         # _start_screen returns true if quit
         while True:
-            if self._start_screen(clock):
+            if self._start_screen():
                 return quit_options
             """Flags:
             1: start game
             0: go back to title screen
             -1: quit game
             """
-            flag = self._run_menus_helper(clock)
+            flag = self._run_menus_helper()
             if flag == 1:
                 return self._game_mode, self._difficulty, True
             elif flag == 0:
@@ -162,11 +167,7 @@ class MenuController:
     :rtype: bool
     """
 
-    def _run_menus_helper(self, clock):
-        ANIMATE = pygame.USEREVENT + 1
-        SIMULATE_BATTLE = pygame.USEREVENT + 2
-        pygame.time.set_timer(ANIMATE, 300)
-        pygame.time.set_timer(SIMULATE_BATTLE, 1000)
+    def _run_menus_helper(self):
         done = False
         while not done:
             # Grabs the keys currently pressed down
@@ -190,13 +191,13 @@ class MenuController:
                     elif game_event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_d, pygame.K_a]:
                         self._parse_horizontal_input(game_event.key)
                 # Animates sprites
-                if game_event.type == ANIMATE:
+                if game_event.type == self.ANIMATE:
                     self._menus.animate()
-                if game_event.type == SIMULATE_BATTLE:
+                if game_event.type == self.SPAWN_SHIPS:
                     self._model.spawn_ships()
             # Updates display
             pygame.display.update()
-            clock.tick(self._fps)
+            self._clock.tick(self._fps)
         return 1
 
     """Selects the current option on the current tree. Returns true if entering gameplay.
@@ -259,14 +260,9 @@ class MenuController:
     :rtype: bool
     """
 
-    def _start_screen(self, clock):
-        ANIMATE = pygame.USEREVENT + 1
-        SIMULATE_BATTLE = pygame.USEREVENT + 2
-        pygame.time.set_timer(ANIMATE, 300)
-        pygame.time.set_timer(SIMULATE_BATTLE, 1000)
-        finished = False
+    def _start_screen(self):
         # Loops until the user quits or presses space to begin
-        while not finished:
+        while True:
             for game_event in pygame.event.get():
                 # Checks if quit
                 if game_event.type == pygame.QUIT:
@@ -274,19 +270,20 @@ class MenuController:
                 elif game_event.type == pygame.KEYUP:
                     if game_event.key == pygame.K_SPACE:
                         return False
-                if game_event.type == ANIMATE:
+                if game_event.type == self.ANIMATE:
                     self._menus.animate()
-                if game_event.type == SIMULATE_BATTLE:
+                if game_event.type == self.SPAWN_SHIPS:
                     self._model.spawn_ships()
             self._menus.render_menu(None)
             pygame.display.update()
-            clock.tick(self._fps)
+            self._clock.tick(self._fps)
 
     """Parses horizontal movement, which is not continuous upon holding down a key.
     
     :param key: The key released
     :type key: pygame key constant
     """
+
     def _parse_horizontal_input(self, key):
         direction = None
         if key == pygame.K_d or key == pygame.K_RIGHT:
@@ -294,3 +291,28 @@ class MenuController:
         elif key == pygame.K_a or key == pygame.K_LEFT:
             direction = Direction.LEFT
         self._tree.switch_selection(direction)
+
+    """Displays the final score screen.
+    
+    :returns: False if user doesn't exit the game
+    :rtype: bool
+    """
+
+    def display_score(self, stats):
+        self._model.reset_showcase()
+        stats_container = MenuResults(stats)
+        while True:
+            for game_event in pygame.event.get():
+                # Checks if quit
+                if game_event.type == pygame.QUIT:
+                    return True
+                elif game_event.type == pygame.KEYUP:
+                    if game_event.key in [pygame.K_SPACE, pygame.K_ESCAPE]:
+                        return False
+                if game_event.type == self.ANIMATE:
+                    self._menus.animate()
+                if game_event.type == self.SPAWN_SHIPS:
+                    self._model.spawn_ships()
+            self._menus.render_menu(stats_container)
+            pygame.display.update()
+            self._clock.tick(self._fps)

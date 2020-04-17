@@ -1,4 +1,5 @@
 
+from src.utils import score_storage
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 
@@ -12,7 +13,12 @@ game_fps = 60
 game_title = 'Tears Over Heaven'
 
 # Player ship and weapon chosen:
-player_ship = PlayerID.CITADEL
-weapon = WeaponID.GUN
-# TODO: Randomly generate
-player_name = "Pilot-x764"
+try:
+    player_ship = PlayerID(score_storage.data["PILOT"]["SHIP"])
+    weapon = WeaponID(score_storage.data["PILOT"]["WEAPON"])
+    player_name = score_storage.data["PILOT"]["NAME"]
+except KeyError:
+    score_storage.construct_data()
+    player_ship = PlayerID(score_storage.data["PILOT"]["SHIP"])
+    weapon = WeaponID(score_storage.data["PILOT"]["WEAPON"])
+    player_name = score_storage.data["PILOT"]["NAME"]
