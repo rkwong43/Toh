@@ -34,10 +34,10 @@ class BurstFireEnemy(Enemy):
         # Mantis has different fire rate mechanics
         # Fire rate affects an internal burst counter to determine
         # when to fire a burst
-        self.fire_rate = 1 * (config.game_fps // 30)
+        self.fire_rate = 2 * (config.game_fps // 30)
 
         # Fires a burst
-        self._burst_max = bursts * (config.game_fps // 30)
+        self._burst_max = 2 * bursts * (config.game_fps // 30)
         self._burst_curr = self._burst_max
         self._reload_speed = fire_rate
         self._reload_curr = fire_rate

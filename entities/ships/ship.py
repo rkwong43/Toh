@@ -84,7 +84,7 @@ class Ship:
         self.remove_if_offscreen = True
         # If in a form of stealth
         self.stealth = False
-        self.rotation_speed = 5 * (60 / config.game_fps)
+        self.rotation_speed = 3 * (60 / config.game_fps)
 
     """Represents the angle the ship is facing.
 
