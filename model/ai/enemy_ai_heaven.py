@@ -49,19 +49,10 @@ class EnemyHeavenAI(EnemyWaveAI):
                 if enemy != EnemyID.MANDIBLE:
                     values["SHIELD"] -= 50
                     values["HP"] -= 50
-        elif difficulty == DifficultyID.NORMAL:
-            for enemy, values in self._stats.items():
-                if enemy != EnemyID.MANDIBLE:
-                    values["SHIELD"] -= 50
-                    values["HP"] -= 50
         elif difficulty == DifficultyID.HARD:
             self._max_combat_rating = 400
             self._combat_ratio = 100
             self._buff_enemies()
-            for enemy, values in self._stats.items():
-                if enemy != EnemyID.MANDIBLE:
-                    values["SHIELD"] += 50
-                    values["HP"] += 50
             self._enemy_buff_wave = 5
             self._fire_rate_range = (fps / 2, fps * 1.5)
             self._wave_rest = 0
@@ -72,7 +63,8 @@ class EnemyHeavenAI(EnemyWaveAI):
     def _buff_enemies(self):
         for enemy, values in self._stats.items():
             if enemy != EnemyID.MANDIBLE:
-                values["SHIELD"] += 100
+                values["HP"] += 100
+                values["DAMAGE"] += 1
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """

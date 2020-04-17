@@ -1,10 +1,9 @@
 import os
 import pygame
 
-from src.utils import config, score_storage
+from src.utils import config
 from src.utils.ids.difficulty_id import DifficultyID
 from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
 from src.utils.ids.player_id import PlayerID
 from src.utils.ids.weapon_id import WeaponID
 from src.view.view import View
@@ -164,6 +163,7 @@ class MenuView(View):
     :param scores: the dictionary of score stats
     :type scores: dictionary
     """
+
     def _render_scores(self, scores):
         y_pos = config.display_height / 2
         x_pos = int(config.display_width * .75) - config.ship_size
@@ -187,7 +187,6 @@ class MenuView(View):
                 self._game_display.blit(image, self._find_posn(image, x_pos, y_pos))
                 self._game_display.blit(name, self._find_posn(name, x_pos, y_pos + config.ship_size // 2))
                 x_pos += 2 * config.ship_size
-
 
     """Renders the current loadout.
     """
@@ -288,7 +287,6 @@ class MenuView(View):
         for effect in effects:
             self._render_effect(effect)
 
-
     """Renders the loadout selection screen.
     
     :param tree: The tree to get items from.
@@ -356,11 +354,13 @@ class MenuView(View):
     :param stats: The container of statistics
     :type stats: MenuResults
     """
+
     def _render_final_score(self, results):
         stats = results.stats
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
-        welcome_text = self._description_font.render("Welcome back " + config.player_name, 0, self.WHITE).convert_alpha()
+        welcome_text = self._description_font.render("Welcome back " + config.player_name, 0,
+                                                     self.WHITE).convert_alpha()
         welcome_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)
         self._game_display.blit(welcome_text, self._find_posn(welcome_text, int(config.display_width * .75),
                                                               config.display_height / 2 + config.ship_size / 2))

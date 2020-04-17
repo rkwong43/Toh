@@ -697,7 +697,11 @@ class Model:
     def get_score(self):
         # TODO: Future game modes that are time based
         if self._game_mode == GameModeID.TITAN_SLAYER:
-            score = str(self._AI.get_time()) + "s"
+            if not self._player_ship.is_dead and len(self.enemy_ships) == 0:
+                # y = 100000 (.96)^t
+                score = int(.96 ** self._AI.get_time() * 100000)
+            else:
+                score = 0
         else:
             score = self._player_ship.score
         self._final_stats["SCORE"] = score

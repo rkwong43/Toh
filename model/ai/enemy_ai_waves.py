@@ -115,11 +115,8 @@ class EnemyWaveAI:
     """
 
     def _buff_enemies(self):
-        self._stats[EnemyID.MANDIBLE]["SHIELD"] += 20
-        self._stats[EnemyID.MANTIS]["SHIELD"] += 20
-        self._stats[EnemyID.SEER]["SHIELD"] += 20
-        self._stats[EnemyID.MOSQUITO]["SHIELD"] += 20
-        self._stats[EnemyID.CRUCIBLE]["SHIELD"] += 20
+        for k, v in self._stats.items():
+            v["SHIELD"] += max(int(v["SHIELD"] // 5), 10)
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """

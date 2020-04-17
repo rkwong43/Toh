@@ -21,8 +21,8 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
 
     def __init__(self, model, difficulty):
         # Model to work with
+        self.fire_rate = config.game_fps
         super().__init__(model, difficulty)
-        self.fire_rate = int(config.game_fps * 1.25)
         self.started_game = False
 
     """Changes the difficulty to the given setting.
@@ -31,10 +31,10 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
     def _change_difficulty(self, difficulty):
         if difficulty == DifficultyID.EASY:
             self._stats[EnemyID.TITAN] = {"HP": 3000, "SHIELD": 500, "SPEED": 5}
-            self.fire_rate = int(config.game_fps * 1.5)
+            self.fire_rate = int(config.game_fps * 1.4)
         elif difficulty == DifficultyID.HARD:
             self._stats[EnemyID.TITAN] = {"HP": 6000, "SHIELD": 500, "SPEED": 5}
-            self.fire_rate = int(config.game_fps * .75)
+            self.fire_rate = int(config.game_fps * .6)
         self._fire_rate_range = (self.fire_rate, self.fire_rate)
 
     """Represents a tick to keep track of enemy spawning, firing, and movement.

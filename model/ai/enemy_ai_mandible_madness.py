@@ -24,7 +24,7 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
     """
 
     def __init__(self, model, difficulty):
-        self._mandible_stats = ship_stats.stats[EnemyID.MANDIBLE]
+        self._mandible_stats = ship_stats.stats[EnemyID.MANDIBLE].copy()
         super().__init__(model, difficulty)
         # Ship stats
         # Mandible
