@@ -23,40 +23,15 @@ class EnemyFateAI(EnemyWaveAI):
         super().__init__(model, difficulty)
         self._weapon_change_wave = 2
 
-    """Represents a tick to keep track of enemy spawning, firing, and movement.
-    """
-
-    def tick(self):
-        player = self._model.get_player()
-        # Makes each enemy tick to fire their weapons
-        # Also makes them move
-        if player.score >= self._level_up_exp:
-            self._model.level_up()
-            self._level_up_exp *= 2
-        for enemy in self._model.enemy_ships:
-            enemy.ticks += 1
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self._model.enemy_projectiles)
-                    self._model.play_sound(enemy.projectile_type)
-        if len(self._model.enemy_ships) == 0:
-            if self._wave % self._weapon_change_wave == 0:
-                self._model.switch_weapon(weapon_generator.generate_weapon())
-                self._model.popup_text("SYSTEM VARIANCE DETECTED", 3)
-            # Waiting for next wave:
-            if self._wait_for_next_wave():
-                self._spawn_enemies()
-                self._wave += 1
-
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """
 
     def _spawn_enemies(self):
         if self._wave == 0:
             self._model.popup_text("WARNING: WEAPONS MALFUNCTION", 3)
+        if self._wave % self._weapon_change_wave == 0:
+            self._model.switch_weapon(weapon_generator.generate_weapon())
+            self._model.popup_text("SYSTEM VARIANCE DETECTED", 3)
         rating = self._max_combat_rating
         # List of entity IDs of available enemies to grab from
         available_enemies = []

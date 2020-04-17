@@ -60,8 +60,8 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
     """
 
     def _buff_enemies(self):
-        self._mandible_stats["SHIELD"] += 10
-        self._mandible_stats["HP"] += 10
+        self._mandible_stats["SHIELD"] += 20
+        self._mandible_stats["HP"] *= 2
 
     """Spawns enemy ships based on the wave number. Number of enemies spawned increases with higher wave counts.
     """
@@ -96,10 +96,13 @@ class EnemyMandibleMadnessAI(EnemyWaveAI):
 
     def spawn_enemy(self, entity_id):
         ship = super().spawn_enemy(EnemyID.MANDIBLE)
+        ship.hp = self._mandible_stats["HP"]
+        ship.shield = self._mandible_stats["SHIELD"]
         if entity_id == ProjectileID.RAILGUN_BLAST:
             ship.hp *= 2
             ship.shield *= 1.5
-            ship.projectile_speed *= 2
+            ship.projectile_speed *= 4
+            ship.fire_rate //= 2
         ship.score_value = (self._mandible_combat_rating * self._wave) + self._mandible_combat_rating
         ship.projectile_damage += (self._wave // 2)
         ship.projectile_type = entity_id

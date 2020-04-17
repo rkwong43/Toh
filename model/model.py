@@ -712,6 +712,7 @@ class Model:
             self._final_stats["HIGH SCORE"] = True
             curr_score["SCORE"] = score
             curr_score["SHIP"] = self._player_ship.entity_id.value
-            curr_score["WEAPON"] = self._player_stats["WEAPON"].value
+            if self._game_mode != GameModeID.FATE:
+                curr_score["WEAPON"] = self._player_stats["WEAPON"].value
             score_storage.save_data()
         return self._final_stats
