@@ -17,7 +17,7 @@ class Archer(Ally):
         super().__init__(hp, shield, x, y, speed, fire_rate)
         self.projectile_type = ProjectileID.FRIENDLY_BULLET
         self.entity_id = AllyID.ARCHER
-        self.fire_rate = fire_rate // 3
+        self.fire_rate = fire_rate // 2
         self.projectile_damage = 5
         self.fire_variance = 3
         self.projectile_speed = 20 * (30 / config.game_fps)

@@ -203,5 +203,5 @@ class EnemyWaveAI:
         # Ship stats
         stats = {}
         for enemy in EnemyID:
-            stats[enemy] = ship_stats.stats[enemy]
+            stats[enemy] = ship_stats.stats[enemy].copy()
         return stats

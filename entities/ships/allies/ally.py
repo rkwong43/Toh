@@ -82,15 +82,10 @@ class Ally(Ship):
         # Rotates the ship to face the target ship
         # Rotates the ship to face the target ship
         # Adjustment for larger ships
-        if target.size > config.ship_size:
-            y = target.y + target.size / 2
-            x = target.x + target.size / 2
-        else:
-            y = target.y
-            x = target.x
+        y = target.y
+        x = target.x
         y_dist = self.y - y
         x_dist = self.x - x
-        # TODO: Account for angle reset
         target_angle = -int(math.degrees(math.atan2(y_dist, x_dist))) + 90
         if abs(self.angle - target_angle) > self.rotation_speed:
             v1 = pygame.math.Vector2()

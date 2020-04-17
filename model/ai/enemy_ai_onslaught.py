@@ -113,7 +113,7 @@ class EnemyOnslaughtAI(EnemyWaveAI):
 
     def _buff_enemies(self):
         for k, v in self._stats.items():
-            v["SHIELD"] += 25
+            v["SHIELD"] += max(int(v["SHIELD"] // 5), 10)
 
     """Spawns an ally!
     """

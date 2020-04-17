@@ -462,8 +462,7 @@ class Model:
         # Sets the reload times
         if self._reload_time <= 0:
             self._reload_time = 1
-        if self._reload > self._reload_time:
-            self._reload = self._reload_time
+        self._reload = self._reload_time
 
         self._player_stats["WEAPON"] = weapon
 
@@ -581,14 +580,14 @@ class Model:
         self._final_stats["LEVEL"] += 1
         player = self._player_ship
         # Increases max HP and restores it
-        player.max_hp += (player.max_hp // 20)
+        player.max_hp += 10
         player.hp = player.max_hp
         # Increases max shield and restores it
-        player.max_shield += (player.max_hp // 10)
+        player.max_shield += 10
         player.shield_recharge_rate = (player.max_shield // 20 / config.game_fps)
         player.shield = player.max_shield
         # Increases damage and fire rate
-        self._player_stats["DMOD"] += .2
+        self._player_stats["DMOD"] += .1
         self._player_stats["RMOD"] -= .05
         if self._player_stats["RMOD"] <= 0:
             self._player_stats["RMOD"] -= .1
@@ -696,9 +695,13 @@ class Model:
     :type: Dictionary
     """
     def get_score(self):
-        score = self._player_ship.score
+        # TODO: Future game modes that are time based
+        if self._game_mode == GameModeID.TITAN_SLAYER:
+            score = str(self._AI.get_time()) + "s"
+        else:
+            score = self._player_ship.score
         self._final_stats["SCORE"] = score
-        self._final_stats["DAMAGE TAKEN"] = self._player_ship.damage_taken
+        self._final_stats["DAMAGE TAKEN"] = int(self._player_ship.damage_taken)
         self._final_stats["HITS TAKEN"] = self._player_ship.hits_taken
         curr_score = score_storage.data["SCORES"][str(self._game_mode.value)][str(self._difficulty.value)]
         if score > curr_score["SCORE"]:

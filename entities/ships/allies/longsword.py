@@ -34,7 +34,7 @@ class Longsword(Ally):
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
-        super().__init__(hp, shield, x, y, speed, fire_rate * 6)
+        super().__init__(hp, shield, x, y, speed, fire_rate)
         self.size = int(8 * config.ship_size)
         self.entity_id = AllyID.LONGSWORD
         self.projectile_type = ProjectileID.FRIENDLY_MISSILE
@@ -53,6 +53,7 @@ class Longsword(Ally):
                 y_pos = self.y + (self.size / 2) - (i * config.ship_size)
                 archer = enemy_generator.generate_enemy(AllyID.ARCHER, x_pos, y_pos, hp=self.hp + self.shield,
                                                         fire_rate=config.game_fps // 2)
+                archer.projectile_damage = 8
                 archer.remove_if_offscreen = False
                 self._turrets.append(archer)
             x_pos += config.ship_size
@@ -86,7 +87,7 @@ class Longsword(Ally):
                 turret.x += x_change
                 turret.y += y_change
 
-    """Despoiler fires multiple missiles at the target.
+    """Longsword doesn't do anything when firing.
 
     :param target: Target to fire at.
     :type target: Ship
@@ -95,18 +96,7 @@ class Longsword(Ally):
     """
 
     def fire(self, target, projectiles):
-        temp = self.fire_variance
-        temp_speed = self.projectile_speed
-        # Fires 3 missiles
-        super().fire(target, projectiles)
-        super().fire(target, projectiles)
-        super().fire(target, projectiles)
-        self.fire_variance = 0
-        self.projectile_speed = int(15 * (30 / config.game_fps))
-        super().fire(target, projectiles)
-        super().fire(target, projectiles)
-        self.fire_variance = temp
-        self.projectile_speed = temp_speed
+        pass
 
     """Damages itself and removes turrets upon death.
     """

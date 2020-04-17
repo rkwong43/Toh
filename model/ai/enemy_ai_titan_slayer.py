@@ -62,3 +62,11 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
             victory_time = "VICTORY: " + str(self._ticks // config.game_fps) + " SECONDS"
             self._model.popup_text(victory_time, 5, y=config.display_height * (2 / 3))
             self._model.end_game()
+
+    """Grabs the time.
+    
+    :returns: time in seconds
+    :rtype: int
+    """
+    def get_time(self):
+        return self._ticks // config.game_fps

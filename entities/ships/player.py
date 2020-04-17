@@ -6,7 +6,6 @@ from src.entities.ships.ship import Ship
 
 
 class Player(Ship):
-
     """Constructor to make the player ship
 
     :param x: starting x coordinate of player
@@ -24,6 +23,8 @@ class Player(Ship):
         # Current score/experience
         self.score = 0
         self.angle = 90
+        self.damage_taken = 0
+        self.hits_taken = 0
 
     """Moves the player ship depending on the direction
     
@@ -41,3 +42,11 @@ class Player(Ship):
             self.x -= self.speed
         elif direction == Direction.RIGHT:
             self.x += self.speed
+
+    """Damages and records how much damage taken and keeps count of the hits taken.
+    """
+
+    def damage(self, damage):
+        super().damage(damage)
+        self.damage_taken += damage
+        self.hits_taken += 1
