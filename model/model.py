@@ -695,6 +695,7 @@ class Model:
     :type: Dictionary
     """
     def get_score(self):
+        self.clear()
         # TODO: Future game modes that are time based
         if self._game_mode == GameModeID.TITAN_SLAYER:
             if not self._player_ship.is_dead and len(self.enemy_ships) == 0:
