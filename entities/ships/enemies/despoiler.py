@@ -31,9 +31,3 @@ class Despoiler(BurstFireEnemy):
         self._reload_speed = fire_rate * 2
         self._reload_curr = fire_rate * 2
 
-    """Added the ability to reload the burst every time it moves. Overrides move() in Enemy"""
-
-    def move(self):
-        self.reload()
-        super().move()
-

@@ -25,10 +25,3 @@ class Mantis(BurstFireEnemy):
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, **args):
         super().__init__(EnemyID.MANTIS, hp, shield, x, y, speed, config.ship_size, fire_rate, 5)
-
-    """Moves the Mantis to its predetermined location. Will also reload its gun. Overrides move() in Enemy.
-    """
-
-    def move(self):
-        self.reload()
-        super().move()

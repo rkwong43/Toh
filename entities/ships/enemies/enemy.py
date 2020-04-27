@@ -83,7 +83,6 @@ class Enemy(Ship):
         # If the enemy ship has any spread
         x_pos = self.x
         y_pos = self.y
-        # Base ship size is 100x100 px
         # This is to accommodate larger ships
         default_size = config.ship_size
         if self.size > config.ship_size:
@@ -99,5 +98,11 @@ class Enemy(Ship):
         elif weapon_type == ProjectileID.DIAMOND_DUST:
             projectile = DiamondDust(self.projectile_speed, x_pos, y_pos, angle, self.projectile_damage,
                                      ProjectileID.ENEMY_BULLET, target)
-
+        elif weapon_type == ProjectileID.PULSE:
+            projectile = self._fire_pulse(target)
         projectiles.append(projectile)
+
+    """Doesn't do anything for now. Must be overridden.
+    """
+    def _fire_pulse(self, target):
+        return 0

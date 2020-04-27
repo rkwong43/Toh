@@ -1,4 +1,3 @@
-
 from src.entities.ships.enemies.enemy import Enemy
 from src.utils import config
 
@@ -28,16 +27,17 @@ class BurstFireEnemy(Enemy):
     :type bursts: int
     """
 
-    def __init__(self, entity_id, hp, shield, x, y, speed, ship_size, fire_rate, bursts):
+    def __init__(self, entity_id, hp, shield, x, y, speed, ship_size, fire_rate, bursts,
+                 burst_rate=2):
         super().__init__(entity_id, hp, shield, x, y, speed, ship_size, fire_rate)
         # fire rate in frames
         # Mantis has different fire rate mechanics
         # Fire rate affects an internal burst counter to determine
         # when to fire a burst
-        self.fire_rate = 2 * (config.game_fps // 30)
+        self.fire_rate = burst_rate * (config.game_fps // 30)
 
         # Fires a burst
-        self._burst_max = 2 * bursts * (config.game_fps // 30)
+        self._burst_max = burst_rate * bursts * (config.game_fps // 30)
         self._burst_curr = self._burst_max
         self._reload_speed = fire_rate
         self._reload_curr = fire_rate
@@ -55,3 +55,9 @@ class BurstFireEnemy(Enemy):
             self._reload_curr = self._reload_speed
             self._burst_curr = self._burst_max
             self.ready_to_fire = True
+
+    """Added the ability to reload the burst every time it moves. Overrides move() in Enemy"""
+
+    def move(self):
+        self.reload()
+        super().move()
