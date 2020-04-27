@@ -238,10 +238,10 @@ class Model:
             # Clears all if a Titan is killed
             if ship.entity_id == EnemyID.TITAN:
                 self.popup_text("TITAN SLAIN", 3)
-                self.effects.append(Explosion(center_x, center_y, EffectID.TITAN_EXPLOSION))
+                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
                 self._final_stats["TITANS SLAIN"] += 1
             elif ship.entity_id == AllyID.LONGSWORD:
-                self.effects.append(Explosion(center_x, center_y, EffectID.TITAN_EXPLOSION))
+                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
 
         else:
             ship.move()

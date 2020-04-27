@@ -150,7 +150,8 @@ class View:
         result = {}
         # Projectiles to render
         projectiles_to_init = [e for e in ProjectileID if e not in
-                               [ProjectileID.RAILGUN_BLAST, ProjectileID.DIAMOND_DUST, ProjectileID.HOMING_BULLET]]
+                               [ProjectileID.RAILGUN_BLAST, ProjectileID.DIAMOND_DUST, ProjectileID.HOMING_BULLET,
+                                ProjectileID.PULSE]]
         # Effects to render
         effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION]
         # Renders each ship
