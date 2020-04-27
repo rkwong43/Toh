@@ -601,7 +601,7 @@ class Model:
         player.hp = player.max_hp
         # Increases max shield and restores it
         player.max_shield += 10
-        player.shield_recharge_rate = (player.max_shield // 20 / config.game_fps)
+        player.shield_recharge_rate = (player.max_shield // 10 / config.game_fps)
         player.shield = player.max_shield
         # Increases damage and fire rate
         self._player_stats["DMOD"] += .1

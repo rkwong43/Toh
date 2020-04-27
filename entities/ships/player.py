@@ -25,6 +25,7 @@ class Player(Ship):
         self.angle = 90
         self.damage_taken = 0
         self.hits_taken = 0
+        self.shield_recharge_rate *= 2
 
     """Moves the player ship depending on the direction
     
