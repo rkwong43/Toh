@@ -1,6 +1,4 @@
-import pygame
 
-from src.utils import config
 from src.view.image_containers.explosion_images import ExplosionImages
 
 """Container to hold images for a charging effect.

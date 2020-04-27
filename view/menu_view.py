@@ -359,6 +359,7 @@ class MenuView(View):
         stats = results.stats
         self._draw_background(self._background)
         self._transition_background(GameID.MENU)
+        # Welcome back Pilot
         welcome_text = self._description_font.render("Welcome back " + config.player_name, 0,
                                                      self.WHITE).convert_alpha()
         welcome_text.fill((255, 255, 255, self._prompt_alpha), None, pygame.BLEND_RGBA_MULT)

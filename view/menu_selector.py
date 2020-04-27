@@ -79,4 +79,8 @@ class MenuSelector(MenuTree):
     """
 
     def set_addl_info(self, game_mode):
-        self.info = score_storage.data["SCORES"][str(game_mode.value)]
+        try:
+            self.info = score_storage.data["SCORES"][str(game_mode.value)]
+        except KeyError:
+            score_storage.update_gamemodes()
+            self.info = score_storage.data["SCORES"][str(game_mode.value)]

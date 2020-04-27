@@ -16,13 +16,12 @@ class ExplosionImages:
     """
 
     def __init__(self, images, size):
-        frames = []
+        self.frames = []
         for image in images:
             frame = pygame.image.load(image).convert_alpha()
             frame = pygame.transform.scale(frame, (size, size))
-            frames.append(frame)
-        self.frames = frames
-        self.frame_offset = config.game_fps / 30
+            self.frames.append(frame)
+        self.frame_offset = int(config.game_fps / 30)
 
     """Returns the given frame of the explosion.
     
@@ -32,6 +31,9 @@ class ExplosionImages:
     :rtype: pygame image
     """
     def get_frame(self, effect):
-        result = self.frames[int(effect.curr_frame // self.frame_offset)]
+        try:
+            result = self.frames[int(effect.curr_frame / (self.frame_offset * effect.frame_multiplier))]
+        except IndexError:
+            result = self.frames[0]
         effect.curr_frame += 1
         return result

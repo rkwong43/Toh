@@ -40,14 +40,15 @@ class View:
                     GameModeID.FATE: os.path.join(_image_path, 'fate_background.png'),
                     GameModeID.ONSLAUGHT: os.path.join(_image_path, 'onslaught_background.png'),
                     GameID.MENU: os.path.join(_image_path, 'background.png'),
-                    GameID.TUTORIAL: os.path.join(_image_path, 'background.png')
+                    GameID.TUTORIAL: os.path.join(_image_path, 'background.png'),
+                    GameModeID.SPECTRAL: os.path.join(_image_path, 'spectral_background.png')
                     }
     # Ship scaling (what the default ship size should be multiplied by in their rendering)
     _ship_scaling = {
         EnemyID.MANDIBLE: 1, EnemyID.MANTIS: 1, EnemyID.CRUCIBLE: 1, EnemyID.MOSQUITO: 1, AllyID.ARCHER: 1,
-        EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1,
+        EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1, EnemyID.SPECTRE: 1,
         EnemyID.ARBITRATOR: 1.5, EnemyID.TERMINUS: 1.5, EnemyID.JUDICATOR: 1.5,
-        EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2,
+        EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2, EnemyID.PHANTOM: 2,
         EnemyID.TITAN: 8, AllyID.LONGSWORD: 8
     }
     # All player ships are by default x1 size
@@ -317,13 +318,14 @@ class View:
     """
 
     def _render_projectile(self, projectile):
-        if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
+        if projectile.entity_id != ProjectileID.RAILGUN_BLAST and projectile.entity_id != ProjectileID.PULSE:
             image = self._image_dict.get(projectile.entity_id)
             # Rotates the projectile depending on its angle
             projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
             center_height = projectile.y + self._ship_size / 2
             center_width = projectile.x + self._ship_size / 2
-            self._game_display.blit(projectile_image, self._find_posn(projectile_image, center_width, center_height))
+            self._game_display.blit(projectile_image,
+                                    self._find_posn(projectile_image, center_width, center_height))
 
     """Renders the given effect. Returns the effect.
 
