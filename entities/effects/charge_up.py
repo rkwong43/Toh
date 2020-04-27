@@ -18,7 +18,6 @@ class ChargeUp(Effect):
 
     def __init__(self, x, y, entity_id):
         super().__init__(x, y, entity_id)
-        # Charging has 16 frames.
         self.max_frame = 16 * int(config.game_fps / 30)
 
 

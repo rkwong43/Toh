@@ -20,6 +20,7 @@ class Effect:
         self.curr_frame = 0
         # Number of frames it lasts
         self.max_frame = 0
+        self.frame_multiplier = 1
 
     """Returns whether to animate the frame or not.
     
@@ -28,4 +29,4 @@ class Effect:
     """
 
     def animate(self):
-        return self.curr_frame < self.max_frame
+        return self.curr_frame <= self.max_frame

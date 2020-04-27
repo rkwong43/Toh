@@ -8,16 +8,16 @@ class Explosion(Effect):
 
     """Constructor to make the explosion.
 
-    :param x: x coordinate of explosion
+    :param x: center x coordinate of explosion
     :type x: int
-    :param y: y coordinate of explosion
+    :param y: center y coordinate of explosion
     :type y: int
     :param entity_id: ID representing what effect it is
     :type entity_id: EntityID
     """
 
     def __init__(self, x, y, entity_id):
-        super().__init__(x, y, entity_id)
+        super().__init__(x - config.ship_size * .75, y - config.ship_size * .75, entity_id)
         # Explosions have 4 frames of animation
         self.max_frame = 4 * int(config.game_fps / 30)
 
