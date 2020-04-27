@@ -12,6 +12,7 @@ class EnemyID(Enum):
     MOSQUITO = auto()
     SUBJUGATOR = auto()
     SEER = auto()
+    SPECTRE = auto()
     # Large ships
     ARBITRATOR = auto()
     TERMINUS = auto()
@@ -19,5 +20,13 @@ class EnemyID(Enum):
     # Larger ships
     DESPOILER = auto()
     MOTHERSHIP = auto()
+    PHANTOM = auto()
     # Largest ships
     TITAN = auto()
+    # Bosses
+    # Spawner:
+    # GENESIS = auto()
+    # Destruction:
+    # SIN = auto()
+    # Both:
+    # NIRVANA = auto()

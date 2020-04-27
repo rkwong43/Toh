@@ -6,14 +6,13 @@ from enum import Enum, auto
 
 class GameModeID(Enum):
     # Game modes
+    # Survival
     CLASSIC = auto()
     MANDIBLE_MADNESS = auto()
     HEAVEN = auto()
-    # All out war - include enemies and allies
-    # Assign each enemy a target
-    # Add warships
     ONSLAUGHT = auto()
-    # Randomly generate weapons every few waves
     FATE = auto()
 
+    # CHALLENGES
     TITAN_SLAYER = auto()
+    SPECTRAL = auto()

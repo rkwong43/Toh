@@ -10,7 +10,9 @@ from src.entities.ships.enemies.mandible import Mandible
 from src.entities.ships.enemies.mantis import Mantis
 from src.entities.ships.enemies.mosquito import Mosquito
 from src.entities.ships.enemies.mothership import Mothership
+from src.entities.ships.enemies.phantom import Phantom
 from src.entities.ships.enemies.seer import Seer
+from src.entities.ships.enemies.spectre import Spectre
 from src.entities.ships.enemies.subjugator import Subjugator
 from src.entities.ships.enemies.terminus import Terminus
 from src.entities.ships.enemies.titan import Titan
@@ -25,11 +27,13 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.SUBJUGATOR: Subjugator,
             EnemyID.MOSQUITO: Mosquito,
             EnemyID.SEER: Seer,
+            EnemyID.SPECTRE: Spectre,
             EnemyID.ARBITRATOR: Arbitrator,
             EnemyID.TERMINUS: Terminus,
             EnemyID.JUDICATOR: Judicator,
             EnemyID.MOTHERSHIP: Mothership,
             EnemyID.DESPOILER: Despoiler,
+            EnemyID.PHANTOM: Phantom,
             EnemyID.TITAN: Titan,
             PlayerID.CITADEL: Citadel,
             PlayerID.AEGIS: Aegis,

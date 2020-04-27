@@ -33,8 +33,10 @@ class EnemyHeavenAI(EnemyWaveAI):
         # How often the enemies are buffed
         self._enemy_buff_wave = 10
 
-        self._combat_ratings = {EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250, EnemyID.DESPOILER: 400,
-                                EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300, EnemyID.TITAN: 1000}
+        self._combat_ratings = {EnemyID.SPECTRE: 100,
+                                EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250, EnemyID.DESPOILER: 400,
+                                EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300, EnemyID.PHANTOM: 400,
+                                EnemyID.TITAN: 1000}
 
     """Changes the difficulty to the given setting.
     """

@@ -16,5 +16,11 @@ class PlayerID(Enum):
     ARCHANGEL = auto()
     # Faster ship, less shield, faster fire rate
     STORM = auto()
-    # less HP and shield, more fire rate and damage
+    # New generation:
+    JUDGMENT = auto()
+
+    # From killing deities:
+    # WRATH
+    # TODO: Remake
+    ETERNITY = auto()
     ORIGIN = auto()

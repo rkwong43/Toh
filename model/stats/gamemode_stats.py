@@ -26,5 +26,5 @@ descriptions = {
     GameModeID.ONSLAUGHT: ["Assault the enemy with allied support."],
     # Challenge
     GameModeID.TITAN_SLAYER: ["Duel a massive Titan warship. Prepare for death."],
-    #GameModeID.SPECTRES: ["Something isn't right..."]
+    GameModeID.SPECTRAL: ["Something isn't right..."]
 }

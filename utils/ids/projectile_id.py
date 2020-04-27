@@ -14,5 +14,6 @@ class ProjectileID(Enum):
     ENEMY_MISSILE = auto()
     DIAMOND_DUST = auto()
     RAILGUN_BLAST = auto()
+    PULSE = auto()
     HOMING_BULLET = auto()
 

@@ -24,7 +24,7 @@ def construct_data():
         results = {}
         for difficulty in DifficultyID:
             results[difficulty.value] = not_attempted.copy()
-        scores[game_mode.value] = results
+        scores[int(game_mode.value)] = results
     data["SCORES"] = scores
     with open("data.json", "w") as outfile:
         json.dump(data, outfile)
@@ -47,3 +47,16 @@ def save_data():
     with open('data.json', 'w') as file:
         json.dump(data, file)
         f.close()
+
+
+"""Checks all the existing gamemodes and adds them if they do not exist.
+"""
+
+
+def update_gamemodes():
+    for gamemode in GameModeID:
+        try:
+            test = data["SCORES"][gamemode.value]["SHIP"]
+        except KeyError:
+            data["SCORES"][int(gamemode.value)] = {"SHIP": PlayerID.CITADEL.value, "WEAPON": WeaponID.GUN.value, "SCORE": 0}
+    save_data()

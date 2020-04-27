@@ -4,6 +4,7 @@ import random
 
 import pygame
 
+from src.entities.effects.charge_up import ChargeUp
 from src.entities.effects.explosion import Explosion
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint
@@ -15,6 +16,7 @@ from src.model.ai.enemy_ai_fate import EnemyFateAI
 from src.model.ai.enemy_ai_heaven import EnemyHeavenAI
 from src.model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
 from src.model.ai.enemy_ai_onslaught import EnemyOnslaughtAI
+from src.model.ai.enemy_ai_spectral import EnemySpectralAI
 from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
 from src.model.ai.enemy_ai_tutorial import EnemyTutorialAI
 from src.model.ai.enemy_ai_waves import EnemyWaveAI
@@ -39,6 +41,9 @@ class Model:
     outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the Model folder
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
+    # Time based game modes
+    _time_based_game_modes = [GameModeID.TITAN_SLAYER, GameModeID.SPECTRAL]
+    # Friendly ships
     friendly_ships = []
 
     """Initializes the model with the width and height of the window and the size of ships
@@ -102,7 +107,7 @@ class Model:
             ship.ticks = 0
 
         # Final game stats
-        self._final_stats = {"SCORE": 0, "LEVEL": 1, "ENEMIES SLAIN": 0, "TITANS SLAIN": 0,
+        self._final_stats = {"SCORE": 0, "WEAPON": '', "MODE": '', "LEVEL": 1, "ENEMIES SLAIN": 0, "TITANS SLAIN": 0,
                              "SHOTS FIRED": 0, "DAMAGE TAKEN": 0, "HITS TAKEN": 0, "HIGH SCORE": False}
 
     """Initializes the player's ship.
@@ -136,7 +141,7 @@ class Model:
         AI_modules = {GameModeID.CLASSIC: EnemyWaveAI, GameModeID.MANDIBLE_MADNESS: EnemyMandibleMadnessAI,
                       GameModeID.TITAN_SLAYER: EnemyTitanSlayerAI, GameModeID.HEAVEN: EnemyHeavenAI,
                       GameID.TUTORIAL: EnemyTutorialAI, GameModeID.FATE: EnemyFateAI,
-                      GameModeID.ONSLAUGHT: EnemyOnslaughtAI}
+                      GameModeID.ONSLAUGHT: EnemyOnslaughtAI, GameModeID.SPECTRAL: EnemySpectralAI}
         AI = AI_modules[game_mode](self, difficulty)
         return AI
 
@@ -203,8 +208,6 @@ class Model:
             self.sounds["MISSILE"].play()
         elif entity_id in [ProjectileID.DIAMOND_DUST, ProjectileID.RAILGUN_BLAST]:
             self.sounds["RAILGUN"].play()
-        else:
-            raise ValueError("Sound for ", entity_id, "doesn't exist yet!")
 
     """Removes effects that are over.
     """
@@ -228,16 +231,17 @@ class Model:
                 self._player_ship.score += ship.score
                 self._final_stats["ENEMIES SLAIN"] += 1
             self.sounds["EXPLOSION"].play()
-            offset = ((config.ship_size * 1.5) - ship.size) // 2
-            self.effects.append(Explosion(ship.x - offset, ship.y - offset,
+            center_x = ship.x + ship.size // 2
+            center_y = ship.y + ship.size // 2
+            self.effects.append(Explosion(center_x, center_y,
                                           EffectID.EXPLOSION))
             # Clears all if a Titan is killed
             if ship.entity_id == EnemyID.TITAN:
                 self.popup_text("TITAN SLAIN", 3)
-                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
+                self.effects.append(Explosion(center_x, center_y, EffectID.TITAN_EXPLOSION))
                 self._final_stats["TITANS SLAIN"] += 1
             elif ship.entity_id == AllyID.LONGSWORD:
-                self.effects.append(Explosion(ship.x, ship.y, EffectID.TITAN_EXPLOSION))
+                self.effects.append(Explosion(center_x, center_y, EffectID.TITAN_EXPLOSION))
 
         else:
             ship.move()
@@ -294,6 +298,7 @@ class Model:
     :param ship: The ship to check if offscreen
     :type ship: Ship
     """
+
     def _ship_is_off_screen(self, ship):
         result = self._is_off_screen(ship)
         if result:
@@ -348,14 +353,24 @@ class Model:
     def _check_if_hit(self, projectile, ships, splash_color):
         weapon_type = projectile.entity_id
         ship_size = config.ship_size
+        radius = projectile.size // 2
+        proj_center = (projectile.x + radius, projectile.y + radius)
         if weapon_type == ProjectileID.RAILGUN_BLAST:
-            self.effects.append(Explosion(projectile.x - ship_size / 4,
-                                          projectile.y - ship_size / 4,
+            self.effects.append(Explosion(proj_center[0],
+                                          proj_center[1],
                                           splash_color))
-        elif weapon_type == ProjectileID.FRIENDLY_MISSILE:
+        elif weapon_type == ProjectileID.FRIENDLY_MISSILE or weapon_type == ProjectileID.ENEMY_MISSILE:
             # Projectile is missile and its target has been destroyed, gives it a new target
             if projectile.target_destroyed:
                 projectile.acquire_target(self.find_closest_target(projectile, self.enemy_ships))
+        elif weapon_type == ProjectileID.PULSE:
+            if projectile.curr_charge != projectile.charge_time:
+                return False
+            else:
+                self.effects.append(Explosion(proj_center[0],
+                                              proj_center[1],
+                                              splash_color))
+                self.sounds["EXPLOSION"].play()
         for ship in ships:
             # Hit box
             ship_bounding_box = ship.size / 4
@@ -369,12 +384,12 @@ class Model:
                 if projectile.has_splash:
                     # Calculates what ships receive splash damage
                     self._check_splash_damage(projectile, ship, ships)
-                    self.effects.append(Explosion(projectile.x - (projectile.size // 4),
-                                                  projectile.y,
+                    self.effects.append(Explosion(proj_center[0],
+                                                  proj_center[1],
                                                   splash_color))
                     self.sounds["EXPLOSION"].play()
                 # Removes projectile if it is not a railgun shot
-                if projectile.entity_id != ProjectileID.RAILGUN_BLAST:
+                if projectile.entity_id not in [ProjectileID.RAILGUN_BLAST, ProjectileID.PULSE]:
                     return True
                 elif ship.entity_id == EnemyID.TITAN or ship.entity_id == AllyID.LONGSWORD:
                     # Railgun hits larger ship
@@ -400,7 +415,9 @@ class Model:
             self.effects.append(tint)
         # If the player dies, then game over and returns to title screen (from controller)
         if self._player_ship.is_dead:
-            self.effects.append(Explosion(self._player_ship.x, self._player_ship.y, EffectID.BLUE_EXPLOSION))
+            size = self._player_ship.size // 2
+            self.effects.append(Explosion(self._player_ship.x + size, self._player_ship.y + size,
+                                          EffectID.BLUE_EXPLOSION))
             self._game_over = True
             self.popup_text("Game Over", 4)
 
@@ -694,10 +711,11 @@ class Model:
     :returns: Dictionary of final stats
     :type: Dictionary
     """
+
     def get_score(self):
         self.clear()
         # TODO: Future game modes that are time based
-        if self._game_mode == GameModeID.TITAN_SLAYER:
+        if self._game_mode in self._time_based_game_modes:
             if not self._player_ship.is_dead and len(self.enemy_ships) == 0:
                 # y = 100000 (.96)^t
                 score = int(.96 ** self._AI.get_time() * 100000)
@@ -705,6 +723,8 @@ class Model:
                 score = 0
         else:
             score = self._player_ship.score
+        self._final_stats["MODE"] = self._game_mode.name
+        self._final_stats["WEAPON"] = self._player_stats["WEAPON"].name
         self._final_stats["SCORE"] = score
         self._final_stats["DAMAGE TAKEN"] = int(self._player_ship.damage_taken)
         self._final_stats["HITS TAKEN"] = self._player_ship.hits_taken
@@ -717,3 +737,12 @@ class Model:
                 curr_score["WEAPON"] = self._player_stats["WEAPON"].value
             score_storage.save_data()
         return self._final_stats
+
+    """Returns all friendly targets.
+    
+    :returns: List of friendly targets
+    :rtype: [Ship]
+    """
+
+    def get_friendlies(self):
+        return self.friendly_ships + [self._player_ship]

@@ -24,7 +24,7 @@ class EnemyWaveAI:
         self._combat_ratings = {EnemyID.MANDIBLE: 10, EnemyID.MANTIS: 40, EnemyID.CRUCIBLE: 100, EnemyID.MOSQUITO: 30,
                                 EnemyID.SUBJUGATOR: 60, EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250,
                                 EnemyID.SEER: 50,
-                                EnemyID.DESPOILER: 400, EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 300,
+                                EnemyID.DESPOILER: 400, EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 400,
                                 EnemyID.TITAN: 1000}
         # Initial wave
         self._wave = 0
@@ -83,19 +83,27 @@ class EnemyWaveAI:
             self._model.level_up()
             self._level_up_exp *= 2
         for enemy in self._model.enemy_ships:
-            enemy.ticks += 1
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self._model.enemy_projectiles)
-                    self._model.play_sound(enemy.projectile_type)
+            self._process_enemy(enemy)
         if len(self._model.enemy_ships) == 0:
             # Waiting for next wave:
             if self._wait_for_next_wave():
                 self._spawn_enemies()
                 self._wave += 1
+
+    """Makes the enemy move and shoot.
+    
+    :param enemy: Enemy ship
+    :type enemy: Enemy
+    """
+    def _process_enemy(self, enemy):
+        enemy.ticks += 1
+        # Fires their weapon if their individual tick rate matches their fire rate
+        if enemy.ticks == enemy.fire_rate:
+            enemy.ticks = 0
+            # Fires projectile at player
+            if enemy.ready_to_fire:
+                enemy.fire(self._model.get_player(), self._model.enemy_projectiles)
+                self._model.play_sound(enemy.projectile_type)
 
     """Waits for the next wave. Returns true if ready.
 

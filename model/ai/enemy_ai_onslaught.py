@@ -52,8 +52,7 @@ class EnemyOnslaughtAI(EnemyWaveAI):
                 enemy.ticks = 0
                 # Fires projectile at player
                 if enemy.ready_to_fire:
-                    enemy.fire(self._model.find_closest_target(enemy,
-                                                               self._model.friendly_ships + [self._model.get_player()]),
+                    enemy.fire(self._model.find_closest_target(enemy, self._model.get_friendlies()),
                                self._model.enemy_projectiles)
                     self._model.play_sound(enemy.projectile_type)
         if len(self._model.enemy_ships) == 0:
