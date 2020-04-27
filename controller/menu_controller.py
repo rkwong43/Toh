@@ -49,7 +49,8 @@ def construct_tree():
                              GameModeID.FATE,
                              GameModeID.ONSLAUGHT],
                             GameID.SELECTOR, difficulty_selector)
-    challenge = MenuSelector([GameModeID.TITAN_SLAYER],
+    challenge = MenuSelector([GameModeID.TITAN_SLAYER,
+                              GameModeID.SPECTRAL],
                              GameID.SELECTOR, difficulty_selector)
     weapon_gallery = MenuTree(GameID.GALLERY, construct_gallery([weapon for weapon in WeaponID]))
     ship_gallery = MenuTree(GameID.GALLERY, construct_gallery([ship for ship in PlayerID]))
@@ -97,6 +98,7 @@ class MenuController:
         # Loads the start menu music
         pygame.mixer.music.load(os.path.join(self.music_path, 'undertow.mp3'))
         pygame.mixer.music.play(-1, 0)
+        pygame.mixer.music.set_volume(.5)
         # How many times the menu can transition per second in frames:
         self._option_transition = config.game_fps // 8
         self._curr_ticks = self._option_transition

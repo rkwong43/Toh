@@ -53,6 +53,7 @@ class Controller:
         # Loads and plays the level music
         pygame.mixer.music.load(self.game_music_path)
         pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(.5)
         paused = False
         ANIMATE = pygame.USEREVENT + 1
         game_over_countdown = self._fps * 5
