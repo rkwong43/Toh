@@ -155,7 +155,7 @@ class View:
         # Projectiles to render
         projectiles_to_init = [e for e in ProjectileID if e not in self._projectiles_with_no_sprite]
         # Effects to render
-        effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION]
+        effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION, EffectID.RED_AOE]
         # Renders each ship
         for id_name, size in self._ship_scaling.items():
             ship_name = id_name.name

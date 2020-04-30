@@ -93,7 +93,7 @@ class Model:
 
         # Sounds
         self.sounds = {}
-        for file_name, volume in {"bullet": .05, "missile": .05, "explosion": .3, "railgun": 1}.items():
+        for file_name, volume in {"bullet": .05, "missile": .05, "explosion": .3, "railgun": .5}.items():
             path = os.path.join(self.sound_path, file_name + '_sound.ogg')
             sound = pygame.mixer.Sound(file=path)
             sound.set_volume(volume)
@@ -151,18 +151,20 @@ class Model:
 
     def tick(self):
         if not self._game_over:
-            # Moves all projectiles and filters them if they're offscreen
-            self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
-                                            if not self._process_friendly_projectile(projectile)]
-            self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
-                                         if not self._process_enemy_projectile(projectile)]
-            self._queue = [action for action in self._queue if self._process_action(action)]
+            # Action queue
+            self._queue[:] = [action for action in self._queue if self._process_action(action)]
             # Rotates enemies, recharges their shields, and checks if they're dead
             self.enemy_ships[:] = [enemy for enemy in self.enemy_ships
                                    if not self._process_ship(enemy, self.get_friendlies(), self.enemy_projectiles)]
             self.friendly_ships[:] = [ship for ship in self.friendly_ships
                                       if not self._process_ship(ship, self.enemy_ships, self.friendly_projectiles)]
+
             self._process_player()
+            # Moves all projectiles and filters them if they're offscreen
+            self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                            if not self._process_friendly_projectile(projectile)]
+            self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                         if not self._process_enemy_projectile(projectile)]
 
     """Processes the player, checking its health, making the AI tick, and deciding when to end the game.
     """
@@ -199,13 +201,18 @@ class Model:
     """
 
     def _process_ship(self, ship, targets, projectiles):
-        ship.ticks += 1
-        if ship.ticks == ship.fire_rate:
-            ship.ticks = 0
-            if ship.ready_to_fire:
-                ship.fire(self.find_closest_target(ship, targets), projectiles)
-                self.play_sound(ship.projectile_type)
-        return self._is_dead(ship, targets)
+        result = self._is_dead(ship, targets)
+        if result:
+            return result
+        else:
+            ship.is_damaged = False
+            ship.ticks += 1
+            if ship.ticks == ship.fire_rate:
+                ship.ticks = 0
+                if ship.ready_to_fire:
+                    ship.fire(self.find_closest_target(ship, targets), projectiles)
+                    self.play_sound(ship.projectile_type)
+            return False
 
     """Processes commands in the queue.
     

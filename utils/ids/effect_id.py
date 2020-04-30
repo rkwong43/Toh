@@ -13,6 +13,7 @@ class EffectID(Enum):
     POPUP = auto()
     RED_CHARGE = auto()
     BLUE_CHARGE = auto()
+    RED_AOE = auto()
     # Screen effects
     SHIELD_TINT = auto()
     HP_TINT = auto()
