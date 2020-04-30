@@ -4,7 +4,6 @@ import random
 
 import pygame
 
-from src.entities.effects.charge_up import ChargeUp
 from src.entities.effects.explosion import Explosion
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint

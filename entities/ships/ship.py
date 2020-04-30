@@ -55,7 +55,7 @@ class Ship:
         self.shield_recharge_rate = (self.max_shield // 20) / config.game_fps
         self.shield_recharge_rate = 1 if self.shield_recharge_rate == 0 else self.shield_recharge_rate
         # Delay before shield recharges
-        self.shield_delay = config.game_fps
+        self.shield_delay = config.game_fps * 2
         # Keeps count of when to regenerate
         self.shield_recharge = self.shield_delay
         #############################################
