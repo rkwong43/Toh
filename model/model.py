@@ -4,6 +4,7 @@ import random
 
 import pygame
 
+from src.entities.effects.charge_up import ChargeUp
 from src.entities.effects.explosion import Explosion
 from src.entities.effects.popup import PopUp
 from src.entities.effects.screen_tint import ScreenTint
@@ -149,28 +150,41 @@ class Model:
     """
 
     def tick(self):
-        # Moves all projectiles and filters them if they're offscreen
-        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
-                                        if not self._process_projectile(projectile)]
-        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
-                                     if not self._process_projectile(projectile)]
-        self._queue = [action for action in self._queue if self._process_action(action)]
-        # Rotates enemies, recharges their shields, and checks if they're dead
-        self.enemy_ships[:] = [enemy for enemy in self.enemy_ships
-                               if not self._process_ship(enemy, self.get_friendlies(), self.enemy_projectiles)]
-        self.friendly_ships[:] = [ship for ship in self.friendly_ships
-                                  if not self._process_ship(ship, self.enemy_ships, self.friendly_projectiles)]
-        self._player_ship.is_damaged = False
+        if not self._game_over:
+            # Moves all projectiles and filters them if they're offscreen
+            self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                            if not self._process_friendly_projectile(projectile)]
+            self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                         if not self._process_enemy_projectile(projectile)]
+            self._queue = [action for action in self._queue if self._process_action(action)]
+            # Rotates enemies, recharges their shields, and checks if they're dead
+            self.enemy_ships[:] = [enemy for enemy in self.enemy_ships
+                                   if not self._process_ship(enemy, self.get_friendlies(), self.enemy_projectiles)]
+            self.friendly_ships[:] = [ship for ship in self.friendly_ships
+                                      if not self._process_ship(ship, self.enemy_ships, self.friendly_projectiles)]
+            self._process_player()
+
+    """Processes the player, checking its health, making the AI tick, and deciding when to end the game.
+    """
+    def _process_player(self):
         # Processing the player
         if self._player_ship.hp > 0:
             self._AI.tick()
             # Reloads the player's weapon depending on its fire speed
             if self._reload < self._reload_time:
                 self._reload += 1
-            # Checks collisions between projectiles and ships
-            self._check_collisions()
             # Recharges shield for player
             self._player_ship.recharge_shield()
+            # If the player is damaged, then plays a screen effect
+            if self._player_ship.is_damaged:
+                self._play_screen_effect()
+            self._player_ship.is_damaged = False
+        elif not self._game_over:
+            size = self._player_ship.size // 2
+            self.effects.append(Explosion(self._player_ship.x + size, self._player_ship.y + size,
+                                          EffectID.BLUE_EXPLOSION))
+            self._game_over = True
+            self.popup_text("Game Over", 4)
 
     """Processes friendly ships. Also handles their firing and reloads.
     
@@ -183,6 +197,7 @@ class Model:
     :returns: if the ship should be removed or not
     :rtype: bool
     """
+
     def _process_ship(self, ship, targets, projectiles):
         ship.ticks += 1
         if ship.ticks == ship.fire_rate:
@@ -190,7 +205,7 @@ class Model:
             if ship.ready_to_fire:
                 ship.fire(self.find_closest_target(ship, targets), projectiles)
                 self.play_sound(ship.projectile_type)
-        return self._is_dead(ship)
+        return self._is_dead(ship, targets)
 
     """Processes commands in the queue.
     
@@ -214,11 +229,12 @@ class Model:
 
     def play_sound(self, entity_id):
         if entity_id in [ProjectileID.FRIENDLY_FLAK, ProjectileID.FRIENDLY_BULLET,
-                         ProjectileID.ENEMY_FLAK, ProjectileID.ENEMY_BULLET, ProjectileID.HOMING_BULLET]:
+                         ProjectileID.ENEMY_FLAK, ProjectileID.ENEMY_BULLET, ProjectileID.HOMING_BULLET,
+                         ProjectileID.DIAMOND_DUST]:
             self.sounds["BULLET"].play()
         elif entity_id in [ProjectileID.ENEMY_MISSILE, ProjectileID.FRIENDLY_MISSILE]:
             self.sounds["MISSILE"].play()
-        elif entity_id in [ProjectileID.DIAMOND_DUST, ProjectileID.RAILGUN_BLAST]:
+        elif entity_id in [ProjectileID.RAILGUN_BLAST]:
             self.sounds["RAILGUN"].play()
 
     """Removes effects that are over.
@@ -232,11 +248,13 @@ class Model:
 
     :param ship: Ship to check if dead
     :type ship: Ship
+    :param targets: List of possible targets for the ship
+    :type targets: [Ship]
     :returns: if ship is dead
     :rtype: bool
     """
 
-    def _is_dead(self, ship):
+    def _is_dead(self, ship, targets):
         if ship.is_dead:
             # Adds to score if necessary
             if ship.entity_id in EnemyID:
@@ -257,8 +275,7 @@ class Model:
 
         else:
             ship.move()
-            closest_target = self.find_closest_target(ship, self.enemy_ships if ship in self.friendly_ships else
-            self.friendly_ships + [self._player_ship])
+            closest_target = self.find_closest_target(ship, targets)
             ship.rotate(closest_target)
             ship.recharge_shield()
             ship.is_damaged = False
@@ -276,10 +293,19 @@ class Model:
         if Direction.FIRE in keys:
             if not self._player_ship.is_dead:
                 if self._reload == self._reload_time:
-                    for i in range(self._player_stats["BURSTS"]):
-                        self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
-                    self._projectile_generator()
                     self._reload = 0
+                    # TODO: Add constant for charge up weapons
+                    if self._player_stats["TYPE"] == ProjectileID.RAILGUN_BLAST:
+                        self._queue.append({"COMMAND": Direction.FIRE, "FRAME": ChargeUp.charge_delay})
+                        charge_effect = ChargeUp(self._player_ship.x + self._player_ship.size // 2,
+                                                 self._player_ship.y + self._player_ship.size // 5,
+                                                 EffectID.BLUE_CHARGE)
+                        self._player_ship.ship_effects.append(charge_effect)
+                        self.effects.append(charge_effect)
+                    else:
+                        for i in range(self._player_stats["BURSTS"]):
+                            self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
+                        self._projectile_generator()
         # Up and down
         size = config.ship_size
         if Direction.UP in keys and self._boundary_check(Direction.UP, size):
@@ -300,6 +326,7 @@ class Model:
     :returns: true if the ship is off screen
     :rtype: bool
     """
+
     def _ship_is_off_screen(self, ship):
         result = self._is_off_screen(ship)
         if result:
@@ -313,9 +340,16 @@ class Model:
     :returns: True if the projectile is off screen
     :rtype: bool
     """
-    def _process_projectile(self, projectile):
+
+    def _process_friendly_projectile(self, projectile):
         projectile.move()
-        return self._is_off_screen(projectile)
+        return self._is_off_screen(projectile) or self._check_if_hit(projectile, self.enemy_ships,
+                                                                     EffectID.BLUE_EXPLOSION)
+
+    def _process_enemy_projectile(self, projectile):
+        projectile.move()
+        return self._is_off_screen(projectile) or self._check_if_hit(projectile, self.get_friendlies(),
+                                                                     EffectID.RED_EXPLOSION)
 
     """Checks if the given entity is off screen.
 
@@ -332,23 +366,6 @@ class Model:
         x_off = center[0] > config.display_width + size or center[0] < -size
         y_off = center[1] > config.display_height + size or center[1] < -size
         return x_off or y_off
-
-    """Checks for any projectile collisions between ships and ship collisions. If the ship is destroyed, adds an
-    explosion effect to the effects list.
-    """
-
-    def _check_collisions(self):
-        # Checks friendly projectiles vs. enemy ships
-        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
-                                        if
-                                        not self._check_if_hit(projectile, self.enemy_ships, EffectID.BLUE_EXPLOSION)]
-        # Checks enemy projectiles vs. friendly ships
-        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
-                                     if not self._check_if_hit(projectile, self.friendly_ships + [self._player_ship],
-                                                               EffectID.RED_EXPLOSION)]
-        # If the player is damaged, then plays a screen effect
-        if self._player_ship.is_damaged:
-            self._play_screen_effect()
 
     """Checks whether to remove the projectile.
 
@@ -425,13 +442,6 @@ class Model:
                 tint_number += 1
         if tint_number <= 6:
             self.effects.append(tint)
-        # If the player dies, then game over and returns to title screen (from controller)
-        if self._player_ship.is_dead:
-            size = self._player_ship.size // 2
-            self.effects.append(Explosion(self._player_ship.x + size, self._player_ship.y + size,
-                                          EffectID.BLUE_EXPLOSION))
-            self._game_over = True
-            self.popup_text("Game Over", 4)
 
     """Checks if the projectile's splash damage collides with any surrounding ships
 
@@ -491,7 +501,8 @@ class Model:
         # Sets the reload times
         if self._reload_time <= 0:
             self._reload_time = 1
-        self._reload = self._reload_time
+        elif self._reload > self._reload_time:
+            self._reload = self._reload_time
 
         self._player_stats["WEAPON"] = weapon
 

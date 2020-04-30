@@ -86,6 +86,9 @@ class Ship:
         self.stealth = False
         self.rotation_speed = 3 * (60 / config.game_fps)
 
+        # Ship effects
+        self.ship_effects = []
+
     """Represents the angle the ship is facing.
 
     :param target: target the ship is facing

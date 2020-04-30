@@ -189,6 +189,9 @@ class View:
             elif effect_name == "RED_EXPLOSION":
                 charge_effect_container = ChargeUpImages(image_paths, int(self._ship_size * 1.5))
                 result[EffectID.RED_CHARGE] = charge_effect_container
+            elif effect_name == "BLUE_EXPLOSION":
+                charge_effect_container = ChargeUpImages(image_paths, int(self._ship_size * 1.5))
+                result[EffectID.BLUE_CHARGE] = charge_effect_container
             result[id_name] = container
         # Screen tints
         blue_tint = os.path.join(self._image_path, 'shield_damage_screen_effect.png')

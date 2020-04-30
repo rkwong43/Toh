@@ -32,7 +32,7 @@ stats = {WeaponID.GUN: {"PROJECTILE SPEED": 20, "SPREAD": 0, "PROJECTILE TYPE": 
                                  "DAMAGE": 5, "RELOAD": 16, "PROJECTILE COUNT": 5, "BURSTS": 0,
                                  "DESCRIPTION": "Creates a burst of compressed plasma shards that track enemies."},
          WeaponID.RAILGUN: {"PROJECTILE SPEED": 60, "SPREAD": 0, "PROJECTILE TYPE": ProjectileID.RAILGUN_BLAST,
-                            "DAMAGE": 50, "RELOAD": 32, "PROJECTILE COUNT": 1, "BURSTS": 0,
+                            "DAMAGE": 75, "RELOAD": 32, "PROJECTILE COUNT": 1, "BURSTS": 0,
                             "DESCRIPTION": "Generates a high-velocity blast of super-compressed plasma."},
          WeaponID.STRIKER: {"PROJECTILE SPEED": 25, "SPREAD": 5, "PROJECTILE TYPE": ProjectileID.HOMING_BULLET,
                             "DAMAGE": 8, "RELOAD": 3, "PROJECTILE COUNT": 1, "BURSTS": 0,

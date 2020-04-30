@@ -34,15 +34,21 @@ class Player(Ship):
     """
 
     def move_player(self, direction):
+        y_delta = 0
         if direction == Direction.UP:
-            self.y -= self.speed
+            y_delta -= self.speed
         elif direction == Direction.DOWN:
-            self.y += self.speed
-
+            y_delta += self.speed
+        x_delta = 0
         if direction == Direction.LEFT:
-            self.x -= self.speed
+            x_delta -= self.speed
         elif direction == Direction.RIGHT:
-            self.x += self.speed
+            x_delta += self.speed
+        self.x += x_delta
+        self.y += y_delta
+        for effect in self.ship_effects:
+            effect.x += x_delta
+            effect.y += y_delta
 
     """Damages and records how much damage taken and keeps count of the hits taken.
     """
