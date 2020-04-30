@@ -143,12 +143,10 @@ class EnemyOnslaughtAI(EnemyWaveAI):
                 self._model.friendly_ships.append(ship)
         # 5% chance of spawning a Longsword
         if random.randint(1, 20) == 20:
-            count = 0
+            # Only allows 1 on screen at once
             for ship in self._model.friendly_ships:
                 if ship.entity_id == AllyID.LONGSWORD:
-                    count += 1
-                    if count == 2:
-                        return
+                    return
             rand_x = random.randint(-config.display_width // 2, config.display_width // 2)
             ship = enemy_generator.generate_enemy(AllyID.LONGSWORD,
                                                   rand_x,
