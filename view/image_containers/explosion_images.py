@@ -9,7 +9,7 @@ from src.utils import config
 class ExplosionImages:
     """Constructor to define and load the images.
 
-    :param images: list of image names
+    :param images: name of png file spritesheet
     :type images: List of str
     :param size: size to scale images to
     :type size: int
@@ -17,10 +17,16 @@ class ExplosionImages:
 
     def __init__(self, images, size):
         self.frames = []
-        for image in images:
-            frame = pygame.image.load(image).convert_alpha()
-            frame = pygame.transform.scale(frame, (size, size))
-            self.frames.append(frame)
+        spritesheet = pygame.image.load(images).convert_alpha()
+        width = spritesheet.get_width()
+        # 5 sprites
+        sprite_size = width // 5
+        image_size = (sprite_size, sprite_size)
+        self.frames = []
+        for i in range(5):
+            offset = sprite_size * i
+            self.frames.append(
+                pygame.transform.scale(spritesheet.subsurface(pygame.Rect((offset, 0), image_size)), (size, size)))
         self.frame_offset = int(config.game_fps / 30)
 
     """Returns the given frame of the explosion.

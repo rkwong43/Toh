@@ -58,6 +58,10 @@ class View:
     # Background y position
     _scrolling_background_y = 0
 
+    # Projectiles that do not have a unique sprite
+    _projectiles_with_no_sprite = [ProjectileID.RAILGUN_BLAST, ProjectileID.DIAMOND_DUST, ProjectileID.HOMING_BULLET,
+                                   ProjectileID.PULSE]
+
     """Constructor to initialize the game display.
 
     :param display_width: width of the window
@@ -149,16 +153,14 @@ class View:
         # Result to return:
         result = {}
         # Projectiles to render
-        projectiles_to_init = [e for e in ProjectileID if e not in
-                               [ProjectileID.RAILGUN_BLAST, ProjectileID.DIAMOND_DUST, ProjectileID.HOMING_BULLET,
-                                ProjectileID.PULSE]]
+        projectiles_to_init = [e for e in ProjectileID if e not in self._projectiles_with_no_sprite]
         # Effects to render
         effects_to_init = [EffectID.EXPLOSION, EffectID.RED_EXPLOSION, EffectID.BLUE_EXPLOSION]
         # Renders each ship
         for id_name, size in self._ship_scaling.items():
             ship_name = id_name.name
-            image_paths = self._get_image_paths(ship_name)
-            container = ImageHolder(image_paths, int(self._ship_size * size))
+            image_path = os.path.join(self._image_path, ship_name + '.png')
+            container = ImageHolder(image_path, int(self._ship_size * size))
             result[id_name] = container
         # Renders each projectile
         projectile_size = self._ship_size // 2
@@ -178,11 +180,7 @@ class View:
         # Renders each effect (explosions)
         for id_name in effects_to_init:
             effect_name = id_name.name
-            image_paths = [os.path.join(self._image_path, effect_name + '_frame1.png'),
-                           os.path.join(self._image_path, effect_name + '_frame2.png'),
-                           os.path.join(self._image_path, effect_name + '_frame3.png'),
-                           os.path.join(self._image_path, effect_name + '_frame4.png'),
-                           os.path.join(self._image_path, effect_name + '_frame5.png')]
+            image_paths = os.path.join(self._image_path, effect_name + '.png')
             container = ExplosionImages(image_paths, int(self._ship_size * 1.5))
             # Two additional effects that do not have different sprites
             if effect_name == "EXPLOSION":
@@ -215,7 +213,8 @@ class View:
         return [os.path.join(self._image_path, ship_name + '_base.png'),
                 os.path.join(self._image_path, ship_name + '_animation.png'),
                 os.path.join(self._image_path, ship_name + '_damaged.png'),
-                os.path.join(self._image_path, ship_name + '_shield.png')]
+                os.path.join(self._image_path, ship_name + '_shield.png')] if ship_name != "CITADEL" else \
+            [os.path.join(self._image_path, ship_name + '.png')]
 
     """Switches a field to determine when to animate images.
     """
@@ -306,11 +305,11 @@ class View:
                 image = image_holder.damaged_image
         elif self._animation_switch:
             image = image_holder.animated_image
-        # Rotates enemy to face the given angle
-        enemy_image = pygame.transform.rotate(image, angle)
+        # Rotates ship to face the given angle
+        ship_image = pygame.transform.rotate(image, angle)
 
-        self._game_display.blit(enemy_image,
-                                self._find_posn(enemy_image, ship.x + ship.size / 2, ship.y + ship.size / 2))
+        self._game_display.blit(ship_image,
+                                self._find_posn(ship_image, ship.x + ship.size / 2, ship.y + ship.size / 2))
 
     """Renders an individual projectile depending on its orientation.
 
@@ -319,14 +318,16 @@ class View:
     """
 
     def _render_projectile(self, projectile):
-        if projectile.entity_id != ProjectileID.RAILGUN_BLAST and projectile.entity_id != ProjectileID.PULSE:
+        try:
             image = self._image_dict.get(projectile.entity_id)
-            # Rotates the projectile depending on its angle
-            projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
-            center_height = projectile.y + self._ship_size / 2
-            center_width = projectile.x + self._ship_size / 2
-            self._game_display.blit(projectile_image,
-                                    self._find_posn(projectile_image, center_width, center_height))
+        except KeyError:
+            return
+        # Rotates the projectile depending on its angle
+        projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
+        center_height = projectile.y + self._ship_size / 2
+        center_width = projectile.x + self._ship_size / 2
+        self._game_display.blit(projectile_image,
+                                self._find_posn(projectile_image, center_width, center_height))
 
     """Renders the given effect. Returns the effect.
 

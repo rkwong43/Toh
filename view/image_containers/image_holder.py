@@ -7,18 +7,25 @@ import pygame
 class ImageHolder:
     """Constructor to define and load the images.
 
-    :param images: list of image names
-    :type images: List of str
+    :param images: The png spritesheet of the image
+    :type images: str
     :param size: size to scale images to
     :type size: int
     """
 
     def __init__(self, images, size):
-        self.base_image = pygame.image.load(images[0]).convert_alpha()
-        self.base_image = pygame.transform.scale(self.base_image, (size, size))
-        self.animated_image = pygame.image.load(images[1]).convert_alpha()
-        self.animated_image = pygame.transform.scale(self.animated_image, (size, size))
-        self.damaged_image = pygame.image.load(images[2]).convert_alpha()
-        self.damaged_image = pygame.transform.scale(self.damaged_image, (size, size))
-        self.shield_damage_image = pygame.image.load(images[3]).convert_alpha()
-        self.shield_damage_image = pygame.transform.scale(self.shield_damage_image, (size, size))
+        # Sprite sheet consists of 4 sprites by default
+        spritesheet = pygame.image.load(images).convert_alpha()
+        width = spritesheet.get_width()
+        # 4 sprites
+        sprite_size = width // 4
+        image_size = (sprite_size, sprite_size)
+        sprites = []
+        for i in range(4):
+            offset = sprite_size * i
+            sprites.append(
+                pygame.transform.scale(spritesheet.subsurface(pygame.Rect((offset, 0), image_size)), (size, size)))
+        self.base_image = sprites[0]
+        self.animated_image = sprites[1]
+        self.damaged_image = sprites[2]
+        self.shield_damage_image = sprites[3]
