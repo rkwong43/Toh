@@ -318,10 +318,9 @@ class View:
     """
 
     def _render_projectile(self, projectile):
-        try:
-            image = self._image_dict.get(projectile.entity_id)
-        except KeyError:
+        if projectile.entity_id in self._projectiles_with_no_sprite:
             return
+        image = self._image_dict.get(projectile.entity_id)
         # Rotates the projectile depending on its angle
         projectile_image = pygame.transform.rotate(image, projectile.direction - 90)
         center_height = projectile.y + self._ship_size / 2

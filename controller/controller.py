@@ -82,9 +82,9 @@ class Controller:
             else:
                 self._model.pause()
             # Renders the _view and removes lasting effects
-            self._model.remove_effects()
             self._view.render(self._model.get_player(), self._model.get_projectiles(),
                               self._model.get_ships(), self._model.get_effects())
+            self._model.remove_effects()
             if self._model.is_game_over():
                 game_over_countdown -= 1
                 if game_over_countdown == 0:

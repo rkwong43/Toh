@@ -18,7 +18,7 @@ class Explosion(Effect):
 
     def __init__(self, x, y, entity_id):
         super().__init__(x - config.ship_size * .75, y - config.ship_size * .75, entity_id)
-        # Explosions have 4 frames of animation
-        self.max_frame = 4 * int(config.game_fps / 30)
+        # Explosions have 5 frames of animation
+        self.max_frame = 5 * int(config.game_fps / 30) - 1
 
 

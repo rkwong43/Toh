@@ -37,9 +37,8 @@ class ExplosionImages:
     :rtype: pygame image
     """
     def get_frame(self, effect):
-        try:
-            result = self.frames[int(effect.curr_frame / (self.frame_offset * effect.frame_multiplier))]
-        except IndexError:
-            result = self.frames[0]
+        frame = int(effect.curr_frame / (self.frame_offset * effect.frame_multiplier))
+        print(frame)
+        result = self.frames[frame]
         effect.curr_frame += 1
         return result

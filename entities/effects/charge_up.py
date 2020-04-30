@@ -5,6 +5,8 @@ from src.utils import config
 
 
 class ChargeUp(Effect):
+    # Charge delay in frames
+    charge_delay = 20 * int(config.game_fps / 30) - 1
 
     """Constructor to make the explosion.
 
@@ -18,6 +20,6 @@ class ChargeUp(Effect):
 
     def __init__(self, x, y, entity_id):
         super().__init__(x, y, entity_id)
-        self.max_frame = 16 * int(config.game_fps / 30)
+        self.max_frame = self.charge_delay
 
 
