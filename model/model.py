@@ -149,35 +149,48 @@ class Model:
     """
 
     def tick(self):
-        # Moves all projectiles
-        for projectile in self.friendly_projectiles + self.enemy_projectiles:
-            projectile.move()
-
+        # Moves all projectiles and filters them if they're offscreen
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if not self._process_projectile(projectile)]
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self._process_projectile(projectile)]
         self._queue = [action for action in self._queue if self._process_action(action)]
-        # Reloads the player's weapon depending on its fire speed
-        if self._reload < self._reload_time:
-            self._reload += 1
         # Rotates enemies, recharges their shields, and checks if they're dead
-        self.enemy_ships[:] = [enemy for enemy in self.enemy_ships if not self._is_dead(enemy)]
-        self.friendly_ships[:] = [friendly for friendly in self.friendly_ships if not self._is_dead(friendly)]
-
+        self.enemy_ships[:] = [enemy for enemy in self.enemy_ships
+                               if not self._process_ship(enemy, self.get_friendlies(), self.enemy_projectiles)]
+        self.friendly_ships[:] = [ship for ship in self.friendly_ships
+                                  if not self._process_ship(ship, self.enemy_ships, self.friendly_projectiles)]
         self._player_ship.is_damaged = False
-        # Removes off screen objects
-        self._remove_off_screen_objects()
+        # Processing the player
         if self._player_ship.hp > 0:
-            # AI handles enemy firing
-            for ship in self.friendly_ships:
-                ship.ticks += 1
-                if ship.ticks == ship.fire_rate:
-                    ship.ticks = 0
-                    if ship.ready_to_fire:
-                        ship.fire(self.find_closest_target(ship, self.enemy_ships), self.friendly_projectiles)
-                        self.play_sound(ship.projectile_type)
             self._AI.tick()
+            # Reloads the player's weapon depending on its fire speed
+            if self._reload < self._reload_time:
+                self._reload += 1
             # Checks collisions between projectiles and ships
             self._check_collisions()
             # Recharges shield for player
             self._player_ship.recharge_shield()
+
+    """Processes friendly ships. Also handles their firing and reloads.
+    
+    :param ship: Friendly ship
+    :type ship: Ally
+    :param targets: Possible targets for the ship
+    :type targets: [Ship]
+    :param projectiles: Projectile list to append onto
+    :type projectiles: [Projectile]
+    :returns: if the ship should be removed or not
+    :rtype: bool
+    """
+    def _process_ship(self, ship, targets, projectiles):
+        ship.ticks += 1
+        if ship.ticks == ship.fire_rate:
+            ship.ticks = 0
+            if ship.ready_to_fire:
+                ship.fire(self.find_closest_target(ship, targets), projectiles)
+                self.play_sound(ship.projectile_type)
+        return self._is_dead(ship)
 
     """Processes commands in the queue.
     
@@ -244,13 +257,12 @@ class Model:
 
         else:
             ship.move()
-            # TODO: Fix
             closest_target = self.find_closest_target(ship, self.enemy_ships if ship in self.friendly_ships else
             self.friendly_ships + [self._player_ship])
             ship.rotate(closest_target)
             ship.recharge_shield()
             ship.is_damaged = False
-        return ship.is_dead
+        return ship.is_dead or self._ship_is_off_screen(ship)
 
     """Moves the player ship and other actions depending on what directions are given.
 
@@ -281,28 +293,29 @@ class Model:
         elif Direction.RIGHT in keys and self._boundary_check(Direction.RIGHT, size):
             self._player_ship.move_player(Direction.RIGHT)
 
-    """Removes all off screen objects such as projectiles or ships.
-    """
-
-    def _remove_off_screen_objects(self):
-        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
-                                        if not self._is_off_screen(projectile)]
-        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
-                                     if not self._is_off_screen(projectile)]
-        self.friendly_ships[:] = [ship for ship in self.friendly_ships if not self._ship_is_off_screen(ship)]
-        self.enemy_ships[:] = [ship for ship in self.enemy_ships if not self._ship_is_off_screen(ship)]
-
-    """Wrapper for determining if a ship is offscreen, alerting it to do something if applicable.
+    """Helper to process ships off screen.
     
-    :param ship: The ship to check if offscreen
+    :param ship: Ship
     :type ship: Ship
+    :returns: true if the ship is off screen
+    :rtype: bool
     """
-
     def _ship_is_off_screen(self, ship):
         result = self._is_off_screen(ship)
         if result:
             ship.offscreen()
         return result
+
+    """Helper to process projectiles, removing them if they're off screen. Also moves them.
+    
+    :param projectile: Projectile to move
+    :type projectile: Projectile
+    :returns: True if the projectile is off screen
+    :rtype: bool
+    """
+    def _process_projectile(self, projectile):
+        projectile.move()
+        return self._is_off_screen(projectile)
 
     """Checks if the given entity is off screen.
 

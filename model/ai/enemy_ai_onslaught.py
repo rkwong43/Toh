@@ -47,16 +47,6 @@ class EnemyOnslaughtAI(EnemyWaveAI):
         if player.score >= self._level_up_exp:
             self._model.level_up()
             self._level_up_exp *= 2
-        for enemy in self._model.enemy_ships:
-            enemy.ticks += 1
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(self._model.find_closest_target(enemy, self._model.get_friendlies()),
-                               self._model.enemy_projectiles)
-                    self._model.play_sound(enemy.projectile_type)
         if len(self._model.enemy_ships) == 0:
             # Waiting for next wave:
             if self._wait_for_next_wave():

@@ -45,19 +45,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
             self.spawn_enemy(EnemyID.TITAN)
             self.started_game = True
             self._model.popup_text("WARNING: DEATH IMMINENT", 3)
-        player = self._model.get_player()
         self._ticks += 1
-        # Makes each enemy tick to fire their weapons
-        # Also makes them move
-        for enemy in self._model.enemy_ships:
-            enemy.ticks += 1
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self._model.enemy_projectiles)
-                    self._model.play_sound(enemy.projectile_type)
         if len(self._model.enemy_ships) == 0 and not self._model.is_game_over():
             victory_time = "VICTORY: " + str(self._ticks // config.game_fps) + " SECONDS"
             self._model.popup_text(victory_time, 5, y=config.display_height * (2 / 3))

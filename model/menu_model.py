@@ -56,7 +56,7 @@ class MenuModel(Model):
 
     def reset_showcase(self):
         self._showcase_weapon = False
-        # Yeets everything off screen
+        # Throws everything off screen
         self._props[:] = []
         self._player_ship.x = config.display_width / 2 - config.ship_size / 2
         self._player_ship.y = config.display_height / 2
@@ -132,7 +132,7 @@ class MenuModel(Model):
         if entity_id in [EnemyID.ARBITRATOR, EnemyID.TERMINUS, EnemyID.JUDICATOR]:
             ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 4),
                                                   config.display_height / 3, effects=self.effects)
-        elif entity_id in [EnemyID.MOTHERSHIP, EnemyID.DESPOILER]:
+        elif entity_id in [EnemyID.MOTHERSHIP, EnemyID.DESPOILER, EnemyID.PHANTOM]:
             ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 2),
                                                   config.display_height / 3, effects=self.effects)
         elif entity_id in EnemyID:

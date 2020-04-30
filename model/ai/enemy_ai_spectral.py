@@ -50,10 +50,6 @@ class EnemySpectralAI(EnemyWaveAI):
             self._next_wave()
             self._model.popup_text("WARNING: UNKNOWN ENTITIES DETECTED", 3)
         self._ticks += 1
-        # Makes each enemy tick to fire their weapons
-        # Also makes them move
-        for enemy in self._model.enemy_ships:
-            self._process_enemy(enemy)
         if len(self._model.enemy_ships) == 0 and len(self._enemies) == 0 \
                 and not self._model.is_game_over():
             victory_time = "VICTORY: " + str(self._ticks // config.game_fps) + " SECONDS"

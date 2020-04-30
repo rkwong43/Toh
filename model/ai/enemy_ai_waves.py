@@ -82,28 +82,11 @@ class EnemyWaveAI:
         if player.score >= self._level_up_exp:
             self._model.level_up()
             self._level_up_exp *= 2
-        for enemy in self._model.enemy_ships:
-            self._process_enemy(enemy)
         if len(self._model.enemy_ships) == 0:
             # Waiting for next wave:
             if self._wait_for_next_wave():
                 self._spawn_enemies()
                 self._wave += 1
-
-    """Makes the enemy move and shoot.
-    
-    :param enemy: Enemy ship
-    :type enemy: Enemy
-    """
-    def _process_enemy(self, enemy):
-        enemy.ticks += 1
-        # Fires their weapon if their individual tick rate matches their fire rate
-        if enemy.ticks == enemy.fire_rate:
-            enemy.ticks = 0
-            # Fires projectile at player
-            if enemy.ready_to_fire:
-                enemy.fire(self._model.get_player(), self._model.enemy_projectiles)
-                self._model.play_sound(enemy.projectile_type)
 
     """Waits for the next wave. Returns true if ready.
 

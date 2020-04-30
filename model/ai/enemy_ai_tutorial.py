@@ -75,15 +75,6 @@ class EnemyTutorialAI(EnemyWaveAI):
             self.tutorial_stage += 1
             self.advance_tutorial()
         player.recharge_shield()
-        for enemy in self._model.enemy_ships:
-            enemy.ticks += 1
-            # Fires their weapon if their individual tick rate matches their fire rate
-            if enemy.ticks == enemy.fire_rate:
-                enemy.ticks = 0
-                # Fires projectile at player
-                if enemy.ready_to_fire:
-                    enemy.fire(player, self._model.enemy_projectiles)
-                    self._model.play_sound(enemy.projectile_type)
 
     """Advances the stage of the tutorial this is in.
     """
