@@ -19,7 +19,7 @@ class ChargeUp(Effect):
     """
 
     def __init__(self, x, y, entity_id):
-        super().__init__(x, y, entity_id)
+        super().__init__(x - .75 * config.ship_size, y - .75 * config.ship_size, entity_id)
         self.max_frame = self.charge_delay
 
 

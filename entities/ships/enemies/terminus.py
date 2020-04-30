@@ -42,7 +42,9 @@ class Terminus(Enemy):
     def move(self):
         super().move()
         if self.fire_rate - ChargeUp.charge_delay == self.ticks:
-            offset_x = int(math.sin(math.radians(self.angle)) * (self.size // 4))
-            offset_y = int(math.cos(math.radians(self.angle)) * (self.size // 5))
-            charge = ChargeUp(self.x + offset_x, self.y + offset_y, EffectID.RED_CHARGE)
+            offset_x = int(math.sin(math.radians(self.angle))) * (self.size // 4)
+            offset_y = int(math.cos(math.radians(self.angle))) * (self.size // 4)
+            x_pos = self.x + self.size // 2
+            y_pos = self.y + self.size // 2
+            charge = ChargeUp(x_pos + offset_x, y_pos + offset_y, EffectID.RED_CHARGE)
             self.effects.append(charge)
