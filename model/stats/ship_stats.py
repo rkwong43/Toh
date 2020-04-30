@@ -30,7 +30,7 @@ stats = {
                         "DESCRIPTION": "Gunship designed to take down enemies with a barrage of missiles."},
     EnemyID.MOTHERSHIP: {"HP": 1000, "SHIELD": 200, "SPEED": 1, "DAMAGE": 25, "PROJECTILE SPEED": 12, "SCORE": 1000,
                          "DESCRIPTION": "Ship carrier with self-defense missiles."},
-    EnemyID.PHANTOM: {"HP": 1000, "SHIELD": 0, "SPEED": 4, "DAMAGE": 40, "PROJECTILE SPEED": 32, "SCORE": 1000,
+    EnemyID.PHANTOM: {"HP": 1000, "SHIELD": 0, "SPEED": 4, "DAMAGE": 40, "PROJECTILE SPEED": 40, "SCORE": 1000,
                       "DESCRIPTION": "Description unavailable."},
     EnemyID.TITAN: {"HP": 4500, "SHIELD": 500, "SPEED": 5, "DAMAGE": 15, "PROJECTILE SPEED": 10, "SCORE": 10000,
                     "DESCRIPTION": "Calamity-class Warship with multiple turrets and defense systems."},

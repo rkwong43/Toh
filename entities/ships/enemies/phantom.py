@@ -61,8 +61,8 @@ class Phantom(BurstFireEnemy):
         projectile = Pulse(self.projectile_speed, target.x + offset - radius, target.y + offset - radius,
                            self.projectile_damage, radius)
         charge = ChargeUp(projectile.x + projectile.size / 2, projectile.y + projectile.size / 2, EffectID.RED_AOE)
-        dif = charge.charge_delay // self.projectile_speed
-        charge.frame_multiplier = dif if dif > 0 else 1
+        dif = 2 * self.projectile_speed // charge.charge_frames
+        charge.frame_multiplier = dif if dif > 0 else 2
         charge.max_frame = ((self.projectile_speed // 5) * 5) - 1
         self.effects.append(charge)
         return projectile

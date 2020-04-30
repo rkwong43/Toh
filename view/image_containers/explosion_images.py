@@ -37,7 +37,6 @@ class ExplosionImages:
     :rtype: pygame image
     """
     def get_frame(self, effect):
-        frame = int(effect.curr_frame / (self.frame_offset * effect.frame_multiplier))
-        result = self.frames[frame]
+        result = self.frames[int(effect.curr_frame / (self.frame_offset * effect.frame_multiplier))]
         effect.curr_frame += 1
         return result
