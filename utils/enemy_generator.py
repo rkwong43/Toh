@@ -4,6 +4,7 @@ from src.entities.ships.allies.citadel import Citadel
 from src.entities.ships.allies.longsword import Longsword
 from src.entities.ships.enemies.arbitrator import Arbitrator
 from src.entities.ships.enemies.crucible import Crucible
+from src.entities.ships.enemies.cyclops import Cyclops
 from src.entities.ships.enemies.despoiler import Despoiler
 from src.entities.ships.enemies.judicator import Judicator
 from src.entities.ships.enemies.king_mandible import KingMandible
@@ -39,6 +40,7 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.TITAN: Titan,
             EnemyID.KING_MANDIBLE: KingMandible,
             EnemyID.QUEEN_MANDIBLE: QueenMandible,
+            EnemyID.CYCLOPS: Cyclops,
             PlayerID.CITADEL: Citadel,
             PlayerID.AEGIS: Aegis,
             AllyID.LONGSWORD: Longsword,

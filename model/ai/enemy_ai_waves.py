@@ -25,6 +25,7 @@ class EnemyWaveAI:
                                 EnemyID.SUBJUGATOR: 60, EnemyID.ARBITRATOR: 200, EnemyID.TERMINUS: 250,
                                 EnemyID.SEER: 50,
                                 EnemyID.DESPOILER: 400, EnemyID.MOTHERSHIP: 400, EnemyID.JUDICATOR: 400,
+                                EnemyID.CYCLOPS: 600,
                                 EnemyID.TITAN: 1000}
         # Initial wave
         self._wave = 0

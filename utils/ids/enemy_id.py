@@ -21,6 +21,7 @@ class EnemyID(Enum):
     DESPOILER = auto()
     MOTHERSHIP = auto()
     PHANTOM = auto()
+    CYCLOPS = auto()
     # Largest ships
     TITAN = auto()
     # Bosses
