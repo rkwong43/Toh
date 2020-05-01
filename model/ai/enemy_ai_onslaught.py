@@ -155,7 +155,7 @@ class EnemyOnslaughtAI(EnemyWaveAI):
                                                   rand_x,
                                                   config.display_height,
                                                   speed=2,
-                                                  hp=1000,
+                                                  hp=2000,
                                                   shield=500)
             ship.set_waypoint(wp=Waypoint(rand_x, -config.ship_size * 12))
             self._model.friendly_ships.append(ship)
