@@ -19,4 +19,4 @@ class ScreenTint(Effect):
     def __init__(self, x, y, entity_id):
         super().__init__(x, y, entity_id)
         # Number of frames it lasts
-        self.max_frame = 3 * int(config.game_fps / 30)
+        self.max_frame = 4 * int(config.game_fps / 30)

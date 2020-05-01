@@ -441,13 +441,10 @@ class Model:
         tint = ScreenTint(0, 0, EffectID.SHIELD_TINT) if self._player_ship.shield > 0 else \
             ScreenTint(0, 0, EffectID.HP_TINT)
         # Checks if the current tint is already playing
-        # Allows layer of tints for more intensity
-        tint_number = 0
         for effect in self.effects:
             if effect.entity_id == tint.entity_id:
-                tint_number += 1
-        if tint_number <= 6:
-            self.effects.append(tint)
+                return
+        self.effects.append(tint)
 
     """Checks if the projectile's splash damage collides with any surrounding ships
 
