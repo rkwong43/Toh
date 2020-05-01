@@ -57,7 +57,7 @@ class QueenMandible(Enemy):
         if self._ai is not None:
             for i in range(self.ships_spawned):
                 ship = self._ai.spawn_enemy(EnemyID.MANDIBLE)
-                ship.x, ship.y = self.x, self.y
+                ship.x, ship.y = self.x + self.size // 2, self.y + self.size // 2
         self.projectile_speed = temp_speed
 
     """Increases fire rate when less than 50% HP
@@ -68,4 +68,3 @@ class QueenMandible(Enemy):
             self._phase = 2
             self.fire_rate //= 2
             self.ticks = 0
-            self.ships_spawned += 1
