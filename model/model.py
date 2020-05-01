@@ -42,7 +42,7 @@ class Model:
     resource_path = os.path.join(outer_path, 'resources')  # the resource folder path
     sound_path = os.path.join(resource_path, 'sounds')  # the sounds folder path
     # Time based game modes
-    _time_based_game_modes = [GameModeID.TITAN_SLAYER, GameModeID.SPECTRAL]
+    _time_based_game_modes = [GameModeID.TITAN_SLAYER, GameModeID.SPECTRAL, GameModeID.MANDIBLE_MADNESS]
     # Friendly ships
     friendly_ships = []
 
@@ -161,10 +161,10 @@ class Model:
 
             self._process_player()
             # Moves all projectiles and filters them if they're offscreen
-            self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
-                                            if not self._process_friendly_projectile(projectile)]
-            self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
-                                         if not self._process_enemy_projectile(projectile)]
+        self.friendly_projectiles[:] = [projectile for projectile in self.friendly_projectiles
+                                        if not self._process_friendly_projectile(projectile)]
+        self.enemy_projectiles[:] = [projectile for projectile in self.enemy_projectiles
+                                     if not self._process_enemy_projectile(projectile)]
 
     """Processes the player, checking its health, making the AI tick, and deciding when to end the game.
     """
@@ -747,13 +747,13 @@ class Model:
         # TODO: Future game modes that are time based
         if self._game_mode in self._time_based_game_modes:
             if not self._player_ship.is_dead and len(self.enemy_ships) == 0:
-                # y = 100000 (.96)^t
-                score = int(.96 ** self._AI.get_time() * 100000)
+                # y = 100000 (something less than 1 but close to it)^t
+                score = int(self._AI.time_decay ** self._AI.get_time() * 100000)
             else:
                 score = 0
         else:
             score = self._player_ship.score
-        self._final_stats["MODE"] = self._game_mode.name
+        self._final_stats["MODE"] = self._game_mode.name.replace('_', ' ')
         self._final_stats["WEAPON"] = self._player_stats["WEAPON"].name
         self._final_stats["SCORE"] = score
         self._final_stats["DAMAGE TAKEN"] = int(self._player_ship.damage_taken)

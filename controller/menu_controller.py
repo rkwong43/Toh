@@ -44,17 +44,19 @@ def construct_gallery(ids):
 def construct_tree():
     difficulty_selector = MenuSelector(difficulties, GameID.SELECTOR, LoadoutSelector())
     survival = MenuSelector([GameModeID.CLASSIC,
-                             GameModeID.MANDIBLE_MADNESS,
                              GameModeID.HEAVEN,
                              GameModeID.FATE,
                              GameModeID.ONSLAUGHT],
                             GameID.SELECTOR, difficulty_selector)
     challenge = MenuSelector([GameModeID.TITAN_SLAYER,
+                              GameModeID.MANDIBLE_MADNESS,
                               GameModeID.SPECTRAL],
                              GameID.SELECTOR, difficulty_selector)
     weapon_gallery = MenuTree(GameID.GALLERY, construct_gallery([weapon for weapon in WeaponID]))
     ship_gallery = MenuTree(GameID.GALLERY, construct_gallery([ship for ship in PlayerID]))
-    enemy_gallery = MenuTree(GameID.GALLERY, construct_gallery([enemy for enemy in EnemyID if enemy != EnemyID.TITAN]))
+    enemies_to_not_show = [EnemyID.TITAN, EnemyID.KING_MANDIBLE, EnemyID.QUEEN_MANDIBLE]
+    enemy_gallery = MenuTree(GameID.GALLERY,
+                             construct_gallery([enemy for enemy in EnemyID if enemy not in enemies_to_not_show]))
     hangar_page = MenuTree(GameID.HANGAR,
                            {GameID.SHIP: ship_gallery,
                             GameID.WEAPON: weapon_gallery,

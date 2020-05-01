@@ -8,7 +8,6 @@ class GameModeID(Enum):
     # Game modes
     # Survival
     CLASSIC = auto()
-    MANDIBLE_MADNESS = auto()
     HEAVEN = auto()
     ONSLAUGHT = auto()
     FATE = auto()
@@ -16,3 +15,4 @@ class GameModeID(Enum):
     # CHALLENGES
     TITAN_SLAYER = auto()
     SPECTRAL = auto()
+    MANDIBLE_MADNESS = auto()
