@@ -8,8 +8,6 @@ from src.utils.ids.projectile_id import ProjectileID
 
 
 class QueenMandible(Enemy):
-    # How many ships it spawns:
-    ships_spawned = 3
     """Constructor to make the Queen Mandible.
 
     :param x: starting x coordinate of ship
@@ -29,12 +27,14 @@ class QueenMandible(Enemy):
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, ai, **args):
-        super().__init__(EnemyID.QUEEN_MANDIBLE, hp, shield, x, y, speed, int(4 * config.ship_size), 8 * fire_rate)
+        super().__init__(EnemyID.QUEEN_MANDIBLE, hp, shield, x, y, speed, int(4 * config.ship_size), 4 * fire_rate)
         # fire rate in seconds
         self.projectile_type = ProjectileID.ENEMY_MISSILE
         self.fire_variance = 45
         self._ai = ai
         self._phase = 1
+        # How many ships it spawns:
+        self.ships_spawned = 2
 
     """Mothership fires multiple missiles at the target.
 
