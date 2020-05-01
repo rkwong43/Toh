@@ -80,6 +80,8 @@ class Ship:
                              FIRE_WAYPOINT: self._move,
                              MOVE_AND_FIRE_WAYPOINT: self._move_to_wp
                              }
+        # If done moving to the waypoint, True by default
+        self.wp_done = True
         # If it should be removed when offscreen
         self.remove_if_offscreen = True
         # If in a form of stealth
@@ -163,6 +165,7 @@ class Ship:
             # Makes sure it caps to account for rounding errors
             if self.shield > self.max_shield:
                 self.shield = self.max_shield
+        self.ship_effects[:] = [effect for effect in self.ship_effects if effect.animate()]
 
     """Sets the ship's waypoint.
     
@@ -181,8 +184,10 @@ class Ship:
             self._wp_state = FIRE_WAYPOINT
         elif not fire_at and move_to:
             self._wp_state = MOVE_WAYPOINT
+            self.wp_done = False
         elif fire_at and move_to:
             self._wp_state = MOVE_AND_FIRE_WAYPOINT
+            self.wp_done = False
         else:
             self._wp_state = NO_WAYPOINT
 
@@ -197,35 +202,54 @@ class Ship:
 
     def _move(self):
         if self.speed > 0:
+            delta_x = 0
+            delta_y = 0
             x_done = False
             if self.x < self.end_x - self.speed:
-                self.x += self.speed
+                delta_x += self.speed
             elif self.x > self.end_x + self.speed:
-                self.x -= self.speed
+                delta_x -= self.speed
             else:
                 x_done = True
 
             if self.y < self.end_y - self.speed:
-                self.y += self.speed
+                delta_y += self.speed
             elif self.y > self.end_y + self.speed:
-                self.y -= self.speed
+                delta_y -= self.speed
             elif x_done:
                 self.end_x, self.end_y = self._generate_pos()
+            self.x += delta_x
+            self.y += delta_y
+            for effect in self.ship_effects:
+                effect.x += delta_x
+                effect.y += delta_y
 
     """Moves the ship towards its waypoint.
     """
 
     def _move_to_wp(self):
         if self.speed > 0:
+            delta_x = 0
+            delta_y = 0
+            x_done = False
             if self.x < self.waypoint.x - self.speed:
-                self.x += self.speed
+                delta_x += self.speed
             elif self.x > self.waypoint.x + self.speed:
-                self.x -= self.speed
+                delta_x -= self.speed
+            else:
+                x_done = True
 
             if self.y < self.waypoint.y - self.speed:
-                self.y += self.speed
+                delta_y += self.speed
             elif self.y > self.waypoint.y + self.speed:
-                self.y -= self.speed
+                delta_y -= self.speed
+            elif x_done:
+                self.wp_done = True
+            self.x += delta_x
+            self.y += delta_y
+            for effect in self.ship_effects:
+                effect.x += delta_x
+                effect.y += delta_y
 
     """Generates a new position to move into. 
 

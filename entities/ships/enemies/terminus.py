@@ -48,3 +48,4 @@ class Terminus(Enemy):
             y_pos = self.y + self.size // 2
             charge = ChargeUp(x_pos + offset_x, y_pos + offset_y, EffectID.RED_CHARGE)
             self.effects.append(charge)
+            self.ship_effects.append(charge)
