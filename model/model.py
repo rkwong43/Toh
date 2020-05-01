@@ -301,7 +301,6 @@ class Model:
             if not self._player_ship.is_dead:
                 if self._reload == self._reload_time:
                     self._reload = 0
-                    # TODO: Add constant for charge up weapons
                     if self._player_stats["TYPE"] == ProjectileID.RAILGUN_BLAST:
                         self._queue.append({"COMMAND": Direction.FIRE, "FRAME": ChargeUp.charge_delay})
                         charge_effect = ChargeUp(self._player_ship.x + self._player_ship.size // 2,

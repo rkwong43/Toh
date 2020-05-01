@@ -89,10 +89,7 @@ class MenuModel(Model):
             if self._reload < self._reload_time:
                 self._reload += 1
             elif self._reload == self._reload_time:
-                self._projectile_generator()
-                self._reload = 0
-                for i in range(self._player_stats["BURSTS"]):
-                    self._queue.append({"COMMAND": Direction.FIRE, "FRAME": i * 2})
+                self.move_player([Direction.FIRE])
         # Checks collisions between projectiles and ships
         self._remove_off_screen_objects()
         for ship in self.enemy_ships + self.friendly_ships + self._props:
@@ -132,7 +129,7 @@ class MenuModel(Model):
         if entity_id in [EnemyID.ARBITRATOR, EnemyID.TERMINUS, EnemyID.JUDICATOR]:
             ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 4),
                                                   config.display_height / 3, effects=self.effects)
-        elif entity_id in [EnemyID.MOTHERSHIP, EnemyID.DESPOILER, EnemyID.PHANTOM]:
+        elif entity_id in [EnemyID.MOTHERSHIP, EnemyID.DESPOILER, EnemyID.PHANTOM, EnemyID.CYCLOPS]:
             ship = enemy_generator.generate_enemy(entity_id, x_pos - (config.ship_size // 2),
                                                   config.display_height / 3, effects=self.effects)
         elif entity_id in EnemyID:
