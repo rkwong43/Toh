@@ -118,7 +118,10 @@ class Enemy(Ship):
     def _fire_pulse(self, target):
         radius = config.ship_size * 1.5 // 2
         offset = target.size // 2
-        projectile = Pulse(self.projectile_speed, target.x + offset - radius, target.y + offset - radius,
+        rand_x = random.randint(-self.fire_variance, self.fire_variance)
+        rand_y = random.randint(-self.fire_variance, self.fire_variance)
+        projectile = Pulse(self.projectile_speed, target.x + rand_x + offset - radius, target.y + rand_y +
+                           offset - radius,
                            self.projectile_damage, radius)
         charge = ChargeUp(projectile.x + projectile.size / 2, projectile.y + projectile.size / 2, EffectID.RED_AOE)
         dif = 2 * self.projectile_speed // charge.charge_frames

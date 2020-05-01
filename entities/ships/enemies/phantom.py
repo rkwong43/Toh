@@ -26,10 +26,11 @@ class Phantom(BurstFireEnemy):
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
-        super().__init__(EnemyID.PHANTOM, hp, shield, x, y, speed, config.ship_size * 2, fire_rate * 4, 8,
+        super().__init__(EnemyID.PHANTOM, hp, shield, x, y, speed, config.ship_size * 2, fire_rate * 4, 16,
                          burst_rate=4)
         self.stealth = True
         self.projectile_type = ProjectileID.PULSE
+        self.fire_variance = 50
         self.effects = effects
 
     """Fires a burst of bullets.

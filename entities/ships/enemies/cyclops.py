@@ -1,10 +1,6 @@
-import random
 
-from src.entities.effects.charge_up import ChargeUp
-from src.entities.projectiles.pulse import Pulse
 from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
 from src.utils import config
-from src.utils.ids.effect_id import EffectID
 
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
@@ -34,7 +30,7 @@ class Cyclops(BurstFireEnemy):
                          burst_rate=2)
         self.projectile_type = ProjectileID.PULSE
         self.effects = effects
-        random.seed()
+        self.fire_variance = 2 * config.ship_size
 
     """Fires a bunch of pulse rounds.
     """
@@ -42,21 +38,3 @@ class Cyclops(BurstFireEnemy):
     def fire(self, target, projectiles):
         for _ in range(4):
             super().fire(target, projectiles)
-
-    """Fires a pulse round near the target.
-    """
-
-    def _fire_pulse(self, target):
-        radius = config.ship_size * 1.5 // 2
-        offset = target.size // 2
-        rand_x = random.randint(-2 * config.ship_size, 2 * config.ship_size)
-        rand_y = random.randint(-2 * config.ship_size, 2 * config.ship_size)
-        projectile = Pulse(self.projectile_speed, target.x + rand_x + offset - radius, target.y + rand_y +
-                           offset - radius,
-                           self.projectile_damage, radius)
-        charge = ChargeUp(projectile.x + projectile.size / 2, projectile.y + projectile.size / 2, EffectID.RED_AOE)
-        dif = 2 * self.projectile_speed // charge.charge_frames
-        charge.frame_multiplier = dif if dif > 0 else 2
-        charge.max_frame = ((self.projectile_speed // 5) * 5) - 1
-        self.effects.append(charge)
-        return projectile
