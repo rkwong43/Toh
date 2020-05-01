@@ -84,6 +84,9 @@ class Ally(Ship):
         # Adjustment for larger ships
         y = target.y
         x = target.x
+        if target.size > config.ship_size:
+            x += (target.size // 2) - config.ship_size // 2
+            y += (target.size // 2) - config.ship_size // 2
         y_dist = self.y - y
         x_dist = self.x - x
         target_angle = -int(math.degrees(math.atan2(y_dist, x_dist))) + 90
