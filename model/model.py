@@ -746,7 +746,7 @@ class Model:
         self.clear()
         # TODO: Future game modes that are time based
         if self._game_mode in self._time_based_game_modes:
-            if not self._player_ship.is_dead and len(self.enemy_ships) == 0:
+            if not self._player_ship.is_dead and len(self.enemy_ships) == 0 and self._AI.cleared:
                 # y = 100000 (something less than 1 but close to it)^t
                 score = int(self._AI.time_decay ** self._AI.get_time() * 100000)
             else:

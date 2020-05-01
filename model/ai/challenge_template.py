@@ -30,6 +30,7 @@ class ChallengeAI(EnemyWaveAI):
         self._enemies = enemies
         self._start_text = start_text
         self._final_wave_text = end_text
+        self.cleared = False
 
     """Represents a tick to keep track of enemy spawning, firing, and movement.
     """
@@ -42,6 +43,7 @@ class ChallengeAI(EnemyWaveAI):
         self._ticks += 1
         if len(self._model.enemy_ships) == 0 and len(self._enemies) == 0 \
                 and not self._model.is_game_over():
+            self.cleared = True
             victory_time = "VICTORY: " + str(self._ticks // config.game_fps) + " SECONDS"
             self._model.popup_text(victory_time, 5, y=config.display_height * (2 / 3))
             self._model.end_game()

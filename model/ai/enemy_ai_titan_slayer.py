@@ -25,6 +25,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
         super().__init__(model, difficulty)
         self.started_game = False
         self.time_decay = .96
+        self.cleared = False
 
     """Changes the difficulty to the given setting.
     """
@@ -48,6 +49,7 @@ class EnemyTitanSlayerAI(EnemyWaveAI):
             self._model.popup_text("WARNING: DEATH IMMINENT", 3)
         self._ticks += 1
         if len(self._model.enemy_ships) == 0 and not self._model.is_game_over():
+            self.cleared = True
             victory_time = "VICTORY: " + str(self._ticks // config.game_fps) + " SECONDS"
             self._model.popup_text(victory_time, 5, y=config.display_height * (2 / 3))
             self._model.end_game()
