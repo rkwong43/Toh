@@ -24,6 +24,8 @@ class EnemyID(Enum):
     # Largest ships
     TITAN = auto()
     # Bosses
+    KING_MANDIBLE = auto()
+    QUEEN_MANDIBLE = auto()
     # Spawner:
     # GENESIS = auto()
     # Destruction:

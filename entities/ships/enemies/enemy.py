@@ -64,8 +64,8 @@ class Enemy(Ship):
     :rtype: (int, int)
     """
     def _generate_pos(self):
-        x = random.randint(config.ship_size, config.display_width - (2 * config.ship_size))
-        y = random.randint(0, config.display_height / 2)
+        x = random.randint(0, config.display_width - self.size)
+        y = random.randint(0, -self.size // 2 + config.display_height // 2)
         return x, y
 
     """Fires projectiles from the enemy to the given target, at the given speed, damage, and size.
@@ -74,6 +74,8 @@ class Enemy(Ship):
     :type target: Ship
     :param projectiles: list of projectiles to append onto
     :type projectiles: List of Projectile
+    :returns: The projectiles fired
+    :rtype: Projectile
     """
 
     def fire(self, target, projectiles):
@@ -101,6 +103,7 @@ class Enemy(Ship):
         elif weapon_type == ProjectileID.PULSE:
             projectile = self._fire_pulse(target)
         projectiles.append(projectile)
+        return projectile
 
     """Doesn't do anything for now. Must be overridden.
     """

@@ -34,6 +34,11 @@ stats = {
                       "DESCRIPTION": "Description unavailable."},
     EnemyID.TITAN: {"HP": 4500, "SHIELD": 500, "SPEED": 5, "DAMAGE": 15, "PROJECTILE SPEED": 10, "SCORE": 10000,
                     "DESCRIPTION": "Calamity-class Warship with multiple turrets and defense systems."},
+    EnemyID.KING_MANDIBLE: {"HP": 2000, "SHIELD": 500, "SPEED": 1, "DAMAGE": 20, "PROJECTILE SPEED": 10, "SCORE": 5000,
+                            "DESCRIPTION": "A King among Mandibles"},
+    EnemyID.QUEEN_MANDIBLE: {"HP": 2000, "SHIELD": 500, "SPEED": 1, "DAMAGE": 50, "PROJECTILE SPEED": 15,
+                             "SCORE": 5000,
+                             "DESCRIPTION": "Royalty of the Mandible ships."},
     ##################################################################
     PlayerID.CITADEL: {"HP": 100, "SHIELD": 100, "SPEED": 10, "DAMAGE MULTIPLIER": 1, "RELOAD MODIFIER": 1,
                        "DESCRIPTION": "Versatile ship with a modular weapon system."},

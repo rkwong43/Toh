@@ -6,11 +6,13 @@ from src.entities.ships.enemies.arbitrator import Arbitrator
 from src.entities.ships.enemies.crucible import Crucible
 from src.entities.ships.enemies.despoiler import Despoiler
 from src.entities.ships.enemies.judicator import Judicator
+from src.entities.ships.enemies.king_mandible import KingMandible
 from src.entities.ships.enemies.mandible import Mandible
 from src.entities.ships.enemies.mantis import Mantis
 from src.entities.ships.enemies.mosquito import Mosquito
 from src.entities.ships.enemies.mothership import Mothership
 from src.entities.ships.enemies.phantom import Phantom
+from src.entities.ships.enemies.queen_mandible import QueenMandible
 from src.entities.ships.enemies.seer import Seer
 from src.entities.ships.enemies.spectre import Spectre
 from src.entities.ships.enemies.subjugator import Subjugator
@@ -35,6 +37,8 @@ entities = {EnemyID.MANDIBLE: Mandible,
             EnemyID.DESPOILER: Despoiler,
             EnemyID.PHANTOM: Phantom,
             EnemyID.TITAN: Titan,
+            EnemyID.KING_MANDIBLE: KingMandible,
+            EnemyID.QUEEN_MANDIBLE: QueenMandible,
             PlayerID.CITADEL: Citadel,
             PlayerID.AEGIS: Aegis,
             AllyID.LONGSWORD: Longsword,

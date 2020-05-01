@@ -49,6 +49,7 @@ class View:
         EnemyID.SUBJUGATOR: 1, EnemyID.SEER: 1, EnemyID.SPECTRE: 1,
         EnemyID.ARBITRATOR: 1.5, EnemyID.TERMINUS: 1.5, EnemyID.JUDICATOR: 1.5,
         EnemyID.MOTHERSHIP: 2, EnemyID.DESPOILER: 2, EnemyID.PHANTOM: 2,
+        EnemyID.KING_MANDIBLE: 4, EnemyID.QUEEN_MANDIBLE: 4,
         EnemyID.TITAN: 8, AllyID.LONGSWORD: 8
     }
     # All player ships are by default x1 size
