@@ -27,6 +27,7 @@ class Pulse(Projectile):
         self.curr_charge = 0
         self.size = radius * 2
         self.air_burst = True
+        self.has_splash = True
 
     """Doesn't really move it, just accelerates the charge time.
     """
