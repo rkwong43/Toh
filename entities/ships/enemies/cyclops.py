@@ -26,7 +26,7 @@ class Cyclops(BurstFireEnemy):
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
-        super().__init__(EnemyID.CYCLOPS, hp, shield, x, y, speed, config.ship_size * 3, fire_rate * 3, 6,
+        super().__init__(EnemyID.CYCLOPS, hp, shield, x, y, speed, config.ship_size * 3, fire_rate * 3, 8,
                          burst_rate=2)
         self.projectile_type = ProjectileID.PULSE
         self.effects = effects
