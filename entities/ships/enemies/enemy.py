@@ -1,11 +1,14 @@
 import random
 
+from src.entities.effects.charge_up import ChargeUp
 from src.entities.projectiles.bullet import Bullet
 from src.entities.projectiles.diamond_dust import DiamondDust
 from src.entities.projectiles.missile import Missile
+from src.entities.projectiles.pulse import Pulse
 from src.entities.ships.ship import Ship
 from src.model.stats import ship_stats
 from src.utils import config
+from src.utils.ids.effect_id import EffectID
 from src.utils.ids.projectile_id import ProjectileID
 
 """Represents an enemy ship or structure."""
@@ -105,7 +108,21 @@ class Enemy(Ship):
         projectiles.append(projectile)
         return projectile
 
-    """Doesn't do anything for now. Must be overridden.
+    """Returns a pulse projectile.
+    
+    :param target: target to fire pulse at.
+    :type target: Ship or WayPoint
+    :returns: Pulse projectile
+    :rtype: Pulse
     """
     def _fire_pulse(self, target):
-        return 0
+        radius = config.ship_size * 1.5 // 2
+        offset = target.size // 2
+        projectile = Pulse(self.projectile_speed, target.x + offset - radius, target.y + offset - radius,
+                           self.projectile_damage, radius)
+        charge = ChargeUp(projectile.x + projectile.size / 2, projectile.y + projectile.size / 2, EffectID.RED_AOE)
+        dif = 2 * self.projectile_speed // charge.charge_frames
+        charge.frame_multiplier = dif if dif > 0 else 2
+        charge.max_frame = ((self.projectile_speed // 5) * 5) - 1
+        self.effects.append(charge)
+        return projectile

@@ -1,8 +1,6 @@
-from src.entities.effects.charge_up import ChargeUp
-from src.entities.projectiles.pulse import Pulse
+
 from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
 from src.utils import config
-from src.utils.ids.effect_id import EffectID
 
 from src.utils.ids.enemy_id import EnemyID
 from src.utils.ids.projectile_id import ProjectileID
@@ -28,7 +26,7 @@ class Phantom(BurstFireEnemy):
     """
 
     def __init__(self, hp, shield, x, y, speed, fire_rate, effects, **args):
-        super().__init__(EnemyID.PHANTOM, hp, shield, x, y, speed, config.ship_size * 2, fire_rate * 4, 8,
+        super().__init__(EnemyID.PHANTOM, hp, shield, x, y, speed, config.ship_size * 2, fire_rate * 4, 12,
                          burst_rate=6)
         self.fire_variance = 2
         self.stealth = True
@@ -47,22 +45,3 @@ class Phantom(BurstFireEnemy):
     def move(self):
         self.stealth = True
         super().move()
-
-    """Returns a pulse projectile.
-    
-    :param target: target to fire pulse at.
-    :type target: Ship or WayPoint
-    :returns: Pulse projectile
-    :rtype: Pulse
-    """
-    def _fire_pulse(self, target):
-        radius = config.ship_size * 1.5 // 2
-        offset = target.size // 2
-        projectile = Pulse(self.projectile_speed, target.x + offset - radius, target.y + offset - radius,
-                           self.projectile_damage, radius)
-        charge = ChargeUp(projectile.x + projectile.size / 2, projectile.y + projectile.size / 2, EffectID.RED_AOE)
-        dif = 2 * self.projectile_speed // charge.charge_frames
-        charge.frame_multiplier = dif if dif > 0 else 2
-        charge.max_frame = ((self.projectile_speed // 5) * 5) - 1
-        self.effects.append(charge)
-        return projectile
