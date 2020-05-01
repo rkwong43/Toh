@@ -182,6 +182,7 @@ class EnemyWaveAI:
         ship = enemy_generator.generate_enemy(entity_id, x_pos, y_pos, hp=enemy_stats["HP"],
                                               speed=enemy_stats["SPEED"], fire_rate=fire_rate,
                                               shield=enemy_stats["SHIELD"], ai=self, effects=self._model.get_effects())
+        ship.y = -ship.size // 2
         self._model.enemy_ships.append(ship)
         if entity_id == EnemyID.TITAN:
             self._model.enemy_ships.extend(ship.spawn_turrets())
