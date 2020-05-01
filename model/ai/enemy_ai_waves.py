@@ -121,12 +121,18 @@ class EnemyWaveAI:
         for enemy, value in self._combat_ratings.items():
             if value <= rating:
                 available_enemies.append(enemy)
+        # 10% chance of hidden enemies
+        if self._max_combat_rating >= 400 and random.randint(1, 10) == 10:
+            available_enemies = [EnemyID.SPECTRE, EnemyID.PHANTOM]
+            self._model.popup_text("UNKNOWN SIGNATURES DETECTED", 3)
         while len(available_enemies) > 0:
             # Chooses an EnemyID of an enemy to spawn
             chosen = random.randint(0, len(available_enemies) - 1)
             # Subtracts their score from the current combat rating
             enemy = available_enemies[chosen]
             combat_value = self._combat_ratings.get(available_enemies[chosen])
+            if combat_value is None:
+                combat_value = {EnemyID.PHANTOM: 400, EnemyID.SPECTRE: 50}[available_enemies[chosen]]
             if combat_value <= rating:
                 # 20% of spawning a Titan
                 if enemy == EnemyID.TITAN:

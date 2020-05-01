@@ -25,8 +25,11 @@ class EnemyOnslaughtAI(EnemyWaveAI):
     def __init__(self, model, difficulty):
         super().__init__(model, difficulty)
         random.seed()
+        # Additional enemies not in Classic
         self._combat_ratings[EnemyID.SPECTRE] = 100
         self._combat_ratings[EnemyID.PHANTOM] = 400
+        self._combat_ratings[EnemyID.KING_MANDIBLE] = 1000
+        self._combat_ratings[EnemyID.QUEEN_MANDIBLE] = 1000
         self._friendly_spawn_ticks = 0
         self._max_combat_rating += 100
         self._max_combat_rating *= 3
