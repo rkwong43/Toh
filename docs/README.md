@@ -46,12 +46,6 @@ Describes the current gameplay features:
       * Every weapon is available for use.
       * Types of enemies spawned are chosen randomly based on an assigned combat rating and the total combat rating allowed for the current wave.
       * Every wave, the total combat rating is reset and increased by a certain amount.
-    * _Mandible Madness:_
-      ![A swarm of Mandibles](page images/screenshot1.png)
-      * Survive against hordes of hornet-like Mandible ships.
-      * Leveling is the same as in Classic, except the initial level threshold is lower.
-      * Every weapon is available for use.
-      * Every few waves (depending on difficulty), the health, shield, damage, score, and quantity of Mandibles will increase. The wave that their stats increase will have one Mandible given a railgun and boosted health and shield.
     * _Heaven:_
       * Survive against hordes of difficult enemy ships.
       * Every larger enemy ship is featured in Heaven Survival.
@@ -67,6 +61,7 @@ Describes the current gameplay features:
       * Allied ships spawn throughout the game.
       * Enemies will target the closest allied ship or the player.
       * Same scoring system and spawning as in Classic.
+    ![Player with allied support.](page images/screenshot5.png)
   * **Challenge**
     ![Player fighting a Titan.](page images/screenshot4.png)
     * _Titan Slayer:_
@@ -74,6 +69,13 @@ Describes the current gameplay features:
       * All weapons are available for use.
       * Score is not relevant, game victory returns the time taken to destroy the Titan.
       * Difficulty affects the health and fire rate of the Titan and its turrets.
+    * _Mandible Madness:_
+      * Fight against waves of Mandibles and Motherships.
+      * Final score is calculated based on time taken.
+      * Final wave includes two mini-bosses.
+    * _Spectral:_
+      * Fight against waves of hidden enemies.
+      * Time based game mode, so final score is based on how quickly the player completes every wave.
   * **Tutorial**
     * Leads the player through basic controls (WASD to move, SPACE to shoot).
     * Gives the player a sample enemy to destroy.

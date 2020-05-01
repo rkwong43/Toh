@@ -1,6 +1,6 @@
 # Tears Over Heaven
 WORK IN PROGRESS \
-Last Edited: 4/14/2020
+Last Edited: 5/1/2020
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
@@ -38,11 +38,6 @@ Describes the current gameplay features inside the game.
       * Every weapon is available for use.
       * Types of enemies spawned are chosen randomly based on an assigned combat rating and the total combat rating allowed for the current wave.
       * Every wave, the total combat rating is reset and increased by a certain amount.
-    * Mandible Madness:
-      * Survive against hordes of hornet-like Mandible ships.
-      * Leveling is the same as in Classic, except the initial level threshold is lower.
-      * Every weapon is available for use.
-      * Every few waves (depending on difficulty), the health, shield, damage, score, and quantity of Mandibles will increase. The wave that their stats increase will have one Mandible given a railgun and boosted health and shield.
     * Heaven:
       * Survive against hordes of difficult enemy ships.
       * Every larger enemy ship is featured in Heaven Survival.
@@ -64,6 +59,13 @@ Describes the current gameplay features inside the game.
       * All weapons are available for use.
       * Score is not relevant, game victory returns the time taken to destroy the Titan.
       * Difficulty affects the health and fire rate of the Titan and its turrets.
+    * Mandible Madness:
+      * Fight against waves of Mandibles and Motherships.
+      * Final score is calculated based on time taken.
+      * Final wave includes two mini-bosses.
+    * Spectral:
+      * Fight against waves of hidden enemies.
+      * Time based game mode, so final score is based on how quickly the player completes every wave.
   * Tutorial
     * Leads the player through basic controls (WASD or arrows to move, SPACE to shoot).
     * Gives the player a sample enemy to destroy.
@@ -88,9 +90,9 @@ Features currently under development or planned for the future.
  * More game modes, enemies, and weapons!
 
 ## How to Add Ships
-    * Create sprites for the animated, base, damaged, and shielded images.
-    * Create an ID for them, name the images ID.png, 
-    ID_base.png ID_damaged.png, and ID_shield.png respectively.
+    * Create sprites for the animated, base, damaged, and shielded images, placing them into
+    a spritesheet.
+    * Create an ID for them, name the spritesheet ID.png.
     * Place the images into the images folder under resources.
     * Add the ID to their respective enum.
     * Create a class for the new ship, extending the Ship class, or Enemy class if the
