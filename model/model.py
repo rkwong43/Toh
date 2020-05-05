@@ -107,7 +107,8 @@ class Model:
             ship.ticks = 0
 
         # Final game stats
-        self._final_stats = {"SCORE": 0, "WEAPON": '', "MODE": '', "LEVEL": 1, "ENEMIES SLAIN": 0, "TITANS SLAIN": 0,
+        self._final_stats = {"SCORE": 0, "WEAPON": '', "MODE": '', "DIFFICULTY": '',
+                             "LEVEL": 1, "ENEMIES SLAIN": 0, "TITANS SLAIN": 0,
                              "SHOTS FIRED": 0, "DAMAGE TAKEN": 0, "HITS TAKEN": 0, "HIGH SCORE": False}
 
     """Initializes the player's ship.
@@ -740,7 +741,6 @@ class Model:
 
     def get_score(self):
         self.clear()
-        # TODO: Future game modes that are time based
         if self._game_mode in self._time_based_game_modes:
             if not self._player_ship.is_dead and len(self.enemy_ships) == 0 and self._AI.cleared:
                 # y = 100000 (something less than 1 but close to it)^t
@@ -750,7 +750,8 @@ class Model:
         else:
             score = self._player_ship.score
         self._final_stats["MODE"] = self._game_mode.name.replace('_', ' ')
-        self._final_stats["WEAPON"] = self._player_stats["WEAPON"].name
+        self._final_stats["DIFFICULTY"] = self._difficulty.name
+        self._final_stats["WEAPON"] = self._player_stats["WEAPON"].name.replace("_", " ")
         self._final_stats["SCORE"] = score
         self._final_stats["DAMAGE TAKEN"] = int(self._player_ship.damage_taken)
         self._final_stats["HITS TAKEN"] = self._player_ship.hits_taken
