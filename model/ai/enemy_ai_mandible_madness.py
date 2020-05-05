@@ -25,9 +25,9 @@ class EnemyMandibleMadnessAI(ChallengeAI):
                             [EnemyID.MANDIBLE] * 4,
                             [EnemyID.MANDIBLE] * 8,
                             [EnemyID.MANDIBLE] * 16,
-                            ([EnemyID.MANDIBLE] * 8) + [EnemyID.MOTHERSHIP],
-                            ([EnemyID.MANDIBLE] * 8) + [EnemyID.MOTHERSHIP] * 2,
-                            ([EnemyID.MANDIBLE] * 8) + [EnemyID.MOTHERSHIP] * 3,
+                            [EnemyID.MOTHERSHIP],
+                            [EnemyID.MOTHERSHIP] * 2,
+                            [EnemyID.MOTHERSHIP] * 3,
                             [EnemyID.KING_MANDIBLE, EnemyID.QUEEN_MANDIBLE] + [EnemyID.MANDIBLE] * 8]
         super().__init__(model, difficulty, enemies_to_spawn, "PREPARE TO ENGAGE SWARM",
                          "DANGER: ROYALS DETECTED")
