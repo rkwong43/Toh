@@ -102,7 +102,7 @@ class MenuController:
         pygame.mixer.music.play(-1, 0)
         pygame.mixer.music.set_volume(.5)
         # How many times the menu can transition per second in frames:
-        self._option_transition = config.game_fps // 8
+        self._option_transition = config.game_fps // 8.5
         self._curr_ticks = self._option_transition
         # Menu click
         path = os.path.join(self.resource_path, 'sounds')
