@@ -1,12 +1,13 @@
 # Toh
 
-WORK IN PROGRESS \
-Last Edited: 5/1/2020
+HIATUS \
+Last Edited: 1/24/2022
 
 _NOTE: Meant to be run on Python 3.7 or any compatible version with Pygame_
 
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
+If you would like to just clone the repo and run it with Python, jump to the **Installation** section.
 
 **SOURCE CODE:** [https://github.com/rkwong43/Toh](https://github.com/rkwong43/Toh)
 
@@ -14,7 +15,7 @@ Currently the demo is only compatible with Windows operating systems. Unpack the
 
 **CONTROLS:** Menu navigation using WASD or arrow keys, select using Space. Go backwards a menu using Esc.
 
-Personal project using self-taught Python and the Pygame library. Is currently under development.
+Personal project using self-taught Python and the Pygame library. Is currently on a hiatus. Might port it into C++ in the future, or the Unity game engine.
 
 * Features decoupled views, models, controllers, and artificial intelligence for behavior of enemies.
 * Has a collision detection algorithm for detecting when projectiles and ships intersect.
@@ -27,6 +28,23 @@ Personal project using self-taught Python and the Pygame library. Is currently u
 * Backgrounds and sound effects are temporary until custom ones are created.
 
  As of now, all weapons and ships are permanently unlocked for the player for demo purposes.
+
+## Installation
+
+Clone the repo into a folder of your choice. Make sure you have Python 3.x installed then install `Pygame`:
+
+```sh
+# For Windows:
+py -m pip install -U pygame --user
+# For Linux:
+sudo apt-get install python3-pygame
+```
+
+From there, simply run:
+
+```sh
+py main.py
+```
 
 ## Current Game Features
 
@@ -98,13 +116,13 @@ Features currently under development or planned for the future.
 
 ## How to Add Ships
 
-    * Create sprites for the animated, base, damaged, and shielded images, placing them into
-    a spritesheet.
-    * Create an ID for them, name the spritesheet ID.png.
-    * Place the images into the images folder under resources.
-    * Add the ID to their respective enum.
-    * Create a class for the new ship, extending the Ship class, or Enemy class if the
-    new ship is an enemy.
-    * Add the ship's stats to the ship_stats.py file.
-    * If enemy ship, alter the enemy_generator.py file and add the new ID to the
-    dictionary of IDs : classes.
+* Create sprites for the animated, base, damaged, and shielded images, placing them into
+  a spritesheet.
+* Create an ID for them, name the spritesheet ID.png.
+* Place the images into the images folder under resources.
+* Add the ID to their respective enum.
+* Create a class for the new ship, extending the Ship class, or Enemy class if the
+  new ship is an enemy.
+* Add the ship's stats to the ship_stats.py file.
+* If enemy ship, alter the enemy_generator.py file and add the new ID to the
+  dictionary of IDs : classes.
