@@ -1,12 +1,12 @@
 import random
 
-from src.entities.ships.waypoint import Waypoint
-from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.utils import config, enemy_generator
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.player_id import PlayerID
+from entities.ships.waypoint import Waypoint
+from model.ai.enemy_ai_waves import EnemyWaveAI
+from utils import config, enemy_generator
+from utils.ids.ally_id import AllyID
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.player_id import PlayerID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.

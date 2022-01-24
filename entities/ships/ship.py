@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from src.utils import config
+from utils import config
 
 # Constants for state of movement and rotations
 NO_WAYPOINT = 1

@@ -2,10 +2,10 @@ import json
 import random
 import string
 
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.gamemode_id import GameModeID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.weapon_id import WeaponID
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.gamemode_id import GameModeID
+from utils.ids.player_id import PlayerID
+from utils.ids.weapon_id import WeaponID
 
 data = {}
 

@@ -1,5 +1,5 @@
-from src.entities.effects.effect import Effect
-from src.utils import config
+from entities.effects.effect import Effect
+from utils import config
 
 """Represents a charge up effect for rail guns. Has 12 frames."""
 

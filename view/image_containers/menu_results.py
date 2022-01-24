@@ -1,4 +1,4 @@
-from src.utils.ids.game_id import GameID
+from utils.ids.game_id import GameID
 
 """Defines a score screen.
 """

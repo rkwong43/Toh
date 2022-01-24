@@ -1,11 +1,11 @@
 import math
 
-from src.entities.effects.charge_up import ChargeUp
-from src.entities.ships.enemies.enemy import Enemy
-from src.utils import config
-from src.utils.ids.effect_id import EffectID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.effects.charge_up import ChargeUp
+from entities.ships.enemies.enemy import Enemy
+from utils import config
+from utils.ids.effect_id import EffectID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents a Terminus enemy fighter."""
 

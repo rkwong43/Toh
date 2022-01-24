@@ -1,7 +1,7 @@
-from src.entities.ships.enemies.terminus import Terminus
-from src.utils import config
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.ships.enemies.terminus import Terminus
+from utils import config
+from utils.ids.enemy_id import EnemyID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents a Judicator enemy fighter."""
 

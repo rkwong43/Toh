@@ -1,20 +1,20 @@
 import random
 
-from src.entities.projectiles.bullet import Bullet
-from src.entities.projectiles.diamond_dust import DiamondDust
-from src.entities.projectiles.missile import Missile
-from src.entities.ships.waypoint import Waypoint
-from src.model.model import Model
-from src.utils import config, enemy_generator
-from src.utils.direction import Direction
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.effect_id import EffectID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.bullet import Bullet
+from entities.projectiles.diamond_dust import DiamondDust
+from entities.projectiles.missile import Missile
+from entities.ships.waypoint import Waypoint
+from model.model import Model
+from utils import config, enemy_generator
+from utils.direction import Direction
+from utils.ids.ally_id import AllyID
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.effect_id import EffectID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.game_id import GameID
+from utils.ids.gamemode_id import GameModeID
+from utils.ids.player_id import PlayerID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents the model that handles displaying weapons or enemies in a gallery type menu.
 """

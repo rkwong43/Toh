@@ -1,5 +1,5 @@
-from src.entities.ships.allies.ally import Ally
-from src.utils.ids.projectile_id import ProjectileID
+from entities.ships.allies.ally import Ally
+from utils.ids.projectile_id import ProjectileID
 
 """A friendly Citadel ship.
 """

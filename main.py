@@ -1,20 +1,11 @@
 import pygame
-# import sys
-# import os
-
-# Makes sure the game knows where the files are located:
-
-# current_path = os.path.dirname(__file__)  # where this file is located
-# outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
-# sys.path.insert(1, outer_path)
-
-from src.model.menu_model import MenuModel
-from src.utils import config, score_storage
-from src.controller.menu_controller import MenuController
-from src.controller.controller import Controller
-from src.model.model import Model
-from src.view.menu_view import MenuView
-from src.view.view import View
+from model.menu_model import MenuModel
+from utils import config, score_storage
+from controller.menu_controller import MenuController
+from controller.controller import Controller
+from model.model import Model
+from view.menu_view import MenuView
+from view.view import View
 
 """Starts the game and loops until exit.
 """

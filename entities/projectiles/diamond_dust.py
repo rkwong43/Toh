@@ -1,6 +1,6 @@
 import random
 
-from src.entities.projectiles.projectile import Projectile
+from entities.projectiles.projectile import Projectile
 
 """A really bad missile. Is currently the behavior for the weapon Diamond Dust.
 Was the initial buggy missile behavior that I turned into a feature and made more random and bad.

@@ -1,9 +1,9 @@
 import random
 
-from src.model.stats import ship_stats
-from src.utils import config, enemy_generator
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.enemy_id import EnemyID
+from model.stats import ship_stats
+from utils import config, enemy_generator
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.enemy_id import EnemyID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI where number of enemies are spawned in waves. Defeating a wave will spawn the next one.

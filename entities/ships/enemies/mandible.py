@@ -1,6 +1,6 @@
-from src.entities.ships.enemies.enemy import Enemy
-from src.utils import config
-from src.utils.ids.enemy_id import EnemyID
+from entities.ships.enemies.enemy import Enemy
+from utils import config
+from utils.ids.enemy_id import EnemyID
 
 """Represents a Mandible enemy fighter."""
 

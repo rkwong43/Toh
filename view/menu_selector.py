@@ -1,7 +1,7 @@
-from src.model.stats import gamemode_stats
-from src.utils import score_storage
-from src.utils.ids.game_id import GameID
-from src.view.menu_tree import MenuTree
+from model.stats import gamemode_stats
+from utils import score_storage
+from utils.ids.game_id import GameID
+from view.menu_tree import MenuTree
 
 """Defines a selection screen that branches off from either other selection screens or a menu tree.
 Consists of a list of items to the left, with a description and other statistics to the right.

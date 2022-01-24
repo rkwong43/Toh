@@ -1,7 +1,7 @@
-from src.entities.ships.allies.ally import Ally
-from src.utils import config, enemy_generator
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.ships.allies.ally import Ally
+from utils import config, enemy_generator
+from utils.ids.ally_id import AllyID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents a Longsword friendly cruiser."""
 

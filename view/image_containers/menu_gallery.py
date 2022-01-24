@@ -1,9 +1,9 @@
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.weapon_id import WeaponID
-from src.model.stats import ship_stats
-from src.model.stats import weapon_stats
+from utils.ids.enemy_id import EnemyID
+from utils.ids.game_id import GameID
+from utils.ids.player_id import PlayerID
+from utils.ids.weapon_id import WeaponID
+from model.stats import ship_stats
+from model.stats import weapon_stats
 
 """Represents a description and image of an entity along with its associated stats.
 """

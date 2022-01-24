@@ -1,6 +1,6 @@
 """Basically a 2D position in space. Meant to have as either targets or as locations to travel to.
 """
-from src.utils import config
+from utils import config
 
 
 class Waypoint:

@@ -1,15 +1,15 @@
 import random
 
-from src.entities.effects.charge_up import ChargeUp
-from src.entities.projectiles.bullet import Bullet
-from src.entities.projectiles.diamond_dust import DiamondDust
-from src.entities.projectiles.missile import Missile
-from src.entities.projectiles.pulse import Pulse
-from src.entities.ships.ship import Ship
-from src.model.stats import ship_stats
-from src.utils import config
-from src.utils.ids.effect_id import EffectID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.effects.charge_up import ChargeUp
+from entities.projectiles.bullet import Bullet
+from entities.projectiles.diamond_dust import DiamondDust
+from entities.projectiles.missile import Missile
+from entities.projectiles.pulse import Pulse
+from entities.ships.ship import Ship
+from model.stats import ship_stats
+from utils import config
+from utils.ids.effect_id import EffectID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents an enemy ship or structure."""
 

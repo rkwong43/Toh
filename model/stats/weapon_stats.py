@@ -1,5 +1,5 @@
-from src.utils.ids.projectile_id import ProjectileID
-from src.utils.ids.weapon_id import WeaponID
+from utils.ids.projectile_id import ProjectileID
+from utils.ids.weapon_id import WeaponID
 
 """Initializes all weapon stats in the game for the player.
 """

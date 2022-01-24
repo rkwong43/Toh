@@ -1,6 +1,6 @@
-from src.entities.ships.enemies.enemy import Enemy
-from src.entities.ships.waypoint import Waypoint
-from src.utils import config
+from entities.ships.enemies.enemy import Enemy
+from entities.ships.waypoint import Waypoint
+from utils import config
 
 """"Represents an enemy deity.
 """

@@ -1,6 +1,6 @@
-from src.entities.projectiles.projectile import Projectile
-from src.utils import config
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.projectile import Projectile
+from utils import config
+from utils.ids.projectile_id import ProjectileID
 
 """Represents a timed pulse of energy."""
 

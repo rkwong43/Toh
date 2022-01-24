@@ -1,9 +1,9 @@
 
-from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
-from src.utils import config
+from entities.ships.enemies.burstfire_enemy import BurstFireEnemy
+from utils import config
 
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.projectile_id import ProjectileID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents a Cyclops enemy fighter. Fires pulses of energy."""
 

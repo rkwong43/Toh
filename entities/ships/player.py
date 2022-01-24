@@ -1,6 +1,6 @@
-from src.utils import config
-from src.utils.direction import Direction
-from src.entities.ships.ship import Ship
+from utils import config
+from utils.direction import Direction
+from entities.ships.ship import Ship
 
 """Represents the player ship that moves"""
 

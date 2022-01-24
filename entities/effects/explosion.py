@@ -1,5 +1,5 @@
-from src.entities.effects.effect import Effect
-from src.utils import config
+from entities.effects.effect import Effect
+from utils import config
 
 """Represents an explosion. Is 4 frames in length"""
 

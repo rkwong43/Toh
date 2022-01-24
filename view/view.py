@@ -1,20 +1,20 @@
 import os
 import pygame
 
-from src.utils import config
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.effect_id import EffectID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.projectile_id import ProjectileID
-from src.utils.ids.weapon_id import WeaponID
-from src.view.image_containers.charge_up_images import ChargeUpImages
-from src.view.image_containers.explosion_images import ExplosionImages
-from src.view.image_containers.image_holder import ImageHolder
-from src.view.image_containers.popup_image import PopUpImage
-from src.view.image_containers.screen_tint_images import ScreenTintImages
+from utils import config
+from utils.ids.ally_id import AllyID
+from utils.ids.effect_id import EffectID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.game_id import GameID
+from utils.ids.gamemode_id import GameModeID
+from utils.ids.player_id import PlayerID
+from utils.ids.projectile_id import ProjectileID
+from utils.ids.weapon_id import WeaponID
+from view.image_containers.charge_up_images import ChargeUpImages
+from view.image_containers.explosion_images import ExplosionImages
+from view.image_containers.image_holder import ImageHolder
+from view.image_containers.popup_image import PopUpImage
+from view.image_containers.screen_tint_images import ScreenTintImages
 
 """View to render the game, uses pygame to render images. Add ships, projectiles, and effects images to render
 inside their respective fields ships_to_init, projectiles_to_init, and effects_to_init inside init_images().

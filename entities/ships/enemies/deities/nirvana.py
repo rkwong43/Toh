@@ -1,5 +1,5 @@
-from src.entities.ships.enemies.deities.deity import Deity
-from src.utils.ids.enemy_id import EnemyID
+from entities.ships.enemies.deities.deity import Deity
+from utils.ids.enemy_id import EnemyID
 
 """"Nirvana enemy deity.
 """

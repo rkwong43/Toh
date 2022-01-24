@@ -1,7 +1,7 @@
 
-from src.utils import score_storage
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.weapon_id import WeaponID
+from utils import score_storage
+from utils.ids.player_id import PlayerID
+from utils.ids.weapon_id import WeaponID
 
 """Defines global variables to be used across all of the game.
 """

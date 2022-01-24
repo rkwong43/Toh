@@ -1,6 +1,6 @@
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.player_id import PlayerID
+from utils.ids.ally_id import AllyID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.player_id import PlayerID
 
 """Holds the statistics and descriptions of all ships in the game.
 """

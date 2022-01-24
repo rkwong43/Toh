@@ -4,32 +4,32 @@ import random
 
 import pygame
 
-from src.entities.effects.charge_up import ChargeUp
-from src.entities.effects.explosion import Explosion
-from src.entities.effects.popup import PopUp
-from src.entities.effects.screen_tint import ScreenTint
-from src.entities.projectiles.bullet import Bullet
-from src.entities.projectiles.diamond_dust import DiamondDust
-from src.entities.projectiles.missile import Missile
-from src.entities.ships.player import Player
-from src.model.ai.enemy_ai_fate import EnemyFateAI
-from src.model.ai.enemy_ai_heaven import EnemyHeavenAI
-from src.model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
-from src.model.ai.enemy_ai_onslaught import EnemyOnslaughtAI
-from src.model.ai.enemy_ai_spectral import EnemySpectralAI
-from src.model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
-from src.model.ai.enemy_ai_tutorial import EnemyTutorialAI
-from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.model.stats import ship_stats, weapon_stats
-from src.utils import config, score_storage
-from src.utils.direction import Direction
-from src.utils.ids.ally_id import AllyID
-from src.utils.ids.effect_id import EffectID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
-from src.utils.ids.projectile_id import ProjectileID
-from src.utils.ids.weapon_id import WeaponID
+from entities.effects.charge_up import ChargeUp
+from entities.effects.explosion import Explosion
+from entities.effects.popup import PopUp
+from entities.effects.screen_tint import ScreenTint
+from entities.projectiles.bullet import Bullet
+from entities.projectiles.diamond_dust import DiamondDust
+from entities.projectiles.missile import Missile
+from entities.ships.player import Player
+from model.ai.enemy_ai_fate import EnemyFateAI
+from model.ai.enemy_ai_heaven import EnemyHeavenAI
+from model.ai.enemy_ai_mandible_madness import EnemyMandibleMadnessAI
+from model.ai.enemy_ai_onslaught import EnemyOnslaughtAI
+from model.ai.enemy_ai_spectral import EnemySpectralAI
+from model.ai.enemy_ai_titan_slayer import EnemyTitanSlayerAI
+from model.ai.enemy_ai_tutorial import EnemyTutorialAI
+from model.ai.enemy_ai_waves import EnemyWaveAI
+from model.stats import ship_stats, weapon_stats
+from utils import config, score_storage
+from utils.direction import Direction
+from utils.ids.ally_id import AllyID
+from utils.ids.effect_id import EffectID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.game_id import GameID
+from utils.ids.gamemode_id import GameModeID
+from utils.ids.projectile_id import ProjectileID
+from utils.ids.weapon_id import WeaponID
 
 """Represents the model that handles controlling the player, firing, enemies, and other game mechanics such as
 health, leveling experience, and game events such as spawning more enemies

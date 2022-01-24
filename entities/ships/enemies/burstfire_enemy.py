@@ -1,5 +1,5 @@
-from src.entities.ships.enemies.enemy import Enemy
-from src.utils import config
+from entities.ships.enemies.enemy import Enemy
+from utils import config
 
 """Represents an enemy ship that fires in bursts."""
 

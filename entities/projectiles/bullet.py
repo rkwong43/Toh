@@ -1,7 +1,7 @@
 import math
 
-from src.entities.projectiles.projectile import Projectile
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.projectile import Projectile
+from utils.ids.projectile_id import ProjectileID
 
 """A bullet that travels in a straight line."""
 

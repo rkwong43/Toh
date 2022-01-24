@@ -3,13 +3,13 @@ import random
 
 import pygame
 
-from src.entities.projectiles.bullet import Bullet
-from src.entities.projectiles.diamond_dust import DiamondDust
-from src.entities.projectiles.missile import Missile
-from src.entities.ships.ship import Ship
-from src.utils import config
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.bullet import Bullet
+from entities.projectiles.diamond_dust import DiamondDust
+from entities.projectiles.missile import Missile
+from entities.ships.ship import Ship
+from utils import config
+from utils.ids.player_id import PlayerID
+from utils.ids.projectile_id import ProjectileID
 
 """A friendly allied ship.
 """

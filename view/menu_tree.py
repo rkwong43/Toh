@@ -1,5 +1,5 @@
-from src.model.stats import gamemode_stats
-from src.utils.direction import Direction
+from model.stats import gamemode_stats
+from utils.direction import Direction
 
 """Represents a tree of menus.
 """

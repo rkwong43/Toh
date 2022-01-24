@@ -1,7 +1,7 @@
-from src.entities.ships.enemies.burstfire_enemy import BurstFireEnemy
-from src.utils import config
+from entities.ships.enemies.burstfire_enemy import BurstFireEnemy
+from utils import config
 
-from src.utils.ids.enemy_id import EnemyID
+from utils.ids.enemy_id import EnemyID
 
 """Represents a Spectre enemy fighter. Fires a burst of bullets."""
 

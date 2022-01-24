@@ -1,6 +1,6 @@
-from src.entities.ships.allies.ally import Ally
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.ships.allies.ally import Ally
+from utils.ids.player_id import PlayerID
+from utils.ids.projectile_id import ProjectileID
 
 """A friendly Aegis ship.
 """

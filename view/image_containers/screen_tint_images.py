@@ -1,6 +1,6 @@
 import pygame
 
-from src.utils import config
+from utils import config
 
 """Container to hold images for an explosion.
 """

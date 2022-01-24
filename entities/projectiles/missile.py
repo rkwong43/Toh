@@ -1,8 +1,8 @@
 import math
 
-from src.entities.projectiles.projectile import Projectile
-from src.utils import config
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.projectile import Projectile
+from utils import config
+from utils.ids.projectile_id import ProjectileID
 
 """A missile that moves down/up at a constant rate but tracks the closest target in the x-position."""
 

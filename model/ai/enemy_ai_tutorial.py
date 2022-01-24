@@ -1,9 +1,9 @@
-from src.entities.projectiles.bullet import Bullet
-from src.model.ai.enemy_ai_waves import EnemyWaveAI
-from src.utils import config
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.projectile_id import ProjectileID
+from entities.projectiles.bullet import Bullet
+from model.ai.enemy_ai_waves import EnemyWaveAI
+from utils import config
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.projectile_id import ProjectileID
 
 """Represents the AI model used to control enemies. Works hand in hand with the model.
 This is an AI to guide the player along basic controls.

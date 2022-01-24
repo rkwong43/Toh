@@ -1,6 +1,6 @@
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.game_id import GameID
+from utils.ids.gamemode_id import GameModeID
 
 """Holds the descriptions for all the game modes or menu options in the game.
 """

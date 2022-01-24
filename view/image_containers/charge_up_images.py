@@ -1,5 +1,5 @@
 
-from src.view.image_containers.explosion_images import ExplosionImages
+from view.image_containers.explosion_images import ExplosionImages
 
 """Container to hold images for a charging effect.
 """

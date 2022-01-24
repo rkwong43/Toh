@@ -1,5 +1,5 @@
-from src.entities.effects.effect import Effect
-from src.utils import config
+from entities.effects.effect import Effect
+from utils import config
 
 """Represents some sort of effect that persists for a standard amount of time in the game.
 """

@@ -1,8 +1,8 @@
 import pygame
 import os
 
-from src.utils import config
-from src.utils.direction import Direction
+from utils import config
+from utils.direction import Direction
 
 """Controller that keeps track of time and key inputs to pass onto the _view and _model. Will also handle music
 and different types of menus and screens

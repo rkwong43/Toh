@@ -1,7 +1,7 @@
 import random
 
-from src.utils import config
-from src.utils.ids.projectile_id import ProjectileID
+from utils import config
+from utils.ids.projectile_id import ProjectileID
 
 projectile_types = [ProjectileID.FRIENDLY_MISSILE, ProjectileID.FRIENDLY_BULLET, ProjectileID.FRIENDLY_FLAK,
                     ProjectileID.HOMING_BULLET, ProjectileID.DIAMOND_DUST]

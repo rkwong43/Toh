@@ -1,6 +1,6 @@
 """A basic projectile, can be extended into different types such as bullets or missiles.
 """
-from src.utils import config
+from utils import config
 
 
 class Projectile:

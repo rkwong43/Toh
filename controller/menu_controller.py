@@ -1,19 +1,19 @@
 import pygame
 import os
 
-from src.utils import config
-from src.utils.direction import Direction
-from src.utils.ids.difficulty_id import DifficultyID
-from src.utils.ids.enemy_id import EnemyID
-from src.utils.ids.game_id import GameID
-from src.utils.ids.gamemode_id import GameModeID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.weapon_id import WeaponID
-from src.view.image_containers.menu_gallery import MenuGallery
-from src.view.image_containers.menu_results import MenuResults
-from src.view.loadout_selector import LoadoutSelector
-from src.view.menu_selector import MenuSelector
-from src.view.menu_tree import MenuTree
+from utils import config
+from utils.direction import Direction
+from utils.ids.difficulty_id import DifficultyID
+from utils.ids.enemy_id import EnemyID
+from utils.ids.game_id import GameID
+from utils.ids.gamemode_id import GameModeID
+from utils.ids.player_id import PlayerID
+from utils.ids.weapon_id import WeaponID
+from view.image_containers.menu_gallery import MenuGallery
+from view.image_containers.menu_results import MenuResults
+from view.loadout_selector import LoadoutSelector
+from view.menu_selector import MenuSelector
+from view.menu_tree import MenuTree
 
 difficulties = [difficulty for difficulty in DifficultyID]
 

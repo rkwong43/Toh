@@ -1,9 +1,9 @@
-from src.utils import config, score_storage
-from src.utils.direction import Direction
-from src.utils.ids.game_id import GameID
-from src.utils.ids.player_id import PlayerID
-from src.utils.ids.weapon_id import WeaponID
-from src.view.menu_selector import MenuSelector
+from utils import config, score_storage
+from utils.direction import Direction
+from utils.ids.game_id import GameID
+from utils.ids.player_id import PlayerID
+from utils.ids.weapon_id import WeaponID
+from view.menu_selector import MenuSelector
 
 """Defines a loadout selection screen. Currently supports picking a ship and a weapon.
 Currently only supports taking the currently unlocked weapons and ships.
