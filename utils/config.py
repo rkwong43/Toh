@@ -10,7 +10,7 @@ display_width = 1024
 display_height = 720
 ship_size = 90
 game_fps = 60
-game_title = 'Tears Over Heaven'
+game_title = 'Toh'
 
 # Player ship and weapon chosen:
 try:

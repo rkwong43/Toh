@@ -1,12 +1,12 @@
 import pygame
-import sys
-import os
+# import sys
+# import os
 
 # Makes sure the game knows where the files are located:
 
-current_path = os.path.dirname(__file__)  # where this file is located
-outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
-sys.path.insert(1, outer_path)
+# current_path = os.path.dirname(__file__)  # where this file is located
+# outer_path = os.path.abspath(os.path.join(current_path, os.pardir))  # the src folder
+# sys.path.insert(1, outer_path)
 
 from src.model.menu_model import MenuModel
 from src.utils import config, score_storage

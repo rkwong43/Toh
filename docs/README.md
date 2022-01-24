@@ -5,7 +5,7 @@ _NOTE: Meant to be run on Python 3.7 or any version compatible with Pygame_
 **DOWNLOAD A DEMO [HERE.](https://drive.google.com/file/d/1IG5TXE3D65jzQhSIlu_q3-AKYB8aY6KX/view?usp=sharing)**
 Currently the demo is only compatible with Windows operating systems. Unpack the .zip and run the .exe.
 
-**SOURCE CODE:** [https://github.com/rkwong43/Tears-Over-Heaven](https://github.com/rkwong43/Tears-Over-Heaven)
+**SOURCE CODE:** [https://github.com/rkwong43/Toh](https://github.com/rkwong43/Toh)
 
 ![A screenshot of the game's Classic Survival](page images/screenshot3.png?raw=true "Title")
 _Screenshot from the game's Survival Mode: Classic._
